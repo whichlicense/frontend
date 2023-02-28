@@ -1,6 +1,6 @@
 /*
  *   Copyright (c) 2023 Duart Snel
-
+ *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,28 +14,12 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+import React from 'react';
 
-import React from "react";
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Test } from "./pages/Test";
-import Home from "./pages/Home";
-import Search from "./pages/Search";
-import Dashboard from "./pages/Dashboard";
-
-function App() {
+function Home() {
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route path="/search" element={<Search />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/test" element={<Test />} />
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </div>
-    </Router>
+    <h1>HI</h1>
   );
 }
 
-export default App;
+export default Home;
