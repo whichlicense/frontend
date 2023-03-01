@@ -19,19 +19,11 @@ import { createContext, useState, useContext } from "react"
 
 export const DrawerContext = createContext<{
     open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    /**
-     * # WARNING!: this will absolutely destroy your render times.. be very careful with this one...
-     * > If i wasn't clear enough.. this gets updates every time the browser window is resized!!!.
-     * ---
-     * Anyways.. first index is the inner width, second is the inner height.
-     */
-    windowSize: [number, number]
 }>({} as any)
   
   export const DrawerContextProvider = (props: any) => {
     const openPoint = 1182;
     const [open, setOpen] = useState(window.innerWidth >= openPoint);
-    const [windowSize, setWindowSize] = useState<[number, number]>([window.innerWidth, window.innerHeight]);
 
     window.addEventListener('resize', () => {
       if (window.innerWidth >= openPoint) {
@@ -39,11 +31,10 @@ export const DrawerContext = createContext<{
       } else {
         setOpen(false)
       }
-      setWindowSize([window.innerWidth, window.innerHeight])
     })
 
     return (
-      <DrawerContext.Provider value={{ open, setOpen, windowSize }}>
+      <DrawerContext.Provider value={{ open, setOpen }}>
         {props.children}
       </DrawerContext.Provider>
     )
