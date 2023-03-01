@@ -42,7 +42,7 @@ export default function HBarChart(props: HBarChartProps) {
     plotOptions: {
       bar: {
         horizontal: false,
-        borderRadius: 20,
+        borderRadius: 12,
         borderRadiusApplication: "around",
         columnWidth: "85%",
       },

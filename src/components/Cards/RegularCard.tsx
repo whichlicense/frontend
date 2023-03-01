@@ -42,7 +42,7 @@ export default function RegularCard(props: RegularCardProps) {
   const bodyRef = useRef(null);
   return (
     <Card
-      className={`rounded-5 ${
+      className={`rounded ${
         props.bg ? props.bg : "bg-dark-1"
       } text-bg-dark w-100`}
     >

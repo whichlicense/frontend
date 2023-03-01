@@ -19,21 +19,27 @@
   /* the higher the black number the lighter of a black it is */
   --color-black: #000000;
   --color-dark-1: rgb(16, 16, 16);
+  --color-page-background: rgb(16, 16, 16);
 
   --color-grey: #818b8e;
   --color-blue: #68a3f7;
   --color-yellow: #eed256;
   --color-red: #f67676;
   --color-deep-red: #ff0000;
-  --color-purple: rgb(148, 117, 234);
+  --color-purple: rgb(155, 123, 245);
 
   --color-section-background: rgb(30, 30, 30);
   --color-highlighted-background: rgb(148, 117, 234);
+  
   --color-button-selected: white;
   --button-color-light: rgb(36,37,35);
   --button-color-dark: black;
+
   --color-text-light: rgb(240,240,240);
   --page-clamp: 96vh;
+
+  --border-radius-normal: 15px;
+  --border-radius-heavy: 18px;
 
   /* Bootstrap overrides */
   --bs-body-color: var(--color-text-light);
@@ -65,7 +71,7 @@ body {
    font-family: Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: black;
+  background-color: var(--color-page-background);
   /* color: whitesmoke; */
   overflow: hidden;
 }
@@ -102,7 +108,7 @@ b {
   color: var(--color-text-light);
   background-color: var(--button-color-light);
   border: none;
-  border-radius: 30px;
+  border-radius: var(--border-radius-normal);
 }
 .btn:hover {
   background-color: var(--color-button-selected);
@@ -127,6 +133,18 @@ b {
 .section{
   background-color: var(--color-section-background) !important;
 }
+.noise {
+  background-image: url("noise.png")
+}
+
+.rounded {
+  border-radius: var(--border-radius-normal) !important;
+}
+
+.rounded-heavy {
+  border-radius: var(--border-radius-heavy) !important;
+}
+
 section{
   background-color: var(--color-section-background) !important;
 }

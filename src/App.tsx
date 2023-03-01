@@ -31,14 +31,14 @@ function App() {
   const mainContentRef = useRef(null);
   return (
     <Router>
-      <Container fluid>
+      <Container fluid className="noise">
         <Row className="d-flex align-items-center" style={{ height: "100vh" }}>
           <Col xs={2} className="pe-0">
             <NavigationBar />
           </Col>
           <Col xs={10} className="g-0">
             <Container fluid>
-              <section ref={mainContentRef} className="clamp rounded-5 p-4 overflow-auto">
+              <section ref={mainContentRef} className="clamp rounded p-4 overflow-auto">
                 <Routes>
                   <Route path="/search" element={<Search />} />
                   <Route path="/dashboard" element={<Dashboard />} />

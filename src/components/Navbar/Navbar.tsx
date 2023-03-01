@@ -22,7 +22,7 @@ export default function NavigationBar() {
     const navigate = useNavigate();
   return (
     <div className="d-flex">
-      <section className="align-self-center rounded-5 container clamp w-100 d-flex flex-column">
+      <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
         <br />
             <h3 style={{fontSize: '1.8vw'}}>WhichLicense</h3>
         <br />
@@ -49,7 +49,7 @@ export default function NavigationBar() {
           </Button>
         </Stack>
 
-        <Card className="w-100 bg-dark-1 rounded-4 p-3 mb-2">
+        <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
           <small className="text-truncate">Remaining: 93 min</small>
           <hr />
           <ProgressBar>
@@ -73,7 +73,7 @@ export default function NavigationBar() {
             <small>100</small>
           </div>
         </Card>
-        <Button className="rounded-4 bg-dark-1 text-start py-2 ps-3 text-truncate">
+        <Button className="rounded bg-dark-1 text-start py-2 ps-3 text-truncate">
           <i className="bi bi-credit-card"></i> Payment
         </Button>
 
