@@ -21,7 +21,6 @@
 export function hasScrollBar(elem: React.MutableRefObject<any>) {
     const div = elem.current;
     if(!div) return false;
-    console.log(div.scrollHeight, div.clientHeight, div.scrollHeight > div.clientHeight);
     if (div.scrollHeight > div.clientHeight) {
       return true
     } else {
