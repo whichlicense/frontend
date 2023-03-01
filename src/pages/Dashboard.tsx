@@ -15,10 +15,123 @@
  *   limitations under the License.
  */
 
+import {
+  Badge,
+  Card,
+  Col,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
+import RegularCard from "../components/Cards/RegularCard";
+import HBarChart from "../components/Charts/HBarChart";
+
 export default function Dashboard() {
-    return (
-        <div>
-            <h1>Dashboard</h1>
-        </div>
-    )
+  return (
+    <section className="clamp rounded-5 p-4 overflow-auto">
+      <RegularCard
+        title={<h1 className="display-6 text-dark">Information Bar.</h1>}
+        bg="bg-purple"
+        maxHeight="25vh"
+        minHeight="25vh"
+      >
+        <HBarChart
+          series={[
+            {
+              data: [
+                {
+                  x: "MIT",
+                  y: 72,
+                },
+                {
+                  x: "Apache 2.0",
+                  y: 30,
+                },
+                {
+                  x: "CC-BY-4.0",
+                  y: 20,
+                },
+                {
+                  x: "intel-acpi",
+                  y: 20,
+                },
+                {
+                  x: "gpl-2.0-plus",
+                  y: 13,
+                },
+                {
+                  x: "x",
+                  y: 40,
+                },
+                {
+                  x: "x",
+                  y: 69,
+                },
+              ],
+            },
+          ]}
+        />
+      </RegularCard>
+
+      <Row>
+        <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
+          <RegularCard title={"Projects"}>
+            <ListGroup variant="flush">
+              <ListGroup.Item>
+                <div className="d-flex justify-content-between align-items-start">
+                  <div className="align-self-center">
+                    WhichLicense detection
+                  </div>
+                  <div className="align-self-baseline">
+                    <Badge bg="secondary">Apache 2.0</Badge>
+                  </div>
+                </div>
+                <hr className="text-muted" />
+              </ListGroup.Item>
+            </ListGroup>
+          </RegularCard>
+        </Col>
+
+        <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
+          <RegularCard title={"Title here"}>test</RegularCard>
+        </Col>
+
+        <Col xs={12} className="g-3">
+          <Card className="rounded-5 bg-dark-1 text-bg-dark p-4">
+            <h3>Recent scans</h3>
+            <Card.Body className="p-1">
+              <ListGroup variant="flush">
+                <ListGroup.Item className="bg-dark-1 text-bg-dark">
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <h5>Scan 1</h5>
+                    </div>
+                    Jan 20, 2021
+                    <div>
+                      <Badge bg="danger">Non-compliant</Badge>
+                    </div>
+                  </div>
+                  <hr className="text-muted" />
+                </ListGroup.Item>
+
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <ListGroup.Item className="bg-dark-1 text-bg-dark">
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <h5>Scan {idx + 2}</h5>
+                      </div>
+                      Jan 20, 2021
+                      <div>
+                        <Badge bg="success">Compliant</Badge>
+                      </div>
+                    </div>
+                    <hr className="text-muted" />
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </section>
+  );
 }

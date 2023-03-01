@@ -17,23 +17,36 @@
 
 import React from "react";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Test } from "./pages/Test";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Dashboard from "./pages/Dashboard";
+import NavigationBar from "./components/Navbar/Navbar";
+import ScanResult from "./pages/ScanResult";
+import { CardGroup, Col, Container, Row } from "react-bootstrap";
 
 function App() {
   return (
     <Router>
-      <div>
-        <Routes>
-          <Route path="/search" element={<Search />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/test" element={<Test />} />
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </div>
+      <Container fluid>
+        <Row className="d-flex align-items-center" style={{height: '100vh'}}>
+          <Col xs={2} className="pe-0">
+              <NavigationBar />
+          </Col>
+          <Col xs={10} className="g-0">
+            <Container fluid>
+              <Routes>
+                <Route path="/search" element={<Search />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/scan-result" element={<ScanResult />} />
+                <Route path="/test" element={<Test />} />
+                <Route path="/" element={<Home />} />
+              </Routes>
+            </Container>
+          </Col>
+        </Row>
+      </Container>
     </Router>
   );
 }
