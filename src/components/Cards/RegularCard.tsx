@@ -18,6 +18,7 @@
 import { useRef } from "react";
 import { Card } from "react-bootstrap";
 import { hasScrollBar } from "../utils/scroll";
+import ScrollIndicator from "../utils/ScrollIndicator";
 
 type RegularCardProps = {
   title?: string | JSX.Element;
@@ -63,11 +64,7 @@ export default function RegularCard(props: RegularCardProps) {
           {props.children}
         </Card.Body>
         {/* Only show chevron when Card.Body is long enough to be scrollable */}
-        {hasScrollBar(bodyRef) && (
-          <div style={{ position: "absolute", bottom: "0", left: "50%" }}>
-            <i className="text-muted bi bi-chevron-compact-down"></i>
-          </div>
-        )}
+        <ScrollIndicator bodyRef={bodyRef} />
       </div>
     </Card>
   );
