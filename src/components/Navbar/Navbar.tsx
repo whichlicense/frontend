@@ -15,38 +15,60 @@
  *   limitations under the License.
  */
 
+import { useState } from "react";
 import { Button, Card, ProgressBar, Stack } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import NavBarButton from "./NavBarButton";
 
 export default function NavigationBar() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
+
   return (
     <div className="d-flex">
       <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
         <br />
-            <h3 style={{fontSize: '1.8vw'}}>WhichLicense</h3>
+        <h3 style={{ fontSize: "1.8vw" }}>WhichLicense</h3>
         <br />
 
-  
         <Stack gap={2} className="flex-grow-0 mb-auto">
-          <Button onClick={()=>navigate('/dashboard')} className="selected text-start py-2 ps-3">
-            <i className="bi bi-building-check"></i> Dashboard
-          </Button>
-          <Button className="text-start py-2 ps-3 text-truncate">
-            <i className="bi bi-card-checklist"></i> Scans
-          </Button>
-          <Button className="text-start py-2 ps-3 text-truncate">
-            <i className="bi bi-binoculars"></i> Search
-          </Button>
-          <Button className="text-start py-2 ps-3 text-truncate">
-            <i className="bi bi-person-rolodex"></i> Accounts
-          </Button>
-          <Button className="text-start py-2 ps-3 text-truncate">
-            <i className="bi bi-bell"></i> Notifications
-          </Button>
-          <Button className="text-start py-2 ps-3 text-truncate">
-            <i className="bi bi-gear-wide-connected"></i> Settings
-          </Button>
+          <NavBarButton
+            onClick={() => navigate("/dashboard")}
+            text={"Dashboard"}
+            iconClass={"bi bi-building-check"}
+            collapsed={!open}
+            selected
+          />
+
+          <NavBarButton
+            text={"Scans"}
+            iconClass={"bi bi-card-checklist"}
+            collapsed={!open}
+          />
+
+          <NavBarButton
+            text={"Search"}
+            iconClass={"bi bi-binoculars"}
+            collapsed={!open}
+          />
+
+          <NavBarButton
+            text={"Accounts"}
+            iconClass={"bi bi-person-rolodex"}
+            collapsed={!open}
+          />
+
+          <NavBarButton
+            text={"Notifications"}
+            iconClass={"bi bi-bell"}
+            collapsed={!open}
+          />
+
+          <NavBarButton
+            text={"Settings"}
+            collapsed={!open}
+            iconClass={"bi bi-gear-wide-connected"}
+          />
         </Stack>
 
         <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
