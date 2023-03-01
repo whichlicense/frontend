@@ -20,12 +20,18 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 
 
 export const DrawerContext = createContext<{
-    open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>
+    open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    /**
+     * # WARNING!: this will absolutely destroy your render times.. be very careful with this one...
+     * > If i wasn't clear enough.. this gets updates every time the browser window is resized!!!.
+     */
+    windowWidth: number
 }>({} as any)
   
   export const DrawerContextProvider = (props: any) => {
     const openPoint = 1182;
     const [open, setOpen] = useState(window.innerWidth >= openPoint);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     window.addEventListener('resize', () => {
       if (window.innerWidth >= openPoint) {
@@ -33,10 +39,11 @@ export const DrawerContext = createContext<{
       } else {
         setOpen(false)
       }
+      setWindowWidth(window.innerWidth)
     })
 
     return (
-      <DrawerContext.Provider value={{ open, setOpen }}>
+      <DrawerContext.Provider value={{ open, setOpen, windowWidth }}>
         {props.children}
       </DrawerContext.Provider>
     )
