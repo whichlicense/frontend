@@ -19,12 +19,13 @@
     width: 15vw !important;
     max-width: 250px !important;
     opacity: 1;
-    transition: all 0.5s ease;
+    transition: all 0.6s ease;
 }
 
 .nav-closed {
     width: 75px !important;
-    transition: all 0.5s ease;
+    max-width: 75px !important;
+    transition: all 0.5s ease, width 0.5s ease;
 }
 
 .nav-collapse-button {
