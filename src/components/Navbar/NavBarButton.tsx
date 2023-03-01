@@ -15,21 +15,32 @@
  *   limitations under the License.
  */
 
-import { Button } from "react-bootstrap";
+import { Button, Stack } from "react-bootstrap";
 type NavBarButtonProps = {
-    text: string;
-    iconClass: string;
-    onClick?: () => void;
-    collapsed?: boolean;
-    selected?: boolean;
-}
-export default function NavBarButton(props: NavBarButtonProps){
-    return (
-        <Button
-            onClick={() => props.onClick && props.onClick()}
-            className={"text-start py-2 ps-3" + (props.selected ? " selected" : "")}
-          >
-            <i className={props.iconClass}></i> {!props.collapsed && props.text}
-          </Button>
-    )
+  text: string;
+  iconClass: string;
+  onClick?: () => void;
+  collapsed?: boolean;
+  selected?: boolean;
+};
+export default function NavBarButton(props: NavBarButtonProps) {
+  return (
+    <Button
+      onClick={() => props.onClick && props.onClick()}
+      className={"text-start py-2 ps-3" + (props.selected ? " selected" : "")}
+    >
+      <Stack direction="horizontal">
+        <i className={props.iconClass}></i>
+        <div
+          className={`ps-3 text-truncate ${
+            props.collapsed
+              ? "nav-button-text-collapsed"
+              : "nav-button-text-expanded"
+          }`}
+        >
+          {props.text}
+        </div>
+      </Stack>
+    </Button>
+  );
 }

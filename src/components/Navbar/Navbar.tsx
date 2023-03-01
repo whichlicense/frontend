@@ -19,16 +19,35 @@ import { useState } from "react";
 import { Button, Card, ProgressBar, Stack } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import NavBarButton from "./NavBarButton";
+import "./Navbar.css";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="d-flex">
+    <div className={`${open ? "nav-open" : "nav-closed"}`}>
+      <div className="position-relative">
+        {open ? (
+          <Button
+            onClick={() => setOpen(false)}
+            className="bg-yellow text-dark position-absolute nav-collapse-button"
+          >
+            <i className="bi bi-caret-left-fill"></i>
+          </Button>
+        ) : (
+          <Button
+            onClick={() => setOpen(true)}
+            className="bg-yellow text-dark position-absolute nav-expand-button"
+          >
+            <i className="bi bi-caret-right-fill"></i>
+          </Button>
+        )}
+      </div>
+
       <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
         <br />
-        <h3 style={{ fontSize: "1.8vw" }}>WhichLicense</h3>
+        {open && <h3 style={{ fontSize: "100%" }}>WhichLicense</h3>}
         <br />
 
         <Stack gap={2} className="flex-grow-0 mb-auto">
@@ -71,39 +90,46 @@ export default function NavigationBar() {
           />
         </Stack>
 
-        <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
-          <small className="text-truncate">Remaining: 93 min</small>
-          <hr />
-          <ProgressBar>
-            <ProgressBar
-              className="bg-yellow"
-              striped
-              variant="warning"
-              now={10}
-              key={1}
-            />
-            <ProgressBar
-              className="bg-blue"
-              striped
-              variant="info"
-              now={90}
-              key={2}
-            />
-          </ProgressBar>
-          <div className="d-flex justify-content-between">
-            <small>7</small>
-            <small>100</small>
-          </div>
-        </Card>
-        <Button className="rounded bg-dark-1 text-start py-2 ps-3 text-truncate">
-          <i className="bi bi-credit-card"></i> Payment
-        </Button>
+        {open && (
+          <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
+            <small className="text-truncate">Remaining: 93 min</small>
+            <hr />
+            <ProgressBar>
+              <ProgressBar
+                className="bg-yellow"
+                striped
+                variant="warning"
+                now={10}
+                key={1}
+              />
+              <ProgressBar
+                className="bg-blue"
+                striped
+                variant="info"
+                now={90}
+                key={2}
+              />
+            </ProgressBar>
+            <div className="d-flex justify-content-between">
+              <small>7</small>
+              <small>100</small>
+            </div>
+          </Card>
+        )}
+
+        <NavBarButton
+          text={"Payment"}
+          collapsed={!open}
+          iconClass={"bi bi-credit-card"}
+        />
 
         <hr className="text-muted mx-1" />
 
-        <Button className="text-start py-2 ps-3 text-truncate">
-          <i className="bi bi-arrow-left-circle"></i> Logout
-        </Button>
+        <NavBarButton
+          text={"Logout"}
+          collapsed={!open}
+          iconClass={"bi bi-arrow-left-circle"}
+        />
         <br />
       </section>
     </div>

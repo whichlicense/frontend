@@ -24,7 +24,7 @@ import Search from "./pages/Search";
 import Dashboard from "./pages/Dashboard";
 import NavigationBar from "./components/Navbar/Navbar";
 import ScanResult from "./pages/ScanResult";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Stack } from "react-bootstrap";
 import ScrollIndicator from "./components/utils/ScrollIndicator";
 
 function App() {
@@ -32,11 +32,9 @@ function App() {
   return (
     <Router>
       <Container fluid className="noise">
-        <Row className="d-flex align-items-center" style={{ height: "100vh" }}>
-          <Col xs={2} className="pe-0">
+        <Stack direction="horizontal" className="d-flex align-items-center" style={{ height: "100vh" }}>
             <NavigationBar />
-          </Col>
-          <Col xs={10} className="g-0">
+          <div className="g-0 w-100">
             <Container fluid>
               <section ref={mainContentRef} className="clamp rounded p-4 overflow-auto">
                 <Routes>
@@ -49,8 +47,8 @@ function App() {
                 <ScrollIndicator bodyRef={mainContentRef} />
               </section>
             </Container>
-          </Col>
-        </Row>
+          </div>
+        </Stack>
       </Container>
     </Router>
   );
