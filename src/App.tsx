@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import React from "react";
+import React, { useRef } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Test } from "./pages/Test";
@@ -24,25 +24,30 @@ import Search from "./pages/Search";
 import Dashboard from "./pages/Dashboard";
 import NavigationBar from "./components/Navbar/Navbar";
 import ScanResult from "./pages/ScanResult";
-import { CardGroup, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
+import ScrollIndicator from "./components/utils/ScrollIndicator";
 
 function App() {
+  const mainContentRef = useRef(null);
   return (
     <Router>
       <Container fluid>
-        <Row className="d-flex align-items-center" style={{height: '100vh'}}>
+        <Row className="d-flex align-items-center" style={{ height: "100vh" }}>
           <Col xs={2} className="pe-0">
-              <NavigationBar />
+            <NavigationBar />
           </Col>
           <Col xs={10} className="g-0">
             <Container fluid>
-              <Routes>
-                <Route path="/search" element={<Search />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/scan-result" element={<ScanResult />} />
-                <Route path="/test" element={<Test />} />
-                <Route path="/" element={<Home />} />
-              </Routes>
+              <section ref={mainContentRef} className="clamp rounded-5 p-4 overflow-auto">
+                <Routes>
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/scan-result" element={<ScanResult />} />
+                  <Route path="/test" element={<Test />} />
+                  <Route path="/" element={<Home />} />
+                </Routes>
+                <ScrollIndicator bodyRef={mainContentRef} />
+              </section>
             </Container>
           </Col>
         </Row>
