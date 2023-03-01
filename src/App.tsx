@@ -26,29 +26,39 @@ import NavigationBar from "./components/Navbar/Navbar";
 import ScanResult from "./pages/ScanResult";
 import { Col, Container, Row, Stack } from "react-bootstrap";
 import ScrollIndicator from "./components/utils/ScrollIndicator";
+import { DrawerContextProvider } from "./context/DrawerContext";
 
 function App() {
   const mainContentRef = useRef(null);
   return (
     <Router>
       <Container fluid className="noise">
-        <Stack direction="horizontal" className="d-flex align-items-center" style={{ height: "100vh" }}>
+        <DrawerContextProvider>
+          <Stack
+            direction="horizontal"
+            className="d-flex align-items-center w-100"
+            style={{ height: "100vh" }}
+          >
             <NavigationBar />
-          <div className="g-0 w-100">
-            <Container fluid>
-              <section ref={mainContentRef} className="clamp rounded p-4 overflow-auto">
-                <Routes>
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/scan-result" element={<ScanResult />} />
-                  <Route path="/test" element={<Test />} />
-                  <Route path="/" element={<Home />} />
-                </Routes>
-                <ScrollIndicator bodyRef={mainContentRef} />
-              </section>
-            </Container>
-          </div>
-        </Stack>
+            <div className="flex-grow-1 flex-fill d-flex">
+              <Container fluid>
+                <section
+                  ref={mainContentRef}
+                  className="clamp rounded p-4 overflow-auto"
+                >
+                  <Routes>
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/scan-result" element={<ScanResult />} />
+                    <Route path="/test" element={<Test />} />
+                    <Route path="/" element={<Home />} />
+                  </Routes>
+                  <ScrollIndicator bodyRef={mainContentRef} />
+                </section>
+              </Container>
+            </div>
+          </Stack>
+        </DrawerContextProvider>
       </Container>
     </Router>
   );

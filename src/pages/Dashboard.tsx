@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Badge, Card, Col, ListGroup, Row } from "react-bootstrap";
+import { Badge, Col, ListGroup, Row } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 

@@ -14,7 +14,9 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+import { useEffect, useRef, useState } from "react";
 import Chart from "react-apexcharts";
+import { useDrawerContext } from "../../context/DrawerContext";
 
 type HBarChartProps = {
   series: ApexCharts.ApexOptions["series"];
@@ -33,11 +35,15 @@ type HBarChartProps = {
     | "palette9"
     | "palette10";
 };
+
 export default function HBarChart(props: HBarChartProps) {
+  const {open} = useDrawerContext()
+  const [width, setWidth] = useState('100%')
   const chartOpts: ApexCharts.ApexOptions = {
     chart: {
       type: "bar",
       background: "transparent",
+      width: width,
     },
     plotOptions: {
       bar: {
@@ -103,12 +109,22 @@ export default function HBarChart(props: HBarChartProps) {
     },
     series: props.series,
   };
+
+  useEffect(() => {
+    setWidth('99.99999999999%')
+    setTimeout(() => {
+      setWidth( '100%')
+    }, 1000)
+  }, [open])
+
+
   return (
-    <Chart
+      <Chart
       series={chartOpts.series}
       options={chartOpts}
       height={"100%"}
       type={"bar"}
+      width={width}
     />
   );
 }

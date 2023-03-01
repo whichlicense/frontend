@@ -15,19 +15,38 @@
  *   limitations under the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { TreemapController, TreemapElement } from 'chartjs-chart-treemap';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+// import {
+//   Chart as ChartJS,
+//   ArcElement,
+//   Tooltip,
+//   Legend,
+//   CategoryScale,
+//   LinearScale,
+//   BarController,
+//   BarElement,
+// } from "chart.js";
+// import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
-ChartJS.register(ArcElement, Tooltip, Legend, TreemapElement, TreemapController);
+// ChartJS.register(
+//   ArcElement,
+//   Tooltip,
+//   Legend,
+//   TreemapElement,
+//   TreemapController,
+//   CategoryScale,
+//   LinearScale,
+//   BarController,
+//   BarElement
+// );
 root.render(
   <React.StrictMode>
     <App />
