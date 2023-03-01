@@ -15,13 +15,7 @@
  *   limitations under the License.
  */
 
-import {
-  Badge,
-  Card,
-  Col,
-  ListGroup,
-  Row,
-} from "react-bootstrap";
+import { Badge, Card, Col, ListGroup, Row } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 
@@ -96,7 +90,8 @@ export default function Dashboard() {
             <ListGroup variant="flush">
               {Array.from({ length: 5 }).map((_, idx) => (
                 <ListGroup.Item>
-                  <i className="bi bi-exclamation-circle"></i> Project {idx+1} has unresolved licenses.
+                  <i className="bi bi-exclamation-circle"></i> Project {idx + 1}{" "}
+                  has unresolved licenses.
                 </ListGroup.Item>
               ))}
             </ListGroup>
@@ -104,40 +99,37 @@ export default function Dashboard() {
         </Col>
 
         <Col xs={12} className="g-3">
-          <Card className="rounded-5 bg-dark-1 text-bg-dark p-4">
-            <h3>Recent scans</h3>
-            <Card.Body className="p-1">
-              <ListGroup variant="flush">
+          <RegularCard title={"Recent scans"} maxHeight="30vh">
+            <ListGroup variant="flush">
+              <ListGroup.Item className="bg-dark-1 text-bg-dark">
+                <div className="d-flex justify-content-between">
+                  <div>
+                    <h5>Scan 1</h5>
+                  </div>
+                  Jan 20, 2021
+                  <div>
+                    <Badge bg="danger">Non-compliant</Badge>
+                  </div>
+                </div>
+                <hr className="text-muted" />
+              </ListGroup.Item>
+
+              {Array.from({ length: 3 }).map((_, idx) => (
                 <ListGroup.Item className="bg-dark-1 text-bg-dark">
                   <div className="d-flex justify-content-between">
                     <div>
-                      <h5>Scan 1</h5>
+                      <h5>Scan {idx + 2}</h5>
                     </div>
                     Jan 20, 2021
                     <div>
-                      <Badge bg="danger">Non-compliant</Badge>
+                      <Badge bg="success">Compliant</Badge>
                     </div>
                   </div>
                   <hr className="text-muted" />
                 </ListGroup.Item>
-
-                {Array.from({ length: 3 }).map((_, idx) => (
-                  <ListGroup.Item className="bg-dark-1 text-bg-dark">
-                    <div className="d-flex justify-content-between">
-                      <div>
-                        <h5>Scan {idx + 2}</h5>
-                      </div>
-                      Jan 20, 2021
-                      <div>
-                        <Badge bg="success">Compliant</Badge>
-                      </div>
-                    </div>
-                    <hr className="text-muted" />
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </Card.Body>
-          </Card>
+              ))}
+            </ListGroup>
+          </RegularCard>
         </Col>
       </Row>
     </>
