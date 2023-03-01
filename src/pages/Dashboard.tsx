@@ -16,6 +16,7 @@
  */
 
 import {
+  Alert,
   Badge,
   Card,
   Col,
@@ -92,7 +93,15 @@ export default function Dashboard() {
         </Col>
 
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
-          <RegularCard title={"Title here"}>test</RegularCard>
+          <RegularCard title={"Notice"}>
+            <ListGroup variant="flush">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <ListGroup.Item>
+                  <i className="bi bi-exclamation-circle"></i> Project {idx+1} has unresolved licenses.
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </RegularCard>
         </Col>
 
         <Col xs={12} className="g-3">
