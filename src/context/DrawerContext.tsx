@@ -16,6 +16,7 @@
  */
 
 import { createContext, useState, useContext } from "react"
+import { useEffectOnce } from "../components/utils/useEffectOnce";
 
 
 export const DrawerContext = createContext<{
@@ -23,7 +24,16 @@ export const DrawerContext = createContext<{
 }>({} as any)
   
   export const DrawerContextProvider = (props: any) => {
-    const [open, setOpen] = useState(true);
+    const openPoint = 1182;
+    const [open, setOpen] = useState(window.innerWidth >= openPoint);
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= openPoint) {
+        setOpen(true)
+      } else {
+        setOpen(false)
+      }
+    })
 
     return (
       <DrawerContext.Provider value={{ open, setOpen }}>
