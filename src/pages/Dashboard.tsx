@@ -16,7 +16,6 @@
  */
 
 import {
-  Alert,
   Badge,
   Card,
   Col,
@@ -28,7 +27,7 @@ import HBarChart from "../components/Charts/HBarChart";
 
 export default function Dashboard() {
   return (
-    <section className="clamp rounded-5 p-4 overflow-auto">
+    <>
       <RegularCard
         title={<h1 className="display-6 text-dark">Information Bar.</h1>}
         bg="bg-purple"
@@ -95,7 +94,7 @@ export default function Dashboard() {
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
           <RegularCard title={"Notice"}>
             <ListGroup variant="flush">
-              {Array.from({ length: 3 }).map((_, idx) => (
+              {Array.from({ length: 5 }).map((_, idx) => (
                 <ListGroup.Item>
                   <i className="bi bi-exclamation-circle"></i> Project {idx+1} has unresolved licenses.
                 </ListGroup.Item>
@@ -141,6 +140,6 @@ export default function Dashboard() {
           </Card>
         </Col>
       </Row>
-    </section>
+    </>
   );
 }
