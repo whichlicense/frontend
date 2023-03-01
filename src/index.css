@@ -151,3 +151,22 @@ section{
 section button{
   background-color: rgb(36, 36, 36) !important;
 }
+
+
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(81, 81, 81, 0.3);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(81, 81, 81, 0.2);
+}
