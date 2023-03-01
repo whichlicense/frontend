@@ -20,29 +20,21 @@ import { Button, Card, ProgressBar, Stack } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import NavBarButton from "./NavBarButton";
 import "./Navbar.css";
+import { useDrawerContext } from "../../context/DrawerContext";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(true);
+  const {open, setOpen} = useDrawerContext()
 
   return (
     <div className={`${open ? "nav-open" : "nav-closed"}`}>
       <div className="position-relative">
-        {open ? (
-          <Button
-            onClick={() => setOpen(false)}
-            className="bg-yellow text-dark position-absolute nav-collapse-button"
+      <Button
+            onClick={() => setOpen(x=>!x)}
+            className={`bg-yellow text-dark position-absolute ${open ? 'nav-collapse-button' : 'nav-expand-button'}`}
           >
-            <i className="bi bi-caret-left-fill"></i>
+            <i className={`bi bi-caret-${open ? 'left' : 'right'}-fill`}></i>
           </Button>
-        ) : (
-          <Button
-            onClick={() => setOpen(true)}
-            className="bg-yellow text-dark position-absolute nav-expand-button"
-          >
-            <i className="bi bi-caret-right-fill"></i>
-          </Button>
-        )}
       </div>
 
       <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
