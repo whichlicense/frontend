@@ -17,6 +17,7 @@
 
 import React, { useRef } from "react";
 import "./App.css";
+import "./styles/Animations.css"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Test } from "./pages/Test";
 import Home from "./pages/Home";
