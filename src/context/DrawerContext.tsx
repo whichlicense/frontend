@@ -23,7 +23,7 @@ export const DrawerContext = createContext<{
   
   export const DrawerContextProvider = (props: any) => {
     const openPoint = 1182;
-    const [open, setOpen] = useState(window.innerWidth >= openPoint);
+    const [open, setOpen] = useState(false);
 
     window.addEventListener('resize', () => {
       if (window.innerWidth >= openPoint) {
