@@ -39,15 +39,24 @@
   --color-text-light: rgb(240,240,240);
   --page-clamp: 96vh;
 
-  --border-radius-normal: 15px;
-  --border-radius-heavy: 18px;
+  --border-radius-normal: 13px;
+  --border-radius-heavy: 15px;
 
   /* Bootstrap overrides */
   --bs-body-color: var(--color-text-light);
 }
+
 @font-face {
-  font-family: 'OxygenMono';
-  src: url(./fonts/OxygenMono-Regular.ttf);
+  font-family: 'DMMono';
+  src: url(./fonts/DMMono-Light.ttf);
+}
+@font-face {
+  font-family: 'DMMono';
+  src: url(./fonts/DMMono-Regular.ttf);
+}
+@font-face {
+  font-family: 'DMMono';
+  src: url(./fonts/DMMono-Medium.ttf);
 }
 @font-face {
   font-family: 'IBMPlexMono';
@@ -64,10 +73,9 @@
   font-weight: 600;
 }
 
-
 body {
   margin: 0;
-  font-family: 'OxygenMono' !important;
+  font-family: 'DMMono' !important;
   
    font-family: Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
