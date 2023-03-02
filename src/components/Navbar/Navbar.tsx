@@ -27,7 +27,7 @@ export default function NavigationBar() {
   const navigate = useNavigate();
   const {open, setOpen} = useDrawerContext()
 
-
+    // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
 
   return (
     <div className={`${open ? "nav-open" : "nav-closed"}`}>
