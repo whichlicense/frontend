@@ -15,10 +15,13 @@
  *   limitations under the License.
  */
 
+import { useParams } from "react-router-dom";
+
 export default function ScanResult(){
+    let { id } = useParams();
     return (
         <div>
-            <h1>Scan Result</h1>
+            <h1>Scan {id} Result Page</h1>
         </div>
     )
 }
