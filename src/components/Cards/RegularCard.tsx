@@ -31,6 +31,8 @@ type RegularCardProps = {
     | "bg-purple";
   maxHeight?: string;
   minHeight?: string;
+  maxWidth?: string;
+  minWidth?: string;
   overflowX?: "auto" | "hidden" | "scroll" | "visible";
   children: JSX.Element | JSX.Element[] | string;
 };
@@ -45,6 +47,10 @@ export default function RegularCard(props: RegularCardProps) {
       className={`rounded align-self-stretch ${
         props.bg ? props.bg : "bg-dark-1"
       } text-bg-dark w-100`}
+      style={{
+        maxWidth: props.maxWidth || "unset",
+        minWidth: props.minWidth || "unset",
+      }}
     >
       <div className="p-4">
         {props.title && props.title.constructor.name === "String" ? (
