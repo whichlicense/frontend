@@ -17,11 +17,10 @@
 
 import { useEffect, useState } from "react";
 import { Button, Card, ProgressBar, Stack } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBarButton from "./NavBarButton";
 import "./Navbar.css";
 import { useDrawerContext } from "../../context/DrawerContext";
-import { useEffectOnce } from "../utils/useEffectOnce";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
