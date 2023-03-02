@@ -16,10 +16,12 @@
  */
 
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   return (
     <>
       <RegularCard
@@ -115,7 +117,7 @@ export default function Dashboard() {
               </ListGroup.Item>
 
               {Array.from({ length: 3 }).map((_, idx) => (
-                <ListGroup.Item className="bg-dark-1 text-bg-dark">
+                <ListGroup.Item onClick={()=>navigate("/scan-result/000")} className="bg-dark-1 text-bg-dark">
                   <div className="d-flex justify-content-between">
                     <div>
                       <h5>Scan {idx + 2}</h5>
