@@ -29,6 +29,7 @@ export default function Dashboard() {
         bg="bg-purple"
         maxHeight="25vh"
         minHeight="25vh"
+        fadeIn
       >
         <HBarChart
           series={[
@@ -70,7 +71,7 @@ export default function Dashboard() {
 
       <Row>
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
-          <RegularCard title={"Projects"}>
+          <RegularCard title={"Projects"} fadeIn>
             <ListGroup variant="flush">
               <ListGroup.Item>
                 <div className="d-flex justify-content-between align-items-start">
@@ -88,7 +89,7 @@ export default function Dashboard() {
         </Col>
 
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
-          <RegularCard title={"Notice"}>
+          <RegularCard title={"Notice"} fadeIn>
             <ListGroup variant="flush">
               {Array.from({ length: 5 }).map((_, idx) => (
                 <ListGroup.Item>
@@ -101,7 +102,7 @@ export default function Dashboard() {
         </Col>
 
         <Col xs={12} className="g-3">
-          <RegularCard title={"Recent scans"} maxHeight="30vh">
+          <RegularCard title={"Recent scans"} maxHeight="30vh" fadeIn>
             <ListGroup variant="flush">
               <ListGroup.Item className="bg-dark-1 text-bg-dark">
                 <div className="d-flex justify-content-between">
