@@ -15,7 +15,16 @@
  *   limitations under the License.
  */
 
-import { Badge, Breadcrumb, Button, Card, Col, Row } from "react-bootstrap";
+import {
+  Badge,
+  Breadcrumb,
+  Button,
+  ButtonGroup,
+  Card,
+  Col,
+  Row,
+  Stack,
+} from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 
@@ -24,9 +33,10 @@ export default function ScanResult() {
   return (
     <div>
       <div className="d-flex justify-content-between">
-        <h1>Colors.js</h1>
-        <div style={{ maxWidth: "50%" }}>
-          {/* TODO: we need a component for this but i dont know how the data will look yet */}
+        <h1 className="display-4">Colors.js</h1>
+
+        {/* TODO: we need a component for this but i dont know how the data will look yet */}
+        {/* <div style={{ maxWidth: "50%" }}>
           <Breadcrumb>
             <Breadcrumb.Item>
               <Badge className="bg-blue">WhichLicense detection</Badge>
@@ -40,30 +50,29 @@ export default function ScanResult() {
               <Badge className="bg-grey">Colors.js</Badge>
             </Breadcrumb.Item>
           </Breadcrumb>
-        </div>
+        </div> */}
       </div>
 
       {/* TODO: show if there is a "back" */}
 
       <Row className="g-3">
         <Col>
-          <Row xs={1} md={6} className="g-3">
-              <Col>
-                <RegularCard title={"License"}>
-                <h4 className="display-6 txt-purple">MIT</h4>
-                </RegularCard>
-              </Col>
-              <Col>
-                <RegularCard title={"Version"}>
-                    <h5>V2.0.5</h5>
-                </RegularCard>
-              </Col>
-              <Col>
-                <RegularCard title={"Scanned"}>
-                    <h5>January 20, 2023 @ 23:00:02</h5>
-                </RegularCard>
-              </Col>
-          </Row>
+          <Stack direction="horizontal" gap={3}>
+            <RegularCard maxWidth="20%" title={"License"}>
+              <div></div>
+              <h4 className="display-6 fs-2 txt-purple">
+                MIT
+                <i className="ps-2 align-top h5 txt-purple bi bi-info-circle"></i>
+              </h4>
+            </RegularCard>
+            <RegularCard title={"Version"}>
+              <h6>Semantic: V2.0.5</h6>
+              <h6>Actual: Ver-2.0.5_alpha #2</h6>
+            </RegularCard>
+            <RegularCard title={"Scanned"}>
+              <h5>January 20, 2023 @ 23:00:02</h5>
+            </RegularCard>
+          </Stack>
         </Col>
         {/* <Col xs={6}>
             <RegularCard title={"Chart???"} minHeight="20vh">
