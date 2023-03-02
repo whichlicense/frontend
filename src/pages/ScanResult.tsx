@@ -17,11 +17,8 @@
 
 import {
   Badge,
-  Breadcrumb,
-  Button,
-  ButtonGroup,
-  Card,
   Col,
+  ListGroup,
   Row,
   Stack,
 } from "react-bootstrap";
@@ -34,55 +31,48 @@ export default function ScanResult() {
     <div>
       <div className="d-flex justify-content-between">
         <h1 className="display-4">Colors.js</h1>
-
-        {/* TODO: we need a component for this but i dont know how the data will look yet */}
-        {/* <div style={{ maxWidth: "50%" }}>
-          <Breadcrumb>
-            <Breadcrumb.Item>
-              <Badge className="bg-blue">WhichLicense detection</Badge>
-            </Breadcrumb.Item>
-            {Array.from({ length: 3 }, (_, i) => i).map((i) => (
-              <Breadcrumb.Item key={i}>
-                <Badge className="bg-blue">dependency {i}</Badge>
-              </Breadcrumb.Item>
-            ))}
-            <Breadcrumb.Item>
-              <Badge className="bg-grey">Colors.js</Badge>
-            </Breadcrumb.Item>
-          </Breadcrumb>
-        </div> */}
       </div>
-
-      {/* TODO: show if there is a "back" */}
 
       <Row className="g-3">
         <Col>
           <Stack direction="horizontal" gap={3}>
-            <RegularCard maxWidth="20%" title={"License"}>
-              <div></div>
-              <h4 className="display-6 fs-2 txt-purple">
-                MIT
-                <i className="ps-2 align-top h5 txt-purple bi bi-info-circle"></i>
-              </h4>
+            <RegularCard maxWidth="20%" title={"License"} fadeIn>
+              <div>
+                <h4 className="display-6 fs-2 txt-purple">
+                  MIT
+                  <i className="ps-2 align-top h5 txt-purple bi bi-info-circle"></i>
+                </h4>
+                <Stack direction="vertical" gap={2}>
+                  <span>Confidence: 100%</span>
+                </Stack>
+              </div>
             </RegularCard>
-            <RegularCard title={"Version"}>
+            <RegularCard title={"Version"} fadeIn>
               <h6>Semantic: V2.0.5</h6>
               <h6>Actual: Ver-2.0.5_alpha #2</h6>
             </RegularCard>
-            <RegularCard title={"Scanned"}>
+            <RegularCard title={"Scanned"} fadeIn>
               <h5>January 20, 2023 @ 23:00:02</h5>
             </RegularCard>
           </Stack>
         </Col>
-        {/* <Col xs={6}>
-            <RegularCard title={"Chart???"} minHeight="20vh">
-                <p>TODO: figure out what to show here</p>
-            </RegularCard>
-        </Col> */}
 
         <Col xs={12}>
-          <RegularCard minHeight="50vh" title={"Dependencies"}>
-            <p>TODO: show dependencies</p>
+          <RegularCard minHeight="50vh" title={"Dependencies"} fadeIn>
+            <ListGroup variant="flush">
+              {Array.from({ length: 10 }).map((_, idx) => (
+                <ListGroup.Item>
+                  <div className="d-flex justify-content-between">
+                    <h6>Some top level dependency</h6>
+                    <span>V2.0.0</span>
+                    <Badge className="bg-grey h-100">
+                      <span>Apache 2.0</span>
+                    </Badge>
+                  </div>
+                  <hr className="text-muted" />
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
           </RegularCard>
         </Col>
       </Row>
