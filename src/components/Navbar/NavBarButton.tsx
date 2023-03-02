@@ -27,7 +27,7 @@ export default function NavBarButton(props: NavBarButtonProps) {
   return (
     <Button
       onClick={() => props.onClick && props.onClick()}
-      className={"text-start py-2 ps-3" + (props.selected ? " selected" : "")}
+      className={"shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "")}
     >
       <Stack direction="horizontal">
         <i className={props.iconClass}></i>

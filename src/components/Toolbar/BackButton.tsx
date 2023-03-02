@@ -25,7 +25,7 @@ export default function BackButton() {
   return (
     <div className="position-relative">
       <Button
-        className={`bg-yellow text-dark position-absolute page-back-button`}
+        className={`bg-yellow text-dark position-absolute page-back-button shadow-sm`}
       >
         <Stack direction="horizontal">
           <i className={`bi bi-caret-left-fill txt-dark-1`}></i>

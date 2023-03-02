@@ -19,6 +19,7 @@ import { useRef } from "react";
 import { Card } from "react-bootstrap";
 import { hasScrollBar } from "../utils/scroll";
 import ScrollIndicator from "../utils/ScrollIndicator";
+import "../../styles/Card.css"
 
 type RegularCardProps = {
   title?: string | JSX.Element;
@@ -45,7 +46,7 @@ export default function RegularCard(props: RegularCardProps) {
   const bodyRef = useRef(null);
   return (
     <Card
-      className={`rounded align-self-stretch ${
+      className={`regular-card shadow-sm rounded align-self-stretch ${
         props.bg ? props.bg : "bg-dark-1"
       } text-bg-dark w-100 ${props.fadeIn ? "fade-in-forward" : ""}`}
       style={{
