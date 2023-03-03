@@ -55,7 +55,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
           </h6>
         );
         case ToolBarItemType.SEPARATOR:
-            return <div className={`vr ${item.color || 'txt-white'} rounded`} style={{padding: '2px'}} />;
+            return <div className={`vr ${item.color || 'bg-grey'} rounded opacity-100`} style={{padding: '2px'}} />;
     }
   };
 

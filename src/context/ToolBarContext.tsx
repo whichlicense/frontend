@@ -40,7 +40,7 @@ export type ToolBarItem =
     }
     | {
       type: ToolBarItemType.SEPARATOR;
-      color?: TxtColors;
+      color?: BgColors;
     };
 
 export const ToolBarContext = createContext<{
