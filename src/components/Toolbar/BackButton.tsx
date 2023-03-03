@@ -17,38 +17,36 @@
 
 import { Button, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../../styles/Button.css"
+import "../../styles/Button.css";
 
 type BackButtonProps = {
   /**
    * Override the default back button url. React-router naming convention must be adhered to.
    */
   overrideUrl?: string;
-}
+};
 export default function BackButton(props: BackButtonProps) {
-    // TODO: lower opacity a bit when scroll starts
-    // TODO: remove 'back' text on mobile
-    // TODO: add full name of previous page on back when on larger screens
-    const navigate = useNavigate();
+  // TODO: lower opacity a bit when scroll starts
+  // TODO: remove 'back' text on mobile
+  // TODO: add full name of previous page on back when on larger screens
+  const navigate = useNavigate();
 
-    const goBack = () => {
-      if (props.overrideUrl) {
-        navigate(props.overrideUrl);
-      } else {
-        navigate(-1);
-      }
+  const goBack = () => {
+    if (props.overrideUrl) {
+      navigate(props.overrideUrl);
+    } else {
+      navigate(-1);
     }
+  };
   return (
-    <div className="position-relative">
-      <Button
-        className={`bg-yellow text-dark position-absolute page-back-button shadow-sm`}
-        onClick={goBack}
-      >
-        <Stack direction="horizontal">
-          <i className={`bi bi-caret-left-fill txt-dark-1`}></i>
-          <div className="txt-dark-1">Back</div>
-        </Stack>
-      </Button>
-    </div>
+    <Button
+      className={`bg-yellow text-dark page-back-button shadow-sm`}
+      onClick={goBack}
+    >
+      <Stack direction="horizontal">
+        <i className={`bi bi-caret-left-fill txt-dark-1`}></i>
+        <div className="txt-dark-1">Back</div>
+      </Stack>
+    </Button>
   );
 }

@@ -17,15 +17,11 @@
 
 import { Button } from "react-bootstrap";
 
-export default function HelpButton(){
-    // TODO: lower opacity a bit when scroll starts
-    return (
-        <div className="position-relative">
-          <Button
-            className={`bg-green text-dark position-absolute page-help-button shadow-sm`}
-          >
-              <i className="bi bi-question-lg txt-dark-1"></i>
-          </Button>
-        </div>
-      );
+export default function HelpButton() {
+  // TODO: lower opacity a bit when scroll starts
+  return (
+    <Button className={`bg-green text-dark page-help-button shadow-sm`}>
+      <i className="bi bi-question-lg txt-dark-1"></i>
+    </Button>
+  );
 }
