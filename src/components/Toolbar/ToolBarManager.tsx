@@ -23,6 +23,7 @@ import {
 } from "../../context/ToolBarContext";
 import BackButton from "./BackButton";
 import HelpButton from "./HelpButton";
+import "../../styles/Button.css";
 
 type ToolBarManagerProps = {};
 export default function ToolBarManager(props: ToolBarManagerProps) {
@@ -36,7 +37,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
             onClick={item.onClick}
             className={`text-truncate ${item.className || ""}${item.bgColor || "bg-dark-1"} ${
               item.txtColor || "txt-white"
-            }} tool-bar-button`}
+            } tool-bar-button`}
           >
             <Stack direction="horizontal" gap={2}>
               {item.icon && <i className={item.icon}></i>}

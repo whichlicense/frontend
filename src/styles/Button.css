@@ -24,3 +24,10 @@
 .page-help-button {
     border-radius: 0 var(--border-radius-normal) 0 var(--border-radius-normal) !important;
 }
+.tool-bar-button-group {
+    border-radius: var(--border-radius-normal) !important;
+}
+
+.tool-bar-button-group > .btn:last-child {
+    border-top-right-radius: 0 !important;
+}
