@@ -18,6 +18,8 @@
 import { Badge, Col, ListGroup, Row, Stack } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
+import DependencyList from "../components/Lists/DependencyList";
+import { ComplianceStatus } from "../components/typings/DependencyStatus";
 
 export default function ScanResult() {
   let { id } = useParams();
@@ -28,11 +30,13 @@ export default function ScanResult() {
         <div>
           <Stack direction="vertical">
             <h3 className="display-5 text-end mb-0">
-                {/* TODO: where did we get this license? whats our source? */}
-                MIT
-                <i className="ps-2 align-middle h5 bi bi-info-circle opacity-75"></i>
+              {/* TODO: where did we get this license? whats our source? */}
+              MIT
+              <i className="ps-2 align-middle h5 bi bi-info-circle opacity-75"></i>
             </h3>
-            <span className="opacity-75">Confidence: <span className="txt-green">100%</span></span>
+            <span className="opacity-75">
+              Confidence: <span className="txt-green">100%</span>
+            </span>
           </Stack>
         </div>
       </div>
@@ -61,22 +65,48 @@ export default function ScanResult() {
 
         <Col xs={12}>
           <RegularCard minHeight="50vh" title={"Dependencies"} fadeIn>
-            <ListGroup variant="flush">
-              {Array.from({ length: 10 }).map((_, idx) => (
-                <ListGroup.Item className="ps-0">
-                  <div className="d-flex justify-content-between">
-                    <h6>Some top level dependency</h6>
-                    <span>2.0.0</span>
-                    {/* TODO: change color based on detected license? or absent? */}
-                    <Badge className="bg-grey h-100">
-                      {/* TODO: tooltip with confidence */}
-                      <span>Apache 2.0</span>
-                    </Badge>
-                  </div>
-                  <hr className="text-muted" />
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
+            <DependencyList
+              dependencies={[
+                {
+                  name: "colors",
+                  version: "2.0.5",
+                  license: "MIT",
+                  compliance: ComplianceStatus.COMPLIANT,
+                },
+                {
+                  name: "Some awesome dep",
+                  version: "2.0.5",
+                  license: "Apache 2.0",
+                  compliance: ComplianceStatus.COMPLIANT,
+                },
+                {
+                  name: "Not so cool",
+                  version: "2.0.5",
+                  license: "GPL 3.0",
+                  compliance: ComplianceStatus.NON_COMPLIANT,
+                },
+                {
+                  name: "Terrible",
+                  version: "2.0.5",
+                  license: "AGPL",
+                  compliance: ComplianceStatus.NON_COMPLIANT,
+                },
+                {
+                  name: "OH NO!",
+                  version: "2.0.5",
+                  license: "Proprietary",
+                  compliance: ComplianceStatus.NON_COMPLIANT,
+                },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+                { name: "colors", version: "2.0.5", license: "MIT" },
+              ]}
+            />
           </RegularCard>
         </Col>
       </Row>
