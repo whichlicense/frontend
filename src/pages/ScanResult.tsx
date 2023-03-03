@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Badge, Col, ListGroup, Row, Stack } from "react-bootstrap";
+import { Col, Row, Stack } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
