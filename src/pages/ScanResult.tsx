@@ -15,14 +15,45 @@
  *   limitations under the License.
  */
 
+import { useEffect } from "react";
 import { Col, Row, Stack } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
 import { ComplianceStatus } from "../components/typings/DependencyStatus";
+import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
 
 export default function ScanResult() {
-  let { id } = useParams();
+  const { id } = useParams();
+  const { setItems } = useToolBarContext();
+
+  useEffect(()=>{
+    setItems([
+      {
+        type: ToolBarItemType.BUTTON,
+        icon: 'bi bi-check-circle',
+        bgColor: 'bg-yellow',
+        onClick: () => {console.log('icon clicked')}
+      },
+      {
+        type: ToolBarItemType.BUTTON,
+        title: 'Resolve License',
+        icon: 'bi bi-check-circle',
+        onClick: () => {console.log('button clicked')}
+      },
+      {
+        type: ToolBarItemType.SEPARATOR
+      },
+      {
+        type: ToolBarItemType.BUTTON,
+        title: 'License info',
+        icon: 'bi bi-info-circle',
+        onClick: () => {console.log('button clicked')}
+      },
+    ])
+
+    return () => setItems([])
+  })
   return (
     <div>
       <div className="d-flex justify-content-between">
