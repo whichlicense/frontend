@@ -15,47 +15,98 @@
  *   limitations under the License.
  */
 
-import { useEffect } from "react";
-import { Col, Row, Stack } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Col, ListGroup, Row, Stack } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
+import { InlineCard } from "../components/Modals/InlineCard";
 import { ComplianceStatus } from "../components/typings/DependencyStatus";
 import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
+import ReactDiffViewer from 'react-diff-viewer';
+import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
+
 
 export default function ScanResult() {
   const { id } = useParams();
   const { setItems } = useToolBarContext();
+  const [showResolveLicense, setShowResolveLicense] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     setItems([
       {
         type: ToolBarItemType.BUTTON,
-        icon: 'bi bi-check-circle',
-        bgColor: 'bg-yellow',
-        onClick: () => {console.log('icon clicked')}
+        icon: "bi bi-check-circle",
+        bgColor: "bg-yellow",
+        onClick: () => {
+          console.log("icon clicked");
+        },
       },
       {
         type: ToolBarItemType.BUTTON,
-        title: 'Resolve License',
-        icon: 'bi bi-check-circle',
-        onClick: () => {console.log('button clicked')}
+        title: "Resolve License",
+        icon: "bi bi-check-circle",
+        onClick: () => {
+          setShowResolveLicense(true);
+        },
       },
       {
-        type: ToolBarItemType.SEPARATOR
+        type: ToolBarItemType.SEPARATOR,
       },
       {
         type: ToolBarItemType.BUTTON,
-        title: 'License info',
-        icon: 'bi bi-info-circle',
-        onClick: () => {console.log('button clicked')}
+        title: "License info",
+        icon: "bi bi-info-circle",
+        onClick: () => {
+          console.log("button clicked");
+        },
       },
-    ])
+    ]);
 
-    return () => setItems([])
-  })
+    return () => setItems([]);
+  }, []);
   return (
     <div>
+      <InlineCard
+        title="Resolve"
+        show={showResolveLicense}
+        handleClose={() => setShowResolveLicense(false)}
+      >
+        <Row className="g-3">
+          <Col xs={6}>
+            <RegularCard title={"License details"} minHeight="20vh">
+              <h5>License: MIT</h5>
+              <h5>Confidence: 100</h5>
+              <h5>
+                Source:{" "}
+                <a
+                  className="txt-blue"
+                  href="https://github.com/whichlicense/license-detection/blob/main/LICENSE"
+                >
+                  github.com/whichlicense/
+                </a>
+              </h5>
+            </RegularCard>
+          </Col>
+          <Col xs={6}>
+            <RegularCard title={"Similar licenses"} minHeight="20vh">
+              <ListGroup>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <ListGroup.Item className="d-flex justify-content-between align-items-start">
+                    <div>MIT-2</div>
+                    <div>Confidence: 98%</div>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </RegularCard>
+          </Col>
+          <Col xs={12}>
+            <RegularCard title={"License difference view"} minHeight="50vh">
+              <ReactDiffViewer oldValue={LICENSE_1} newValue={LICENSE_2} splitView={true} useDarkTheme />
+            </RegularCard>
+          </Col>
+        </Row>
+      </InlineCard>
       <div className="d-flex justify-content-between">
         <h1 className="display-3">Colors.js</h1>
         <div>
