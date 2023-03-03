@@ -17,7 +17,7 @@
 
 import React, { useRef } from "react";
 import "./App.css";
-import "./styles/Animations.css"
+import "./styles/Animations.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Test } from "./pages/Test";
 import Home from "./pages/Home";
@@ -30,6 +30,8 @@ import ScrollIndicator from "./components/utils/ScrollIndicator";
 import { DrawerContextProvider } from "./context/DrawerContext";
 import BackButton from "./components/Toolbar/BackButton";
 import HelpButton from "./components/Toolbar/HelpButton";
+import ToolBarManager from "./components/Toolbar/ToolBarManager";
+import { ToolBarContextProvider } from "./context/ToolBarContext";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -45,26 +47,23 @@ function App() {
             <NavigationBar />
             <div className="flex-grow-1 flex-fill d-flex">
               <Container fluid>
-                {/* TODO: this is a toolbar.. make a context to show toolbar items:
-                    We must be able to display buttons with text, icons, etc.
-                    We must also be able to catch a callback for when they are pressed.
-                 */}
-                <BackButton />
-                <HelpButton />
-                
-                <section
-                  ref={mainContentRef}
-                  className="clamp rounded px-4 pb-4 pt-5 overflow-auto"
-                >
-                  <Routes>
-                    <Route path="/search" element={<Search />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/scan-result/:id" element={<ScanResult />} />
-                    <Route path="/test" element={<Test />} />
-                    <Route path="/" element={<Home />} />
-                  </Routes>
-                  <ScrollIndicator bodyRef={mainContentRef} />
-                </section>
+                <ToolBarContextProvider>
+                  <ToolBarManager />
+
+                  <section
+                    ref={mainContentRef}
+                    className="clamp rounded px-4 pb-4 pt-5 overflow-auto"
+                  >
+                    <Routes>
+                      <Route path="/search" element={<Search />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/scan-result/:id" element={<ScanResult />} />
+                      <Route path="/test" element={<Test />} />
+                      <Route path="/" element={<Home />} />
+                    </Routes>
+                    <ScrollIndicator bodyRef={mainContentRef} />
+                  </section>
+                </ToolBarContextProvider>
               </Container>
             </div>
           </Stack>
