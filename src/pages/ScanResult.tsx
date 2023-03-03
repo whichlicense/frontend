@@ -62,6 +62,8 @@ export default function ScanResult() {
           <Stack direction="vertical">
             <h3 className="display-5 text-end mb-0">
               {/* TODO: where did we get this license? whats our source? */}
+              {/* TODO: what about multiple licenses? Some projects allow you to choose..
+                we will need to allow someone to resolve (or choose) one or all? */}
               MIT
               <i className="ps-2 align-middle h5 bi bi-info-circle opacity-75"></i>
             </h3>
