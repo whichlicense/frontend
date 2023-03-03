@@ -15,13 +15,35 @@
  *   limitations under the License.
  */
 
+import { useEffect } from "react";
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
+import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const {setItems} = useToolBarContext();
+  useEffect(()=>{
+    setItems([
+      {
+        type: ToolBarItemType.BUTTON,
+        title: 'Add Project',
+        icon: 'bi bi-plus-circle',
+        onClick: () => {console.log('button clicked')}
+      },
+      {
+        type: ToolBarItemType.SEPARATOR
+      },
+      {
+        type: ToolBarItemType.BUTTON,
+        title: 'Scan Project',
+        icon: 'bi bi-cpu',
+        onClick: () => {console.log('button clicked')}
+      },
+    ])
+  }, [])
   return (
     <>
       <RegularCard
