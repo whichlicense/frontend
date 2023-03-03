@@ -39,8 +39,8 @@
   --color-text-light: rgb(240,240,240);
   --page-clamp: 96vh;
 
-  --border-radius-normal: 13px;
-  --border-radius-heavy: 15px;
+  --border-radius-normal: 12px;
+  --border-radius-heavy: 14px;
 
   /* Bootstrap overrides */
   --bs-body-color: var(--color-text-light);
@@ -132,8 +132,14 @@ b {
 .txt-dark-1 {
   color: var(--color-dark-1) !important;
 }
+.txt-black {
+  color: var(--color-black) !important;
+}
 .txt-green {
   color: var(--color-green) !important;
+}
+.txt-white {
+  color: var(--color-text-light) !important;
 }
 
 
@@ -208,4 +214,15 @@ section button{
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(81, 81, 81, 0.2);
+}
+
+/* hide scrollbar but allow scrolling */
+.no-scrollbar {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll; 
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
 }
