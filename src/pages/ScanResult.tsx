@@ -30,7 +30,7 @@ import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
 export default function ScanResult() {
   const { id } = useParams();
   const { setItems } = useToolBarContext();
-  const [showResolveLicense, setShowResolveLicense] = useState(true);
+  const [showResolveLicense, setShowResolveLicense] = useState(false);
 
   useEffect(() => {
     setItems([
