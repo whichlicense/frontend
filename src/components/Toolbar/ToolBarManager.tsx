@@ -66,21 +66,23 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
           className="position-absolute w-100 d-flex justify-content-between"
           style={{ zIndex: 1 }}
         >
-          <BackButton />
           <Stack
             direction="horizontal"
-            className="position-absolute w-100 d-flex justify-content-center no-scrollbar"
+            className="w-100 d-flex justify-content-start no-scrollbar"
             style={{
               overflowX: "auto",
             }}
           >
             <ButtonGroup className="tool-bar-button-group">
+            <BackButton />
+            {items.length > 0 && renderToolBarItem({type: ToolBarItemType.SEPARATOR, color: 'bg-dark-1'})}
+
             {items.map((item) => {
               return renderToolBarItem(item);
             })}
             </ButtonGroup>
-            
           </Stack>
+          
           <HelpButton />
         </div>
       </div>
