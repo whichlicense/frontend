@@ -28,6 +28,7 @@ export default function ScanResult() {
         <div>
           <Stack direction="vertical">
             <h3 className="display-5 text-end mb-0">
+                {/* TODO: where did we get this license? whats our source? */}
                 MIT
                 <i className="ps-2 align-middle h5 bi bi-info-circle opacity-75"></i>
             </h3>
@@ -54,6 +55,9 @@ export default function ScanResult() {
             </RegularCard>
           </Stack>
         </Col>
+
+        {/* TODO: collapsed item with the tree in it.. */}
+        {/* TODO: what about other information like the URL of the repo? */}
 
         <Col xs={12}>
           <RegularCard minHeight="50vh" title={"Dependencies"} fadeIn>
