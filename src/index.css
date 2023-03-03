@@ -105,6 +105,12 @@ b {
 .bg-yellow {
   background-color: var(--color-yellow) !important;
 }
+.bg-red {
+  background-color: var(--color-red) !important;
+}
+.bg-deep-red {
+  background-color: var(--color-deep-red) !important;
+}
 .bg-purple {
   background-color: var(--color-purple) !important;
 }
