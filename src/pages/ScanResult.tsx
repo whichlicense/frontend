@@ -26,6 +26,8 @@ import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
 import ReactDiffViewer from 'react-diff-viewer';
 import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
 
+// TODO: scan again toolbar button
+// TODO: scan latest version toolbar button
 
 export default function ScanResult() {
   const { id } = useParams();
