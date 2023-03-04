@@ -34,4 +34,5 @@ export type TxtColors =
     | "txt-grey"
     | "txt-green"
     | "txt-white"
+    | "txt-purple"
     | "txt-red";
