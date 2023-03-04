@@ -21,7 +21,8 @@ import { BgColors, TxtColors } from "../components/typings/Colors";
 export enum ToolBarItemType {
   BUTTON,
   TEXT,
-  SEPARATOR
+  INPUT,
+  SEPARATOR,
 }
 export type ToolBarItem =
   | {
@@ -38,14 +39,20 @@ export type ToolBarItem =
       txtColor?: TxtColors;
       title: string;
     }
-    | {
+  | {
       type: ToolBarItemType.SEPARATOR;
       color?: BgColors;
+    }
+  | {
+      type: ToolBarItemType.INPUT;
+      placeholder?: string;
+      defaultValue?: string;
+      onChange: (value: string) => void;
     };
 
 export const ToolBarContext = createContext<{
-    items: ToolBarItem[];
-    setItems: React.Dispatch<React.SetStateAction<ToolBarItem[]>>;
+  items: ToolBarItem[];
+  setItems: React.Dispatch<React.SetStateAction<ToolBarItem[]>>;
 }>({} as any);
 
 export const ToolBarContextProvider = (props: any) => {
