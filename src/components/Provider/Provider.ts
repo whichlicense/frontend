@@ -30,5 +30,9 @@ export abstract class Provider {
     }
 
     // TODO: all possible APIs that are ours go here (e.g., getScan, scanProject, getProjects, etc.)
-
+    static checkForLocalServer() {
+        // TODO: check if there is a local server running and check version
+        // TODO: toast with error if version mismatch
+        return false;
+    }
 }
