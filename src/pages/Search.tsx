@@ -24,12 +24,30 @@ import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
 export default function Search() {
   const { setItems } = useToolBarContext();
   const [depCardOpen, setDepCardOpen] = useState(false);
+  const [filterCardOpen, setFilterCardOpen] = useState(false);
   useEffect(() => {
     setItems([
       {
         type: ToolBarItemType.INPUT,
         placeholder: "Search...",
         onChange: (value) => {},
+      },
+      {
+        type: ToolBarItemType.BUTTON,
+        title: "Filter",
+        icon: "bi bi-filter",
+        onClick: () => {
+          setFilterCardOpen(true);
+        },
+      },
+      {
+        type: ToolBarItemType.SEPARATOR,
+      },
+      {
+        type: ToolBarItemType.BUTTON,
+        title: "New scan",
+        icon: "bi bi-plus",
+        onClick: () => {},
       },
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,26 +83,54 @@ export default function Search() {
         ))}
       </Row>
 
-      <InlineCard title="Dependency X" show={depCardOpen} handleClose={()=>setDepCardOpen(false)}>
+      <InlineCard
+        title="Dependency X"
+        show={depCardOpen}
+        handleClose={() => setDepCardOpen(false)}
+      >
         <Stack>
-        <h6>Manager: NPM</h6>
-        <div className="d-flex justify-content-between">
-            <h6>
-                Version:
-            </h6>
+          <h6>Manager: NPM</h6>
+          <div className="d-flex justify-content-between">
+            <h6>Version:</h6>
             <Form.Select>
-        <option>1.0.0</option>
-      </Form.Select>
-        </div>
-        <hr />
-        <h5>License history</h5>
-        <ListGroup variant="flush">
-        <ListGroup.Item>0.0.1 - MIT</ListGroup.Item>
-        <ListGroup.Item>0.0.2 - Apache 2.0</ListGroup.Item>
-    </ListGroup>
-
-
+              <option>1.0.0</option>
+            </Form.Select>
+          </div>
+          <hr />
+          <h5>License history</h5>
+          <ListGroup variant="flush">
+            <ListGroup.Item>0.0.1 - MIT</ListGroup.Item>
+            <ListGroup.Item>0.0.2 - Apache 2.0</ListGroup.Item>
+          </ListGroup>
         </Stack>
+      </InlineCard>
+
+      <InlineCard
+        title="Filter"
+        show={filterCardOpen}
+        handleClose={() => setFilterCardOpen(false)}
+      >
+        <Row>
+          <Col>
+            <Form.Label htmlFor="package-manager-selection">
+              Package manager
+            </Form.Label>
+            <Form.Select id="package-manager-selection">
+              <option value="1">All</option>
+              <option value="2">NPM</option>
+              <option value="3">Maven</option>
+            </Form.Select>
+          </Col>
+          <Col>
+            <Form.Label htmlFor="license-selection">License</Form.Label>
+            <Form.Select id="license-selection">
+              <option value="1">All</option>
+              <option value="2">MIT</option>
+              <option value="3">Apache 2.0</option>
+            </Form.Select>
+          </Col>
+          
+        </Row>
       </InlineCard>
     </div>
   );
