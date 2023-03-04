@@ -74,9 +74,12 @@ export default function Search() {
                 setDepCardOpen(true);
               }}
             >
-              <Stack gap={2}>
+              <Stack gap={1}>
                 <h6>Manager: NPM</h6>
-                <small>Last scan: Jan 20, 2023</small>
+                <h6>License: MIT
+                  <i className="bi bi-question-circle txt-red ms-2"></i>
+                </h6>
+                <small className="text-muted">Last scan: Jan 20, 2023</small>
               </Stack>
             </RegularCard>
           </Col>
