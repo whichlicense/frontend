@@ -120,7 +120,7 @@ export default function Search() {
             <Form.Label htmlFor="package-manager-selection">
               Package manager
             </Form.Label>
-            <Form.Select id="package-manager-selection">
+            <Form.Select className="bg-grey border-0 txt-white" id="package-manager-selection">
               <option value="1">All</option>
               <option value="2">NPM</option>
               <option value="3">Maven</option>
@@ -128,7 +128,7 @@ export default function Search() {
           </Col>
           <Col>
             <Form.Label htmlFor="license-selection">License</Form.Label>
-            <Form.Select id="license-selection">
+            <Form.Select className="bg-grey border-0 txt-white" id="license-selection">
               <option value="1">All</option>
               <option value="2">MIT</option>
               <option value="3">Apache 2.0</option>
