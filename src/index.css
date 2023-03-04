@@ -122,6 +122,9 @@ b {
 .bg-green {
   background-color: var(--color-green) !important;
 }
+.bg-button-light {
+  background-color: var(--button-color-light) !important;
+}
 .txt-purple {
   color: var(--color-purple) !important;
 }
