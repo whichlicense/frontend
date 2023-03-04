@@ -59,10 +59,13 @@ export const ToolBarContext = createContext<{
 export const ToolBarContextProvider = (props: any) => {
   const [items, setItems] = useState<ToolBarItem[]>([]);
   const location = useLocation();
+  const [lastLocation, setLastLocation] = useState<string|undefined>(location.pathname);
 
   useEffect(() => {
+    if(lastLocation === location.pathname) return;
+    setLastLocation(location.pathname);
     setItems([]);
-  }, [location])
+  }, [lastLocation, location])
 
   return (
     <ToolBarContext.Provider value={{ items, setItems }}>
