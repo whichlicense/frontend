@@ -15,7 +15,8 @@
  *   limitations under the License.
  */
 
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { BgColors, TxtColors } from "../components/typings/Colors";
 
 export enum ToolBarItemType {
@@ -57,6 +58,11 @@ export const ToolBarContext = createContext<{
 
 export const ToolBarContextProvider = (props: any) => {
   const [items, setItems] = useState<ToolBarItem[]>([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    setItems([]);
+  }, [location])
 
   return (
     <ToolBarContext.Provider value={{ items, setItems }}>

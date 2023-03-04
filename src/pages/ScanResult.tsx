@@ -64,8 +64,7 @@ export default function ScanResult() {
         },
       },
     ]);
-
-    return () => setItems([]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
