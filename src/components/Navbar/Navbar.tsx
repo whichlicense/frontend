@@ -15,15 +15,15 @@
  *   limitations under the License.
  */
 
-import { useEffect, useState } from "react";
 import { Button, Card, ProgressBar, Stack } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import NavBarButton from "./NavBarButton";
 import "./Navbar.css";
 import { useDrawerContext } from "../../context/DrawerContext";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {open, setOpen} = useDrawerContext()
 
     // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
@@ -50,7 +50,7 @@ export default function NavigationBar() {
             text={"Dashboard"}
             iconClass={"bi bi-building-check"}
             collapsed={!open}
-            selected
+            selected={location.pathname === "/dashboard"}
           />
 
           <NavBarButton
@@ -58,6 +58,7 @@ export default function NavigationBar() {
             text={"Scans"}
             iconClass={"bi bi-card-checklist"}
             collapsed={!open}
+            selected={location.pathname === "/scans"}
           />
 
           <NavBarButton
@@ -65,6 +66,7 @@ export default function NavigationBar() {
             text={"Search"}
             iconClass={"bi bi-binoculars"}
             collapsed={!open}
+            selected={location.pathname === "/search"}
           />
 
           <NavBarButton
@@ -72,6 +74,7 @@ export default function NavigationBar() {
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
             collapsed={!open}
+            selected={location.pathname === "/accounts"}
           />
 
           <NavBarButton
@@ -79,6 +82,7 @@ export default function NavigationBar() {
             text={"Notifications"}
             iconClass={"bi bi-bell"}
             collapsed={!open}
+            selected={location.pathname === "/notifications"}
           />
 
           <NavBarButton
@@ -86,6 +90,7 @@ export default function NavigationBar() {
             text={"Settings"}
             collapsed={!open}
             iconClass={"bi bi-gear-wide-connected"}
+            selected={location.pathname === "/settings"}
           />
         </Stack>
 
