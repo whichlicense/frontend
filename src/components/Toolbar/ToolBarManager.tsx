@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Button, ButtonGroup, Form, Stack } from "react-bootstrap";
+import { Button, ButtonGroup, Stack } from "react-bootstrap";
 import {
   ToolBarItem,
   ToolBarItemType,
@@ -26,23 +26,26 @@ import HelpButton from "./HelpButton";
 import "../../styles/Button.css";
 import { useState } from "react";
 import { InlineCard } from "../Modals/InlineCard";
-import ReactMarkdown from 'react-markdown'
-
+import ReactMarkdown from "react-markdown";
 
 type ToolBarManagerProps = {};
 export default function ToolBarManager(props: ToolBarManagerProps) {
   const { items } = useToolBarContext();
-  const [showHelp, setShowHelp] = useState(false)
+  const [showHelp, setShowHelp] = useState(false);
 
-  const renderToolBarItem = (item: ToolBarItem) => {
+  const renderToolBarItem = (item: ToolBarItem, idx: number) => {
+    const calcAnimationDelay = (idx: number) => {
+      return idx * 0.02;
+    };
     switch (item.type) {
       case ToolBarItemType.BUTTON:
         return (
           <Button
             onClick={item.onClick}
-            className={`text-truncate ${item.className || ""}${
+            className={`fade-in-forward text-truncate ${item.className || ""}${
               item.bgColor || "bg-dark-1"
             } ${item.txtColor || "txt-white"} tool-bar-button`}
+            style={{ animationDelay: `${calcAnimationDelay(idx)}s` }}
           >
             <Stack direction="horizontal" gap={2}>
               {item.icon && <i className={item.icon}></i>}
@@ -53,9 +56,10 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
       case ToolBarItemType.TEXT:
         return (
           <h6
-            className={`text-truncate text-align-baseline py-0 my-0 fs-4 ${
+            className={`fade-in-forward text-truncate text-align-baseline py-0 my-0 fs-4 ${
               item.txtColor || "txt-white"
             }`}
+            style={{ animationDelay: `${calcAnimationDelay(idx)}s` }}
           >
             {item.title}
           </h6>
@@ -64,7 +68,8 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
         return (
           <>
             <input
-              className="btn bg-white txt-dark-1"
+              className="fade-in-forward btn bg-white txt-dark-1"
+              style={{ animationDelay: `${calcAnimationDelay(idx)}s` }}
               placeholder={item.placeholder || "..."}
               defaultValue={item.defaultValue || ""}
               onChange={(e) => item.onChange(e.target.value)}
@@ -74,8 +79,13 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
       case ToolBarItemType.SEPARATOR:
         return (
           <div
-            className={`vr ${item.color || "bg-grey"} rounded opacity-100`}
-            style={{ padding: "2px" }}
+            className={`fade-in-forward vr ${
+              item.color || "bg-grey"
+            } rounded opacity-100`}
+            style={{
+              padding: "2px",
+              animationDelay: `${calcAnimationDelay(idx)}s`,
+            }}
           />
         );
       default: {
@@ -85,8 +95,8 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
   };
 
   const onHelpButtonClick = () => {
-    setShowHelp(true)
-  }
+    setShowHelp(true);
+  };
 
   return (
     <div>
@@ -105,13 +115,16 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
             <ButtonGroup className="tool-bar-button-group">
               <BackButton />
               {items.length > 0 &&
-                renderToolBarItem({
-                  type: ToolBarItemType.SEPARATOR,
-                  color: "bg-dark-1",
-                })}
+                renderToolBarItem(
+                  {
+                    type: ToolBarItemType.SEPARATOR,
+                    color: "bg-dark-1",
+                  },
+                  0
+                )}
 
-              {items.map((item) => {
-                return renderToolBarItem(item);
+              {items.map((item, idx) => {
+                return renderToolBarItem(item, idx + 1);
               })}
             </ButtonGroup>
           </Stack>
@@ -120,9 +133,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
         </div>
       </div>
       <InlineCard show={showHelp} handleClose={() => setShowHelp(false)}>
-        <ReactMarkdown>
-          # COMING SOON!
-        </ReactMarkdown>
+        <ReactMarkdown># COMING SOON!</ReactMarkdown>
       </InlineCard>
     </div>
   );
