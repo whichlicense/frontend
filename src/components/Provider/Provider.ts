@@ -20,6 +20,11 @@ export type ProviderOptions = {
     port: number;
 }
 
+export enum ProviderType {
+    LOCAL,
+    CLOUD
+}
+
 /**
  * Represents a connection system towards a server.
  */
