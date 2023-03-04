@@ -54,30 +54,35 @@ export default function NavigationBar() {
           />
 
           <NavBarButton
+            onClick={() => navigate("/scans")}
             text={"Scans"}
             iconClass={"bi bi-card-checklist"}
             collapsed={!open}
           />
 
           <NavBarButton
+            onClick={() => navigate("/search")}
             text={"Search"}
             iconClass={"bi bi-binoculars"}
             collapsed={!open}
           />
 
           <NavBarButton
+            onClick={() => navigate("/accounts")}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
             collapsed={!open}
           />
 
           <NavBarButton
+            onClick={() => navigate("/notifications")}
             text={"Notifications"}
             iconClass={"bi bi-bell"}
             collapsed={!open}
           />
 
           <NavBarButton
+            onClick={() => navigate("/settings")}
             text={"Settings"}
             collapsed={!open}
             iconClass={"bi bi-gear-wide-connected"}
@@ -112,6 +117,7 @@ export default function NavigationBar() {
         )}
 
         <NavBarButton
+          onClick={() => navigate("/payment")}
           text={"Payment"}
           collapsed={!open}
           iconClass={"bi bi-credit-card"}
