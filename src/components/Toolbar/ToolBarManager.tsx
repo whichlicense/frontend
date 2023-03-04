@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Button, ButtonGroup, Stack } from "react-bootstrap";
+import { Button, ButtonGroup, Form, Stack } from "react-bootstrap";
 import {
   ToolBarItem,
   ToolBarItemType,
@@ -24,10 +24,15 @@ import {
 import BackButton from "./BackButton";
 import HelpButton from "./HelpButton";
 import "../../styles/Button.css";
+import { useState } from "react";
+import { InlineCard } from "../Modals/InlineCard";
+import ReactMarkdown from 'react-markdown'
+
 
 type ToolBarManagerProps = {};
 export default function ToolBarManager(props: ToolBarManagerProps) {
   const { items } = useToolBarContext();
+  const [showHelp, setShowHelp] = useState(false)
 
   const renderToolBarItem = (item: ToolBarItem) => {
     switch (item.type) {
@@ -35,9 +40,9 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
         return (
           <Button
             onClick={item.onClick}
-            className={`text-truncate ${item.className || ""}${item.bgColor || "bg-dark-1"} ${
-              item.txtColor || "txt-white"
-            } tool-bar-button`}
+            className={`text-truncate ${item.className || ""}${
+              item.bgColor || "bg-dark-1"
+            } ${item.txtColor || "txt-white"} tool-bar-button`}
           >
             <Stack direction="horizontal" gap={2}>
               {item.icon && <i className={item.icon}></i>}
@@ -55,10 +60,33 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
             {item.title}
           </h6>
         );
-        case ToolBarItemType.SEPARATOR:
-            return <div className={`vr ${item.color || 'bg-grey'} rounded opacity-100`} style={{padding: '2px'}} />;
+      case ToolBarItemType.INPUT:
+        return (
+          <>
+            <Form.Control
+              className="btn bg-white txt-dark-1"
+              placeholder={item.placeholder || "..."}
+              defaultValue={item.defaultValue || ""}
+              onChange={(e) => item.onChange(e.target.value)}
+            />
+          </>
+        );
+      case ToolBarItemType.SEPARATOR:
+        return (
+          <div
+            className={`vr ${item.color || "bg-grey"} rounded opacity-100`}
+            style={{ padding: "2px" }}
+          />
+        );
+      default: {
+        return <>ERROR</>;
+      }
     }
   };
+
+  const onHelpButtonClick = () => {
+    setShowHelp(true)
+  }
 
   return (
     <div>
@@ -75,18 +103,27 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
             }}
           >
             <ButtonGroup className="tool-bar-button-group">
-            <BackButton />
-            {items.length > 0 && renderToolBarItem({type: ToolBarItemType.SEPARATOR, color: 'bg-dark-1'})}
+              <BackButton />
+              {items.length > 0 &&
+                renderToolBarItem({
+                  type: ToolBarItemType.SEPARATOR,
+                  color: "bg-dark-1",
+                })}
 
-            {items.map((item) => {
-              return renderToolBarItem(item);
-            })}
+              {items.map((item) => {
+                return renderToolBarItem(item);
+              })}
             </ButtonGroup>
           </Stack>
-          
-          <HelpButton />
+
+          <HelpButton onClick={onHelpButtonClick} />
         </div>
       </div>
+      <InlineCard show={showHelp} handleClose={() => setShowHelp(false)}>
+        <ReactMarkdown>
+          # COMING SOON!
+        </ReactMarkdown>
+      </InlineCard>
     </div>
   );
 }
