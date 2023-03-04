@@ -29,6 +29,6 @@ export abstract class Provider {
         this.options = options;
     }
 
-    // TODO: all possible APIs that are ours go here (e.g., getScan, scanProject, etc.)
+    // TODO: all possible APIs that are ours go here (e.g., getScan, scanProject, getProjects, etc.)
 
 }
