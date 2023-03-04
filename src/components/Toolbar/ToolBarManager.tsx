@@ -35,7 +35,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
 
   const renderToolBarItem = (item: ToolBarItem, idx: number) => {
     const calcAnimationDelay = (idx: number) => {
-      return idx * 0.02;
+      return idx * 0.01;
     };
     switch (item.type) {
       case ToolBarItemType.BUTTON:
