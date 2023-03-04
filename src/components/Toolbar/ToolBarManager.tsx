@@ -63,7 +63,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
       case ToolBarItemType.INPUT:
         return (
           <>
-            <Form.Control
+            <input
               className="btn bg-white txt-dark-1"
               placeholder={item.placeholder || "..."}
               defaultValue={item.defaultValue || ""}
