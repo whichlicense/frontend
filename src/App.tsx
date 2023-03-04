@@ -32,6 +32,7 @@ import BackButton from "./components/Toolbar/BackButton";
 import HelpButton from "./components/Toolbar/HelpButton";
 import ToolBarManager from "./components/Toolbar/ToolBarManager";
 import { ToolBarContextProvider } from "./context/ToolBarContext";
+import LicenseInfo from "./pages/LicenseInfo";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -58,6 +59,7 @@ function App() {
                       <Route path="/search" element={<Search />} />
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/scan-result/:id" element={<ScanResult />} />
+                      <Route path="/license/:id" element={<LicenseInfo />} />
                       <Route path="/test" element={<Test />} />
                       <Route path="/" element={<Home />} />
                     </Routes>
