@@ -73,6 +73,11 @@
   font-weight: 600;
 }
 
+* {
+  font-smooth: always;
+  -webkit-font-smoothing: auto;
+}
+
 body {
   margin: 0;
   font-family: 'DMMono' !important;
