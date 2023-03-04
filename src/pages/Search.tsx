@@ -63,10 +63,11 @@ export default function Search() {
         </small>
       </div>
       <br />
-      <Row xs={1} md={3} lg={4} xl={5} xxl={7} className="g-3">
+      <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-3">
         {Array.from({ length: 40 }).map((_, idx) => (
           <Col>
             <RegularCard
+              minHeight="15vh"
               title={`Example ${idx}`}
               icon="bi bi-arrow-up-right-circle"
               iconColor="txt-purple"
@@ -79,6 +80,7 @@ export default function Search() {
                 <h6>License: MIT
                   <i className="bi bi-question-circle txt-red ms-2"></i>
                 </h6>
+                <h6>Latest: 1.0.0</h6>
                 <small className="text-muted">Last scan: Jan 20, 2023</small>
               </Stack>
             </RegularCard>
