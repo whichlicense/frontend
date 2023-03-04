@@ -15,25 +15,36 @@
  *   limitations under the License.
  */
 
-import { InputGroup, Form, Row, Col, Stack } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { InputGroup, Form, Row, Col, Stack, ListGroup } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { InlineCard } from "../components/Modals/InlineCard";
+import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
 
 export default function Search() {
+  const { setItems } = useToolBarContext();
+  const [depCardOpen, setDepCardOpen] = useState(false);
+  useEffect(() => {
+    setItems([
+      {
+        type: ToolBarItemType.INPUT,
+        placeholder: "Search...",
+        onChange: (value) => {},
+      },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div>
-      <RegularCard>
-        {/* TODO: maybe put this in the toolbar? */}
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Control type="email" placeholder="Search..." />
-          <Form.Text className="text-muted">
-            Enter some information about the dependency you want to search for.
-            Use the toolbar above to fine tune your search parameters.
-          </Form.Text>
-        </Form.Group>
-      </RegularCard>
-
       <br />
-
+      <div>
+        <h6 className="display-6">3000 Dependencies scanned</h6>
+        <small className="text-muted">
+          Enter some information about the dependency you want to search for.
+          Use the toolbar above to fine tune your search parameters.
+        </small>
+      </div>
+      <br />
       <Row xs={1} md={3} lg={4} xl={5} xxl={7} className="g-3">
         {Array.from({ length: 40 }).map((_, idx) => (
           <Col>
@@ -42,18 +53,39 @@ export default function Search() {
               icon="bi bi-arrow-up-right-circle"
               iconColor="txt-purple"
               onCardClick={() => {
-                console.log("clicked");
+                setDepCardOpen(true);
               }}
             >
               <Stack gap={2}>
                 <h6>Manager: NPM</h6>
                 <small>Last scan: Jan 20, 2023</small>
-                <small>Scanned version: 2.1.0</small>
               </Stack>
             </RegularCard>
           </Col>
         ))}
       </Row>
+
+      <InlineCard title="Dependency X" show={depCardOpen} handleClose={()=>setDepCardOpen(false)}>
+        <Stack>
+        <h6>Manager: NPM</h6>
+        <div className="d-flex justify-content-between">
+            <h6>
+                Version:
+            </h6>
+            <Form.Select>
+        <option>1.0.0</option>
+      </Form.Select>
+        </div>
+        <hr />
+        <h5>License history</h5>
+        <ListGroup variant="flush">
+        <ListGroup.Item>0.0.1 - MIT</ListGroup.Item>
+        <ListGroup.Item>0.0.2 - Apache 2.0</ListGroup.Item>
+    </ListGroup>
+
+
+        </Stack>
+      </InlineCard>
     </div>
   );
 }
