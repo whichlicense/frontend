@@ -19,7 +19,8 @@ import { useRef } from "react";
 import { Card } from "react-bootstrap";
 import { hasScrollBar } from "../utils/scroll";
 import ScrollIndicator from "../utils/ScrollIndicator";
-import "../../styles/Card.css"
+import "../../styles/Card.css";
+import { TxtColors } from "../typings/Colors";
 
 type RegularCardProps = {
   title?: string | JSX.Element;
@@ -36,6 +37,13 @@ type RegularCardProps = {
   minWidth?: string;
   overflowX?: "auto" | "hidden" | "scroll" | "visible";
   fadeIn?: boolean;
+
+  icon?: string;
+  iconColor?: TxtColors;
+
+  onCardClick?: () => void;
+  onIconClick?: () => void;
+
   children: JSX.Element | JSX.Element[] | string;
 };
 
@@ -53,18 +61,34 @@ export default function RegularCard(props: RegularCardProps) {
         maxWidth: props.maxWidth || "unset",
         minWidth: props.minWidth || "unset",
       }}
+      onClick={() => {
+        props.onCardClick && props.onCardClick();
+      }}
     >
       <div className="p-4">
-        {props.title && props.title.constructor.name === "String" ? (
-          <span className="opacity-75">{props.title}</span>
-        ) : (
-          props.title
-        )}
+        <div className="d-flex justify-content-between">
+          {props.title && props.title.constructor.name === "String" ? (
+            <span className="opacity-75">{props.title}</span>
+          ) : (
+            props.title
+          )}
+          {props.icon && (
+            <div>
+              <i
+                onClick={() => {
+                  props.onIconClick && props.onIconClick();
+                }}
+                className={`${props.icon} ${props.iconColor || ""}`}
+              ></i>
+            </div>
+          )}
+        </div>
+
         <Card.Body
           className="px-0"
           style={{
             maxHeight: props.maxHeight || "15vh",
-            minHeight: props.minHeight || 'unset',
+            minHeight: props.minHeight || "unset",
             overflowY: props.overflowX || "auto",
           }}
           ref={bodyRef}
