@@ -38,14 +38,6 @@ export default function ScanResult() {
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
-      icon: "bi bi-check-circle",
-      bgColor: "bg-yellow",
-      onClick: () => {
-        console.log("icon clicked");
-      },
-    },
-    {
-      type: ToolBarItemType.BUTTON,
       title: "Resolve License",
       icon: "bi bi-check-circle",
       onClick: () => {
