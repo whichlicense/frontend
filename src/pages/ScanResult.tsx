@@ -29,6 +29,7 @@ import { useToolBar } from "../components/Hooks/useToolBar";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
+// TODO: optional query param that identifies the main to-level scan (the user project). This is used to show compatibility information
 
 export default function ScanResult() {
   const { id } = useParams();
