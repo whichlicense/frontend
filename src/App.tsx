@@ -33,6 +33,7 @@ import HelpButton from "./components/Toolbar/HelpButton";
 import ToolBarManager from "./components/Toolbar/ToolBarManager";
 import { ToolBarContextProvider } from "./context/ToolBarContext";
 import LicenseInfo from "./pages/LicenseInfo";
+import Settings from "./pages/Settings";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -60,6 +61,7 @@ function App() {
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/scan-result/:id" element={<ScanResult />} />
                       <Route path="/license/:id" element={<LicenseInfo />} />
+                      <Route path="/settings" element={<Settings />} />
                       <Route path="/test" element={<Test />} />
                       <Route path="/" element={<Home />} />
                     </Routes>
