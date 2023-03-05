@@ -18,40 +18,38 @@
 import { useEffect, useState } from "react";
 import { InputGroup, Form, Row, Col, Stack, ListGroup } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
-import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
+import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Search() {
-  const { setItems } = useToolBarContext();
   const [depCardOpen, setDepCardOpen] = useState(false);
   const [filterCardOpen, setFilterCardOpen] = useState(false);
-  useEffect(() => {
-    setItems([
-      {
-        type: ToolBarItemType.INPUT,
-        placeholder: "Search...",
-        onChange: (value) => {},
+  useToolBar([
+    {
+      type: ToolBarItemType.INPUT,
+      placeholder: "Search...",
+      onChange: (value) => {},
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Filter",
+      icon: "bi bi-filter",
+      onClick: () => {
+        setFilterCardOpen(true);
       },
-      {
-        type: ToolBarItemType.BUTTON,
-        title: "Filter",
-        icon: "bi bi-filter",
-        onClick: () => {
-          setFilterCardOpen(true);
-        },
-      },
-      {
-        type: ToolBarItemType.SEPARATOR,
-      },
-      {
-        type: ToolBarItemType.BUTTON,
-        title: "New scan",
-        icon: "bi bi-plus",
-        onClick: () => {},
-      },
-    ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "New scan",
+      icon: "bi bi-plus",
+      onClick: () => {},
+    },
+  ]);
+
   return (
     <div>
       <br />

@@ -15,35 +15,36 @@
  *   limitations under the License.
  */
 
-import { useEffect } from "react";
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
-import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
+import { useToolBar } from "../components/Hooks/useToolBar";
+import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const {setItems} = useToolBarContext();
-  useEffect(()=>{
-    setItems([
-      {
-        type: ToolBarItemType.BUTTON,
-        title: 'Add Project',
-        icon: 'bi bi-plus-circle',
-        onClick: () => {console.log('button clicked')}
+  useToolBar([
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Add Project",
+      icon: "bi bi-plus-circle",
+      onClick: () => {
+        console.log("button clicked");
       },
-      {
-        type: ToolBarItemType.SEPARATOR
+    },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Scan Project",
+      icon: "bi bi-cpu",
+      onClick: () => {
+        console.log("button clicked");
       },
-      {
-        type: ToolBarItemType.BUTTON,
-        title: 'Scan Project',
-        icon: 'bi bi-cpu',
-        onClick: () => {console.log('button clicked')}
-      },
-    ])
-  }, [])
+    },
+  ]);
   return (
     <>
       <RegularCard
@@ -140,7 +141,10 @@ export default function Dashboard() {
               </ListGroup.Item>
 
               {Array.from({ length: 3 }).map((_, idx) => (
-                <ListGroup.Item onClick={()=>navigate("/scan-result/000")} className="bg-dark-1 text-bg-dark">
+                <ListGroup.Item
+                  onClick={() => navigate("/scan-result/000")}
+                  className="bg-dark-1 text-bg-dark"
+                >
                   <div className="d-flex justify-content-between">
                     <div>
                       <h5>Scan {idx + 2}</h5>

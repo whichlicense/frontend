@@ -15,57 +15,55 @@
  *   limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Col, ListGroup, Row, Stack } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { ComplianceStatus } from "../components/typings/DependencyStatus";
-import { ToolBarItemType, useToolBarContext } from "../context/ToolBarContext";
-import ReactDiffViewer from 'react-diff-viewer';
+import { ToolBarItemType } from "../context/ToolBarContext";
+import ReactDiffViewer from "react-diff-viewer";
 import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
+import { useToolBar } from "../components/Hooks/useToolBar";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
 
 export default function ScanResult() {
   const { id } = useParams();
-  const { setItems } = useToolBarContext();
   const [showResolveLicense, setShowResolveLicense] = useState(false);
 
-  useEffect(() => {
-    setItems([
-      {
-        type: ToolBarItemType.BUTTON,
-        icon: "bi bi-check-circle",
-        bgColor: "bg-yellow",
-        onClick: () => {
-          console.log("icon clicked");
-        },
+  useToolBar([
+    {
+      type: ToolBarItemType.BUTTON,
+      icon: "bi bi-check-circle",
+      bgColor: "bg-yellow",
+      onClick: () => {
+        console.log("icon clicked");
       },
-      {
-        type: ToolBarItemType.BUTTON,
-        title: "Resolve License",
-        icon: "bi bi-check-circle",
-        onClick: () => {
-          setShowResolveLicense(true);
-        },
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Resolve License",
+      icon: "bi bi-check-circle",
+      onClick: () => {
+        setShowResolveLicense(true);
       },
-      {
-        type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "License info",
+      icon: "bi bi-info-circle",
+      onClick: () => {
+        console.log("button clicked");
       },
-      {
-        type: ToolBarItemType.BUTTON,
-        title: "License info",
-        icon: "bi bi-info-circle",
-        onClick: () => {
-          console.log("button clicked");
-        },
-      },
-    ]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    },
+  ]);
+
   return (
     <div>
       <InlineCard
@@ -103,7 +101,12 @@ export default function ScanResult() {
           </Col>
           <Col xs={12}>
             <RegularCard title={"License difference view"} minHeight="50vh">
-              <ReactDiffViewer oldValue={LICENSE_1} newValue={LICENSE_2} splitView={true} useDarkTheme />
+              <ReactDiffViewer
+                oldValue={LICENSE_1}
+                newValue={LICENSE_2}
+                splitView={true}
+                useDarkTheme
+              />
             </RegularCard>
           </Col>
         </Row>
