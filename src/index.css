@@ -125,6 +125,9 @@ b {
 .bg-button-light {
   background-color: var(--button-color-light) !important;
 }
+.bg-transparent {
+  background-color: transparent !important;
+}
 .txt-purple {
   color: var(--color-purple) !important;
 }
@@ -233,4 +236,12 @@ section button{
 
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* for Chrome, Safari, and Opera */
+}
+.accordion-button {
+  background-color: var(--button-color-light);
+  color: var(--color-text-light);
+}
+.accordion-body {
+  background-color: var(--color-section-background);
+  color: var(--color-text-light);
 }
