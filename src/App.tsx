@@ -34,44 +34,50 @@ import ToolBarManager from "./components/Toolbar/ToolBarManager";
 import { ToolBarContextProvider } from "./context/ToolBarContext";
 import LicenseInfo from "./pages/LicenseInfo";
 import Settings from "./pages/Settings";
+import { ProviderContextProvider } from "./context/ProviderContext";
 
 function App() {
   const mainContentRef = useRef(null);
   return (
     <Router>
       <Container fluid className="noise">
-        <DrawerContextProvider>
-          <Stack
-            direction="horizontal"
-            className="d-flex align-items-center w-100"
-            style={{ height: "100vh" }}
-          >
-            <NavigationBar />
-            <div className="flex-grow-1 flex-fill d-flex">
-              <Container fluid>
-                <ToolBarContextProvider>
-                  <ToolBarManager />
+        <ProviderContextProvider>
+          <DrawerContextProvider>
+            <Stack
+              direction="horizontal"
+              className="d-flex align-items-center w-100"
+              style={{ height: "100vh" }}
+            >
+              <NavigationBar />
+              <div className="flex-grow-1 flex-fill d-flex">
+                <Container fluid>
+                  <ToolBarContextProvider>
+                    <ToolBarManager />
 
-                  <section
-                    ref={mainContentRef}
-                    className="clamp rounded px-4 pb-4 pt-5 overflow-auto"
-                  >
-                    <Routes>
-                      <Route path="/search" element={<Search />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/scan-result/:id" element={<ScanResult />} />
-                      <Route path="/license/:id" element={<LicenseInfo />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/test" element={<Test />} />
-                      <Route path="/" element={<Home />} />
-                    </Routes>
-                    <ScrollIndicator bodyRef={mainContentRef} />
-                  </section>
-                </ToolBarContextProvider>
-              </Container>
-            </div>
-          </Stack>
-        </DrawerContextProvider>
+                    <section
+                      ref={mainContentRef}
+                      className="clamp rounded px-4 pb-4 pt-5 overflow-auto"
+                    >
+                      <Routes>
+                        <Route path="/search" element={<Search />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route
+                          path="/scan-result/:id"
+                          element={<ScanResult />}
+                        />
+                        <Route path="/license/:id" element={<LicenseInfo />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/test" element={<Test />} />
+                        <Route path="/" element={<Home />} />
+                      </Routes>
+                      <ScrollIndicator bodyRef={mainContentRef} />
+                    </section>
+                  </ToolBarContextProvider>
+                </Container>
+              </div>
+            </Stack>
+          </DrawerContextProvider>
+        </ProviderContextProvider>
       </Container>
     </Router>
   );
