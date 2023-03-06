@@ -36,6 +36,7 @@ type RegularCardProps = {
   maxWidth?: string;
   minWidth?: string;
   overflowX?: "auto" | "hidden" | "scroll" | "visible";
+  className?: string;
   fadeIn?: boolean;
 
   icon?: string;
@@ -56,7 +57,9 @@ export default function RegularCard(props: RegularCardProps) {
     <Card
       className={`regular-card shadow-sm rounded align-self-stretch ${
         props.bg ? props.bg : "bg-dark-1"
-      } text-bg-dark w-100 ${props.fadeIn ? "fade-in-forward" : ""}`}
+      } text-bg-dark w-100 ${props.fadeIn ? "fade-in-forward" : ""} ${
+        props.className || ""
+      }`}
       style={{
         maxWidth: props.maxWidth || "unset",
         minWidth: props.minWidth || "unset",
