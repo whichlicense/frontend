@@ -130,10 +130,11 @@ b {
 }
 .bg-striped {
   background: repeating-linear-gradient(45deg,
-          rgba(255,255,255,0.08),
-          rgba(255,255,255,0.08) 10px,
-          rgba(0,0,0,1) 10px,
-          rgba(0,0,0,1) 20px);
+          #4a4a4a,
+          #4a4a4a 20px,
+          #525047 20px,
+          #525047 60px
+  );
 }
 .txt-purple {
   color: var(--color-purple) !important;
