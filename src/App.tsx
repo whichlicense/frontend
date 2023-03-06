@@ -35,6 +35,7 @@ import { ToolBarContextProvider } from "./context/ToolBarContext";
 import LicenseInfo from "./pages/LicenseInfo";
 import Settings from "./pages/Settings";
 import { ProviderContextProvider } from "./context/ProviderContext";
+import Notifications from "./pages/Notifications";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -66,6 +67,7 @@ function App() {
                           element={<ScanResult />}
                         />
                         <Route path="/license/:id" element={<LicenseInfo />} />
+                        <Route path="/notifications" element={<Notifications />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/test" element={<Test />} />
                         <Route path="/" element={<Home />} />
