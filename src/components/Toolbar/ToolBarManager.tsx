@@ -41,7 +41,8 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
       case ToolBarItemType.BUTTON:
         return (
           <Button
-            onClick={item.onClick}
+            disabled={item.disabled}
+            onClick={()=>!item.disabled && item.onClick()}
             className={`fade-in-forward text-truncate ${item.className || ""}${
               item.bgColor || "bg-dark-1"
             } ${item.txtColor || "txt-white"} tool-bar-button`}
@@ -123,7 +124,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
                   0
                 )}
 
-              {items.map((item, idx) => {
+              {items.filter(x=>!x.hidden).map((item, idx) => {
                 return renderToolBarItem(item, idx + 1);
               })}
             </ButtonGroup>

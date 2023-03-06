@@ -25,7 +25,13 @@ export enum ToolBarItemType {
   INPUT,
   SEPARATOR,
 }
-export type ToolBarItem =
+type HidableToolBarItem = {
+  /**
+   * Hidden elements will **NOT** be rendered.
+   */
+  hidden?: boolean;
+};
+export type ToolBarItem = (
   | {
       type: ToolBarItemType.BUTTON;
       title?: string;
@@ -33,6 +39,7 @@ export type ToolBarItem =
       txtColor?: TxtColors;
       icon?: string;
       className?: string;
+      disabled?: boolean;
       onClick: () => void;
     }
   | {
@@ -49,7 +56,9 @@ export type ToolBarItem =
       placeholder?: string;
       defaultValue?: string;
       onChange: (value: string) => void;
-    };
+    }
+) &
+  HidableToolBarItem;
 
 export const ToolBarContext = createContext<{
   items: ToolBarItem[];
@@ -59,13 +68,15 @@ export const ToolBarContext = createContext<{
 export const ToolBarContextProvider = (props: any) => {
   const [items, setItems] = useState<ToolBarItem[]>([]);
   const location = useLocation();
-  const [lastLocation, setLastLocation] = useState<string|undefined>(location.pathname);
+  const [lastLocation, setLastLocation] = useState<string | undefined>(
+    location.pathname
+  );
 
   useEffect(() => {
-    if(lastLocation === location.pathname) return;
+    if (lastLocation === location.pathname) return;
     setLastLocation(location.pathname);
     setItems([]);
-  }, [lastLocation, location])
+  }, [lastLocation, location]);
 
   return (
     <ToolBarContext.Provider value={{ items, setItems }}>
