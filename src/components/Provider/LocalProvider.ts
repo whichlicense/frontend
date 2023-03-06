@@ -15,11 +15,22 @@
  *   limitations under the License.
  */
 
-import { Provider } from "./Provider";
+import { AccountType, Provider } from "./Provider";
 
 /**
  * Represents a connection system towards a locally hosted solution.
  */
 export class LocalProvider extends Provider {
+    getScan(id: string): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Always returns AccountType.ALL in the LocalProvider as it does not have an account system.
+     * @returns AccountType.AL
+     */
+    getLoggedInAccountType(): AccountType {
+        return AccountType.ALL;
+    }
 
 }

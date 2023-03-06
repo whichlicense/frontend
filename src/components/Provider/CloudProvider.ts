@@ -21,4 +21,7 @@ import { Provider } from "./Provider";
  * Represents a connection system towards the cloud hosted solution.
  */
 export class CloudProvider extends Provider {
+    getScan(id: string): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
 }
