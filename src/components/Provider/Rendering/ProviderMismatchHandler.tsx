@@ -15,51 +15,60 @@
  *   limitations under the License.
  */
 
-import { ProviderType } from "../Provider"
+import { useEffect, useMemo } from "react";
+import { useProviderContext } from "../../../context/ProviderContext";
+import { CloudProvider } from "../CloudProvider";
+import { LocalProvider } from "../LocalProvider";
+import { ProviderType } from "../Provider";
 
 export enum ProviderMismatchAction {
-    HIDE,
-    /**
-     * Indicate that the component is not available for the current provider.
-     * Tries to mimic the size of the original component as much as possible.
-     */
-    INDICATE,
-    /**
-     * Replace the component with a passed in component.
-     */
-    REPLACE
+  HIDE,
+  /**
+   * Replace the component with a passed in component.
+   */
+  REPLACE,
 }
 
-type ProviderMismatchHandlerProps = {
-    action: ProviderMismatchAction.HIDE,
-    requiredProvider: ProviderType,
-} | {
-    action: ProviderMismatchAction.INDICATE,
-    /**
-     * Any extra classes that should be added to the component that replaces the normal one.
-     * This can be used to adjust the sizing further.
-     */
-    extraReplacedComponentClasses?: string,
-    requiredProvider: ProviderType,
-} | {
-    action: ProviderMismatchAction.REPLACE,
-    requiredProvider: ProviderType,
-    component: JSX.Element
-}
+type ProviderMismatchHandlerDefaults = {
+  children: JSX.Element;
+  requiredProvider: ProviderType;
+};
+type ProviderMismatchHandlerProps = (
+  | {
+      action: ProviderMismatchAction.HIDE;
+    }
+  | {
+      action: ProviderMismatchAction.REPLACE;
+      replacingComponent: JSX.Element;
+    }
+) &
+  ProviderMismatchHandlerDefaults;
 
 /**
  * Takes a certain action when the provider does not match the required provider.
  */
-export default function ProviderMismatchHandler(props: ProviderMismatchHandlerProps){
-    // TODO: ProviderContext should be used to determine the current provider.
-    /*
-     TODO: take classes, styles and and other props and store them so that
-     they can be used when the provider changes to something else...
-     These can be used to retain some styling when the provider changes.
-     */
-    return (
-        <>
-        <h1>ProviderDependant</h1>
-        </>
-    )
+export default function ProviderMismatchHandler(
+  props: ProviderMismatchHandlerProps
+) {
+  const { provider } = useProviderContext();
+  const providerType = useMemo(() => {
+    return provider instanceof CloudProvider
+      ? ProviderType.CLOUD
+      : ProviderType.LOCAL;
+  }, [provider]);
+
+  const takeAction = () => {
+    switch (props.action) {
+      case ProviderMismatchAction.HIDE:
+        return null;
+      case ProviderMismatchAction.REPLACE:
+        return props.replacingComponent;
+    }
+  };
+
+  return (
+    <>
+      {props.requiredProvider === providerType ? props.children : takeAction()}
+    </>
+  );
 }
