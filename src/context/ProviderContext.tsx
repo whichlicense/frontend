@@ -18,11 +18,12 @@
 import { createContext, useState, useContext, useEffect } from "react"
 import { CloudProvider } from "../components/Provider/CloudProvider"
 import { LocalProvider } from "../components/Provider/LocalProvider"
-import { Provider } from "../components/Provider/Provider"
+import { Provider, ProviderType } from "../components/Provider/Provider"
 
 export const ProviderContext = createContext<{
     provider: Provider,
-    setProvider: React.Dispatch<React.SetStateAction<Provider>>
+    setProvider: React.Dispatch<React.SetStateAction<Provider>>,
+    getProviderType: () => ProviderType
 }>({} as any)
   
   export const ProviderContextProvider = (props: any) => {
@@ -35,12 +36,16 @@ export const ProviderContext = createContext<{
         host: "localhost",
         port: 8080,
       })
-    )
+    );
+
+    const getProviderType = () => {
+      return provider instanceof CloudProvider ? ProviderType.CLOUD : ProviderType.LOCAL
+    }
 
 
 
     return (
-      <ProviderContext.Provider value={{ provider, setProvider }}>
+      <ProviderContext.Provider value={{ provider, setProvider, getProviderType }}>
         {props.children}
       </ProviderContext.Provider>
     )

@@ -22,21 +22,25 @@ import HBarChart from "../components/Charts/HBarChart";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { ProviderType } from "../components/Provider/Provider";
 import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/Provider/Rendering/ProviderMismatchHandler";
+import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const {getProviderType} = useProviderContext()
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
       title: "Add Project",
       icon: "bi bi-plus-circle",
+      hidden: getProviderType() === ProviderType.LOCAL,
       onClick: () => {
         console.log("button clicked");
       },
     },
     {
       type: ToolBarItemType.SEPARATOR,
+      hidden: getProviderType() === ProviderType.LOCAL,
     },
     {
       type: ToolBarItemType.BUTTON,
