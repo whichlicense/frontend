@@ -20,6 +20,8 @@ import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 import { useToolBar } from "../components/Hooks/useToolBar";
+import { ProviderType } from "../components/Provider/Provider";
+import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/Provider/Rendering/ProviderMismatchHandler";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Dashboard() {
@@ -94,10 +96,21 @@ export default function Dashboard() {
 
       <Row>
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
+          <ProviderMismatchHandler
+          replacingComponent={
+            <RegularCard className="bg-striped" title={"Projects"} fadeIn>
+              <div className="text-muted">
+                <h5 >Not available</h5>
+                <small>This feature is only available in our cloud hosted solution</small>
+              </div>
+            </RegularCard>
+          }
+           requiredProvider={ProviderType.CLOUD} action={ProviderMismatchAction.REPLACE}>
           <RegularCard title={"Projects"} fadeIn>
             <ListGroup variant="flush">
               <ListGroup.Item>
-                <div className="d-flex justify-content-between align-items-start">
+                <div className="d-flex justify-content-between align-items-start"
+                onClick={()=>{console.log('ss')}}>
                   <div className="align-self-center">
                     WhichLicense detection
                   </div>
@@ -109,6 +122,7 @@ export default function Dashboard() {
               </ListGroup.Item>
             </ListGroup>
           </RegularCard>
+          </ProviderMismatchHandler>
         </Col>
 
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
