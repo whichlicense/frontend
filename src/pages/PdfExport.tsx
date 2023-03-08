@@ -15,28 +15,40 @@
  *   limitations under the License.
  */
 
-import {  useRef, useState } from "react";
-import { Container, Row, Col, ListGroup, Image, Stack } from "react-bootstrap";
+import { useRef, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  ListGroup,
+  Image,
+  Stack,
+  Form,
+} from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function PdfExport() {
-  const printRef = useRef<HTMLElement | null>(null);
+  const printRef = useRef<HTMLDivElement | null>(null);
   const [showExportOptions, setShowExportOptions] = useState(false);
+  const [printSettings, setPrintSettings] = useState({
+    background: "#1e1e1e",
+  });
+  // TODO: take in scan ID as url parameter.. go from there.
 
   useToolBar([
     {
-        type: ToolBarItemType.BUTTON,
-        title: "Export options",
-        icon: "bi bi-sliders",
-        onClick: () => {
-            setShowExportOptions(true)
-        },
+      type: ToolBarItemType.BUTTON,
+      title: "Export options",
+      icon: "bi bi-sliders",
+      onClick: () => {
+        setShowExportOptions(true);
       },
+    },
     {
-        type: ToolBarItemType.SEPARATOR,
+      type: ToolBarItemType.SEPARATOR,
     },
     {
       type: ToolBarItemType.BUTTON,
@@ -63,7 +75,10 @@ export default function PdfExport() {
         <style>
             @page {
                 size: A4;
-                margin: 0;
+                margin: 0 !important;
+                padding: 0 !important;;
+                border: none !important;
+                background: ${printSettings.background};
             }
         </style>
     </head>
@@ -84,7 +99,12 @@ export default function PdfExport() {
     <div>
       <h1>PDF export view</h1>
       <hr />
-      <section ref={printRef}>
+      <div
+        ref={printRef}
+        style={{
+          backgroundColor: printSettings.background,
+        }}
+      >
         <Container fluid className="py-3">
           <Row className="g-3">
             <Col xs={6}>
@@ -149,9 +169,35 @@ export default function PdfExport() {
             ))}
           </Row>
         </Container>
-      </section>
-      <InlineCard title="Export options" show={showExportOptions} handleClose={()=>setShowExportOptions(false)}>
-        <p>Test</p>
+      </div>
+      <InlineCard
+        title="Export options"
+        show={showExportOptions}
+        handleClose={() => setShowExportOptions(false)}
+      >
+        <Stack gap={2}>
+          <div className="d-flex justify-content-between">
+            Background color
+            <Form.Control
+              type="color"
+              id="bgColor"
+              defaultValue="#1e1e1e"
+              title="Choose your color"
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  background: e.target.value,
+                });
+              }}
+            />
+          </div>
+
+          <div className="d-flex justify-content-between">
+            Show transitive dependencies
+            <Form.Check type={"checkbox"} checked />
+          </div>
+
+        </Stack>
       </InlineCard>
     </div>
   );
