@@ -44,7 +44,7 @@ export default function Dashboard() {
     },
     {
       type: ToolBarItemType.BUTTON,
-      title: "Scan Project",
+      title: "Scan A Project",
       icon: "bi bi-cpu",
       onClick: () => {
         console.log("button clicked");
