@@ -17,6 +17,9 @@
 // @ts-ignore
 import * as html2pdf from "html2pdf.js";
 
+/**
+ * @deprecated
+ */
 export function downloadPdf(elementRef: React.MutableRefObject<any>, opts: {fileName: string}){
     const element = elementRef.current;
     const options = {
@@ -26,6 +29,7 @@ export function downloadPdf(elementRef: React.MutableRefObject<any>, opts: {file
       html2canvas: { scale: 2 },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      enableLinks: true,
     };
     html2pdf().set(options).from(element).save();
 }
