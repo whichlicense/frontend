@@ -24,6 +24,7 @@ import {
   Image,
   Stack,
   Form,
+  Badge,
 } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
@@ -37,6 +38,10 @@ export default function PdfExport() {
     background: "#1e1e1e",
   });
   // TODO: take in scan ID as url parameter.. go from there.
+  // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
+  // TODO: find a way to show when a dependencies license has been manually resolves (maybe in notice box or something)
+  // TODO: add chart display with associated options
+
 
   useToolBar([
     {
@@ -138,7 +143,21 @@ export default function PdfExport() {
                 <ListGroup>
                   {Array.from({ length: 100 }).map((_, idx) => (
                     <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
-                      Dependency {idx}
+                        <Row>
+                            <Col xs={4}>
+                                Dependency {idx}
+                            </Col>
+                            <Col xs={1}>
+                                <Badge>1.0.0</Badge>
+                            </Col>
+                            <Col xs={2}>
+                                <Badge className="bg-green txt-dark-1">MIT</Badge>
+                            </Col>
+                            <Col xs={5} className="d-flex justify-content-end">
+                                <Badge className="bg-green txt-dark-1">Compliant</Badge>
+                            </Col>
+                        </Row>
+                      
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
