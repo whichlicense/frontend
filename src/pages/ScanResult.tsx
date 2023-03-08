@@ -17,7 +17,7 @@
 
 import { useState } from "react";
 import { Col, ListGroup, Row, Stack } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
 import { InlineCard } from "../components/Modals/InlineCard";
@@ -34,6 +34,7 @@ import { useToolBar } from "../components/Hooks/useToolBar";
 export default function ScanResult() {
   const { id } = useParams();
   const [showResolveLicense, setShowResolveLicense] = useState(false);
+  const navigate = useNavigate();
 
   useToolBar([
     {
@@ -55,6 +56,17 @@ export default function ScanResult() {
         console.log("button clicked");
       },
     },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Export PDF",
+      icon: "bi bi-file-earmark-arrow-down",
+      onClick: () => {
+        navigate("/pdf-export");
+      }
+    }
   ]);
 
   return (
