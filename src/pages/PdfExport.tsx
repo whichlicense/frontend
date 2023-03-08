@@ -71,8 +71,8 @@ export default function PdfExport() {
     <div>
       <h1>PDF export view</h1>
       <hr />
-      <section ref={printRef} style={{}}>
-        <Container>
+      <section ref={printRef}>
+        <Container fluid className="py-3">
           <Row className="g-3">
             <Col xs={6}>
               <Image src="logo192.png" />
