@@ -14,6 +14,7 @@
     "bootstrap": "^5.2.3",
     "chart.js": "^4.2.1",
     "chartjs-chart-treemap": "^2.3.0",
+    "html2pdf.js": "^0.10.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-bootstrap": "^2.7.2",
