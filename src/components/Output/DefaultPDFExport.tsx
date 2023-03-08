@@ -20,26 +20,25 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useRef } from "react";
 import RegularCard from "../Cards/RegularCard";
+// @ts-ignore
+import * as html2pdf from 'html2pdf.js';
 
 export default function DefaultPDFExport() {
   // TODO: develop our own export pdf style for delivery
 
   const printRef = useRef<any>(undefined)
 
-  // TODO: this does not work because it cuts off the page. also, a single page is not ideal!
   const handleDownloadPdf = async () => {
     const element = printRef.current;
-    const canvas = await html2canvas(element as any);
-    const data = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF();
-    const imgProperties = pdf.getImageProperties(data);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight =
-      (imgProperties.height * pdfWidth) / imgProperties.width;
-
-    pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('print.pdf');
+    const options = {
+      margin: 10,
+      filename: 'download.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+    };
+    html2pdf().set(options).from(element).save();
   };
 
   return (
