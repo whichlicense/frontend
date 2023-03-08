@@ -46,6 +46,8 @@ type RegularCardProps = {
   onIconClick?: () => void;
 
   children: JSX.Element | JSX.Element[] | string;
+
+  id?: string;
 };
 
 /**
@@ -67,6 +69,7 @@ export default function RegularCard(props: RegularCardProps) {
       onClick={() => {
         props.onCardClick && props.onCardClick();
       }}
+      id={props.id}
     >
       <div className="p-4">
         <div className="d-flex justify-content-between">
