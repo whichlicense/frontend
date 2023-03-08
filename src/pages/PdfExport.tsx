@@ -124,7 +124,7 @@ export default function PdfExport() {
               </Stack>
             </Col>
             <Col xs={6}>
-              <RegularCard title="Compliancy" minHeight="100px">
+              <RegularCard title="Status" minHeight="100px">
                 <h4 className="txt-green">Compliant</h4>
               </RegularCard>
             </Col>
@@ -144,16 +144,16 @@ export default function PdfExport() {
                   {Array.from({ length: 100 }).map((_, idx) => (
                     <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
                         <Row>
-                            <Col xs={4}>
+                            <Col xs={9}>
                                 Dependency {idx}
                             </Col>
                             <Col xs={1}>
-                                <Badge>1.0.0</Badge>
+                                <div>1.0.0</div>
                             </Col>
-                            <Col xs={2}>
-                                <Badge className="bg-green txt-dark-1">MIT</Badge>
+                            <Col xs={1}>
+                                <Badge className="bg-grey txt-dark-1">MIT</Badge>
                             </Col>
-                            <Col xs={5} className="d-flex justify-content-end">
+                            <Col xs={1} className="d-flex justify-content-end">
                                 <Badge className="bg-green txt-dark-1">Compliant</Badge>
                             </Col>
                         </Row>
