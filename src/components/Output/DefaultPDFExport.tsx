@@ -16,8 +16,6 @@
  */
 
 import { Button, Col, Container, ListGroup, Row } from "react-bootstrap";
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { useRef } from "react";
 import RegularCard from "../Cards/RegularCard";
 // @ts-ignore
@@ -25,6 +23,8 @@ import * as html2pdf from 'html2pdf.js';
 
 export default function DefaultPDFExport() {
   // TODO: develop our own export pdf style for delivery
+  // TODO: This must take in children and default options, and then export the children as a pdf given the options
+  // TODO: the options can be shown/modified in an inline card (this component deals with that)
 
   const printRef = useRef<any>(undefined)
 
