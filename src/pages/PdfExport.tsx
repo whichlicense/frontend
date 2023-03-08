@@ -15,16 +15,29 @@
  *   limitations under the License.
  */
 
-import {  useRef } from "react";
+import {  useRef, useState } from "react";
 import { Container, Row, Col, ListGroup, Image, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
+import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function PdfExport() {
   const printRef = useRef<HTMLElement | null>(null);
+  const [showExportOptions, setShowExportOptions] = useState(false);
 
   useToolBar([
+    {
+        type: ToolBarItemType.BUTTON,
+        title: "Export options",
+        icon: "bi bi-sliders",
+        onClick: () => {
+            setShowExportOptions(true)
+        },
+      },
+    {
+        type: ToolBarItemType.SEPARATOR,
+    },
     {
       type: ToolBarItemType.BUTTON,
       title: "Download PDF",
@@ -137,6 +150,9 @@ export default function PdfExport() {
           </Row>
         </Container>
       </section>
+      <InlineCard title="Export options" show={showExportOptions} handleClose={()=>setShowExportOptions(false)}>
+        <p>Test</p>
+      </InlineCard>
     </div>
   );
 }
