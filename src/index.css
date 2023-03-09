@@ -257,3 +257,6 @@ section button{
   background-color: var(--color-section-background);
   color: var(--color-text-light);
 }
+.list-group-item {
+  border: none !important;
+}
