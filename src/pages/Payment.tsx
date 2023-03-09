@@ -99,6 +99,7 @@ export default function Payment() {
   const checkout = () => {
     createOrder().then((data) => {
       if (!data.public_id) return;
+      // TODO: conditionally use sandbox or production based on NPM environment
       RevolutCheckout(data.public_id, "sandbox").then((instance) => {
         // work with instance
         instance.payWithPopup({
