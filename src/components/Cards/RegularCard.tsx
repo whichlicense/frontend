@@ -17,7 +17,6 @@
 
 import { useRef } from "react";
 import { Card } from "react-bootstrap";
-import { hasScrollBar } from "../utils/scroll";
 import ScrollIndicator from "../utils/ScrollIndicator";
 import "../../styles/Card.css";
 import { BgColors, TxtColors } from "../typings/Colors";
@@ -29,7 +28,7 @@ type RegularCardProps = {
   minHeight?: string;
   maxWidth?: string;
   minWidth?: string;
-  overflowX?: "auto" | "hidden" | "scroll" | "visible";
+  overflowY?: "auto" | "hidden" | "scroll" | "visible";
   className?: string;
   fadeIn?: boolean;
 
@@ -89,14 +88,14 @@ export default function RegularCard(props: RegularCardProps) {
           style={{
             maxHeight: props.maxHeight || "15vh",
             minHeight: props.minHeight || "unset",
-            overflowY: props.overflowX || "auto",
+            overflowY: props.overflowY || "auto",
           }}
           ref={bodyRef}
         >
           {props.children}
         </Card.Body>
         {/* Only show chevron when Card.Body is long enough to be scrollable */}
-        <ScrollIndicator bodyRef={bodyRef} />
+        {props.overflowY !== "hidden" && <ScrollIndicator bodyRef={bodyRef} />}
       </div>
     </Card>
   );
