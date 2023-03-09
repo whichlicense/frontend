@@ -41,6 +41,8 @@ export default function PdfExport() {
   // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
   // TODO: find a way to show when a dependencies license has been manually resolves (maybe in notice box or something)
   // TODO: add chart display with associated options
+  // TODO: table of contents generation
+  // TODO: ability to include license text from all the modules in the export!
 
 
   useToolBar([
