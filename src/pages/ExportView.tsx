@@ -30,6 +30,7 @@ import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { downloadPlainText } from "../components/utils/download";
+import { LICENSE_1 } from "../components/utils/TEST_LICENSES";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function ExportView() {
@@ -39,6 +40,7 @@ export default function ExportView() {
     background: "#1e1e1e",
     transitiveIncluded: true,
     showCustomNotes: false,
+    addLicenses: false
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
   // TODO: take in scan ID as url parameter.. go from there.
@@ -164,21 +166,20 @@ export default function ExportView() {
             </Col>
             {printSettings.showCustomNotes && (
               <Col xs={12}>
-              <RegularCard
-                title="Custom notes"
-                minHeight="100px"
-                maxHeight="100%"
-              >
-                <textarea
-                  defaultValue={customNotes}
-                  className="w-100 bg-transparent border-0 rounded txt-white"
-                  onBlur={(e) => setCustomNotes(e.target.value)}
+                <RegularCard
+                  title="Custom notes"
+                  minHeight="100px"
+                  maxHeight="100%"
                 >
-                </textarea>
-              </RegularCard>
-            </Col>
+                  <textarea
+                    defaultValue={customNotes}
+                    className="w-100 bg-transparent border-0 rounded txt-white"
+                    onBlur={(e) => setCustomNotes(e.target.value)}
+                  ></textarea>
+                </RegularCard>
+              </Col>
             )}
-            
+
             <Col xs={6}>
               <RegularCard title="Status" minHeight="100px">
                 <h4 className="txt-green">Compliant</h4>
@@ -242,6 +243,21 @@ export default function ExportView() {
                   </RegularCard>
                 </Col>
               ))}
+
+            {printSettings.addLicenses && Array.from({ length: 10 }).map((_, idx) => (
+              <Col xs={12}>
+                <RegularCard title={`License ${idx}`} maxHeight="100%">
+                  <div
+                    className="bg-transparent"
+                    style={{
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {LICENSE_1}
+                  </div>
+                </RegularCard>
+              </Col>
+            ))}
           </Row>
         </Container>
       </div>
@@ -292,6 +308,21 @@ export default function ExportView() {
               }}
               type={"checkbox"}
               defaultChecked={printSettings.showCustomNotes}
+            />
+          </div>
+
+
+          <div className="d-flex justify-content-between">
+            Add all used licenses as text
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  addLicenses: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.addLicenses}
             />
           </div>
         </Stack>
