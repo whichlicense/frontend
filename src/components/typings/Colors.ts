@@ -18,6 +18,7 @@
 export type BgColors =
     | "bg-dark"
     | "bg-dark-1"
+    | "bg-dark-2"
     | "bg-blue"
     | "bg-yellow"
     | "bg-grey"

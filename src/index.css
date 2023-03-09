@@ -19,6 +19,7 @@
   /* the higher the black number the lighter of a black it is */
   --color-black: #000000;
   --color-dark-1: rgb(16, 16, 16);
+  --color-dark-2: #2b2b2b;
   --color-page-background: rgb(16, 16, 16);
 
   --color-grey: #818b8e;
@@ -100,6 +101,9 @@ b {
 
 .bg-dark-1 {
   background-color: var(--color-dark-1) !important;
+}
+.bg-dark-2 {
+  background-color: var(--color-dark-2) !important;
 }
 .bg-blue {
   background-color: var(--color-blue) !important;

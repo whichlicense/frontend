@@ -20,17 +20,11 @@ import { Card } from "react-bootstrap";
 import { hasScrollBar } from "../utils/scroll";
 import ScrollIndicator from "../utils/ScrollIndicator";
 import "../../styles/Card.css";
-import { TxtColors } from "../typings/Colors";
+import { BgColors, TxtColors } from "../typings/Colors";
 
 type RegularCardProps = {
   title?: string | JSX.Element;
-  bg?:
-    | "bg-dark"
-    | "bg-dark-1"
-    | "bg-blue"
-    | "bg-yellow"
-    | "bg-grey"
-    | "bg-purple";
+  bg?: BgColors;
   maxHeight?: string;
   minHeight?: string;
   maxWidth?: string;
@@ -58,7 +52,7 @@ export default function RegularCard(props: RegularCardProps) {
   return (
     <Card
       className={`regular-card shadow-sm rounded align-self-stretch ${
-        props.bg ? props.bg : "bg-dark-1"
+        props.bg ? props.bg : "bg-dark-2"
       } text-bg-dark w-100 ${props.fadeIn ? "fade-in-forward" : ""} ${
         props.className || ""
       }`}
