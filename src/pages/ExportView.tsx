@@ -37,6 +37,7 @@ export default function ExportView() {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [printSettings, setPrintSettings] = useState({
     background: "#1e1e1e",
+    transitiveIncluded: true,
   });
   // TODO: take in scan ID as url parameter.. go from there.
   // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
@@ -199,7 +200,7 @@ export default function ExportView() {
                 <br />
               </RegularCard>
             </Col>
-            {Array.from({ length: 100 }).map((_, idx) => (
+            {printSettings.transitiveIncluded && Array.from({ length: 100 }).map((_, idx) => (
               <Col xs={16}>
                 <RegularCard
                   title={`Dependency ${idx}'s dependencies`}
@@ -245,8 +246,14 @@ export default function ExportView() {
           </div>
 
           <div className="d-flex justify-content-between">
-            Show transitive dependencies
-            <Form.Check type={"checkbox"} checked />
+            Include transitive dependencies
+            <Form.Check onChange={(e)=>{
+              setPrintSettings({
+                ...printSettings,
+                transitiveIncluded: e.target.checked,
+              });
+            }}
+             type={"checkbox"} defaultChecked={printSettings.transitiveIncluded} />
           </div>
 
         </Stack>
