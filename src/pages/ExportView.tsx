@@ -29,6 +29,7 @@ import {
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
+import { downloadPlainText } from "../components/utils/download";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function ExportView() {
@@ -65,15 +66,19 @@ export default function ExportView() {
         print();
       },
     },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Download HTML",
+      icon: "bi bi-filetype-html",
+      onClick: () => {
+        // TODO: change file name to something more meaningful
+        downloadPlainText("export.html", constructHTML());
+      },
+    },
   ]);
 
-  const print = () => {
-    const printWindow = window.open(
-      "",
-      "mywindow",
-      "status=1,toolbar=0,scrollbars=0,left=0,top=0,innerWidth=793.7008,innerHeight=1122.5197"
-    )!;
-    printWindow.document.write(`<html>
+  const constructHTML = () => {
+    return `<html>
     <head>
         <title>PDF export</title>
         ${[
@@ -89,10 +94,19 @@ export default function ExportView() {
             }
         </style>
     </head>
-    <body onafterprint="self.close()">
+    <body onafterprint="self.close()" style="overflow: auto;">
         ${printRef.current!.outerHTML}
     </body>
-</html>`);
+</html>`
+  }
+
+  const print = () => {
+    const printWindow = window.open(
+      "",
+      "mywindow",
+      "status=1,toolbar=0,scrollbars=0,left=0,top=0,innerWidth=793.7008,innerHeight=1122.5197"
+    )!;
+    printWindow.document.write(constructHTML());
 
     setTimeout(() => {
       printWindow.document.close();
@@ -105,7 +119,7 @@ export default function ExportView() {
   return (
     <div>
       <h1>Export view</h1>
-      <small className="text-muted">Please note that the export view only serves as a rough visual indication as to how visual exports will end up. Non-visual exports will not carry over the visual aspects of the view</small>
+      <small className="text-muted">Please note that the export view only serves as a rough visual indication as to how visual exports will end up. Non-visual exports like CSV will not carry over the visual aspects of the view.</small>
       <hr />
       <div
         ref={printRef}
