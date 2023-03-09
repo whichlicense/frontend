@@ -172,7 +172,7 @@ export default function ExportView() {
               </RegularCard>
             </Col>
             <Col xs={12}>
-              <RegularCard title="Dependencies" maxHeight="100%">
+              <RegularCard title="Top-level Dependencies" maxHeight="100%">
                 <ListGroup>
                   {Array.from({ length: 100 }).map((_, idx) => (
                     <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
