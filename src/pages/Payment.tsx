@@ -89,6 +89,7 @@ export default function Payment() {
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
   const createOrder = async () => {
+    // TODO: conditionally use public url or localhost based on NPM environment
     return (await fetch(`http://localhost:8000/create-payment-order`).then(
       (res) => {
         return res.json();
