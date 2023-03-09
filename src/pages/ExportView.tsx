@@ -61,7 +61,7 @@ export default function ExportView() {
     {
       type: ToolBarItemType.BUTTON,
       title: "Download PDF",
-      icon: "bi bi-file-earmark-arrow-down",
+      icon: "bi bi-filetype-pdf",
       onClick: () => {
         print();
       },
@@ -81,6 +81,14 @@ export default function ExportView() {
       icon: "bi bi-filetype-csv",
       onClick: () => {
         // TODO: implement csv export when data structure is available
+      },
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Text",
+      icon: "bi bi-file-earmark-text",
+      onClick: () => {
+        // TODO: implement txt export when data structure is available
       },
     }
   ]);
