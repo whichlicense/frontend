@@ -49,6 +49,7 @@ export default function Payment() {
       txtColor: "txt-dark-1",
       icon: "bi bi-building-up",
       onClick: () => {
+        // TODO: implement
         console.log("Change plan");
       },
     },
@@ -57,6 +58,8 @@ export default function Payment() {
         title: "Change payment details",
         icon: "bi bi-credit-card",
         onClick: () => {
+        // TODO: implement
+
           console.log("Change plan");
         },
       },
