@@ -45,11 +45,21 @@ export default function Payment() {
     {
       type: ToolBarItemType.BUTTON,
       title: "Change plan",
-      bgColor: "bg-purple",
+      bgColor: "bg-blue",
+      txtColor: "txt-dark-1",
+      icon: "bi bi-building-up",
       onClick: () => {
         console.log("Change plan");
       },
     },
+    {
+        type: ToolBarItemType.BUTTON,
+        title: "Change payment details",
+        icon: "bi bi-credit-card",
+        onClick: () => {
+          console.log("Change plan");
+        },
+      },
   ]);
 
   const TOP_UP_OPTIONS = [
@@ -120,7 +130,7 @@ export default function Payment() {
       {/* <Button onClick={checkout}>Checkout</Button> */}
       <Row className="g-4">
         <Col xs={12} md={6}>
-          <RegularCard title="Usage" minHeight="19vh" maxHeight="19vh">
+          <RegularCard title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
               <small className="text-truncate">Remaining: 93 min</small>
               <hr />
@@ -148,11 +158,12 @@ export default function Payment() {
           </RegularCard>
         </Col>
         <Col xs={12} md={6}>
-          <RegularCard title="Subscription" minHeight="19vh" maxHeight="19vh">
+          <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
               <h6>Cost per month: €3.00</h6>
               <h6>Next billing date: August 12, 2023</h6>
+              <h6>Billed to: John Doe - xxxxxxx 6453</h6>
             </div>
           </RegularCard>
         </Col>
