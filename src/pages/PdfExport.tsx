@@ -71,7 +71,7 @@ export default function PdfExport() {
     const printWindow = window.open(
       "",
       "mywindow",
-      "status=1,toolbar=0,scrollbars=0,left=0,top=0"
+      "status=1,toolbar=0,scrollbars=0,left=0,top=0,innerWidth=793.7008,innerHeight=1122.5197"
     )!;
     printWindow.document.write(`<html>
     <head>
@@ -146,16 +146,16 @@ export default function PdfExport() {
                   {Array.from({ length: 100 }).map((_, idx) => (
                     <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
                         <Row>
-                            <Col xs={9}>
+                            <Col xs={6}>
                                 Dependency {idx}
                             </Col>
-                            <Col xs={1}>
+                            <Col xs={2}>
                                 <div>1.0.0</div>
                             </Col>
-                            <Col xs={1}>
+                            <Col xs={2}>
                                 <Badge className="bg-grey txt-dark-1">MIT</Badge>
                             </Col>
-                            <Col xs={1} className="d-flex justify-content-end">
+                            <Col xs={2} className="d-flex justify-content-end">
                                 <Badge className="bg-green txt-dark-1">Compliant</Badge>
                             </Col>
                         </Row>
