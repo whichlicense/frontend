@@ -97,7 +97,7 @@ export default function Payment() {
     )) as Promise<RevolutOrder>;
   };
 
-  const checkout = () => {
+  const checkout = (orderId: string) => {
     createOrder().then((data) => {
       if (!data.public_id) return;
       // TODO: conditionally use sandbox or production based on NPM environment
@@ -117,7 +117,7 @@ export default function Payment() {
   };
   return (
     <div>
-      <Button onClick={checkout}>Checkout</Button>
+      {/* <Button onClick={checkout}>Checkout</Button> */}
       <Row className="g-4">
         <Col xs={12} md={6}>
           <RegularCard title="Usage" minHeight="19vh" maxHeight="19vh">
@@ -174,7 +174,9 @@ export default function Payment() {
                     overflowY="hidden"
                   >
                     <h5>€{option.price}</h5>
-                    <Button className="w-100">Buy</Button>
+                    <Button onClick={()=>{
+                        checkout(option.id);
+                    }} className="w-100">Buy</Button>
                   </RegularCard>
                 </Col>
               ))}
