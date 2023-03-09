@@ -105,6 +105,7 @@ export default function ExportView() {
   return (
     <div>
       <h1>Export view</h1>
+      <small className="text-muted">Please note that the export view only serves as a rough visual indication as to how visual exports will end up. Non-visual exports will not carry over the visual aspects of the view</small>
       <hr />
       <div
         ref={printRef}
