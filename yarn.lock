@@ -1680,6 +1680,11 @@
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
+"@revolut/checkout@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@revolut/checkout/-/checkout-1.1.9.tgz#5ac78d15925471b3d09df9200a7c7376fcb85b71"
+  integrity sha512-+7gQHZamG/3Jp411/3S5wHE1VLwsLPxnbcTOx8sQZN1+RPa3pOSlsgxqLJx6BYBludUxUi9I5g93QIbu5AH6FA==
+
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
   resolved "https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-5.3.1.tgz"
