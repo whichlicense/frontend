@@ -31,7 +31,7 @@ import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
-export default function PdfExport() {
+export default function ExportView() {
   const printRef = useRef<HTMLDivElement | null>(null);
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [printSettings, setPrintSettings] = useState({
@@ -104,7 +104,7 @@ export default function PdfExport() {
 
   return (
     <div>
-      <h1>PDF export view</h1>
+      <h1>Export view</h1>
       <hr />
       <div
         ref={printRef}

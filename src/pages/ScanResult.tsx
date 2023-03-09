@@ -61,10 +61,10 @@ export default function ScanResult() {
     },
     {
       type: ToolBarItemType.BUTTON,
-      title: "Export PDF",
+      title: "Export",
       icon: "bi bi-file-earmark-arrow-down",
       onClick: () => {
-        navigate("/pdf-export");
+        navigate("/export-view");
       }
     }
   ]);

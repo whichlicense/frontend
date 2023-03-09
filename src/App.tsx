@@ -36,7 +36,7 @@ import LicenseInfo from "./pages/LicenseInfo";
 import Settings from "./pages/Settings";
 import { ProviderContextProvider } from "./context/ProviderContext";
 import Notifications from "./pages/Notifications";
-import PdfExport from "./pages/PdfExport";
+import ExportView from "./pages/ExportView";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -70,7 +70,7 @@ function App() {
                         <Route path="/license/:id" element={<LicenseInfo />} />
                         <Route path="/notifications" element={<Notifications />} />
                         <Route path="/settings" element={<Settings />} />
-                        <Route path="/pdf-export" element={<PdfExport />} />
+                        <Route path="/export-view" element={<ExportView />} />
                         <Route path="/test" element={<Test />} />
                         <Route path="/" element={<Home />} />
                       </Routes>
