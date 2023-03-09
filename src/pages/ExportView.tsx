@@ -127,10 +127,10 @@ export default function ExportView() {
     printWindow.document.write(constructHTML());
 
     setTimeout(() => {
-      // printWindow.document.close();
-      // printWindow.focus();
-      // printWindow.print();
-      // printWindow.close();
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
     }, 500);
   };
 
