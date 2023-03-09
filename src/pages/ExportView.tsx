@@ -68,13 +68,21 @@ export default function ExportView() {
     },
     {
       type: ToolBarItemType.BUTTON,
-      title: "Download HTML",
+      title: "HTML",
       icon: "bi bi-filetype-html",
       onClick: () => {
         // TODO: change file name to something more meaningful
         downloadPlainText("export.html", constructHTML());
       },
     },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "CSV",
+      icon: "bi bi-filetype-csv",
+      onClick: () => {
+        // TODO: implement csv export when data structure is available
+      },
+    }
   ]);
 
   const constructHTML = () => {
@@ -130,7 +138,7 @@ export default function ExportView() {
         <Container fluid className="py-3">
           <Row className="g-3">
             <Col xs={6}>
-              <Image src="logo192.png" />
+              <Image src="http://localhost:3001/logo192.png" />
             </Col>
             <Col xs={6} className="text-end">
               <Stack gap={1}>
