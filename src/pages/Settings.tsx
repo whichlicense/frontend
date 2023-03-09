@@ -18,6 +18,8 @@
 import { Accordion } from "react-bootstrap";
 
 export default function Settings() {
+  // TODO: delete account button in "account" section
+
   return (
     <div>
         <h6 className="display-6">Settings</h6>
