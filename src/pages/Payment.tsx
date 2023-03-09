@@ -151,7 +151,7 @@ export default function Payment() {
           <RegularCard title="Subscription" minHeight="19vh" maxHeight="19vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
-              <h6>Cost per month: $20.00</h6>
+              <h6>Cost per month: €3.00</h6>
               <h6>Next billing date: August 12, 2023</h6>
             </div>
           </RegularCard>
@@ -160,8 +160,8 @@ export default function Payment() {
           <hr />
           <Stack gap={3}>
             <div>
-              <h2 className="mb-0">Top-up</h2>
-              <small className="text-muted">Top-up in a pinch</small>
+              <h2 className="mb-0">Top-up options</h2>
+              <small className="text-muted">Top-up in a pinch or choose to pay manually instead of a subscription</small>
             </div>
 
             <Row className="g-2">
