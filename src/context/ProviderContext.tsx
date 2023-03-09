@@ -28,14 +28,14 @@ export const ProviderContext = createContext<{
   
   export const ProviderContextProvider = (props: any) => {
     const [provider, setProvider] = useState<Provider>(
-      // new CloudProvider({
-      //   host: "localhost", // TODO: point to actual cloud
-      //   port: 8080, // TODO: point to actual cloud port
-      // })
-      new LocalProvider({
-        host: "localhost",
-        port: 8080,
+      new CloudProvider({
+        host: "localhost", // TODO: point to actual cloud
+        port: 8080, // TODO: point to actual cloud port
       })
+      // new LocalProvider({
+      //   host: "localhost",
+      //   port: 8080,
+      // })
     );
 
     const getProviderType = () => {
