@@ -83,17 +83,17 @@ export default function ScanResult() {
           <Col xs={12}>
             <Stack gap={1}>
             <ButtonGroup>
-              <Button className="bg-green">Accept license</Button>
+              <Button className="bg-green">Accept package</Button>
               <Button className="bg-red">Decline package</Button>
               <Button className="bg-blue">Resolve the below entered information</Button>
             </ButtonGroup>
             <small>
               <i className="px-2 bi bi-info-circle opacity-75"></i>
-              <span className="txt-green">Accepting</span> a license will accept this package, its current license and any associated risks.
+              <span className="txt-green">Accepting</span> a package will allow the package, its current license and any associated risks.
             </small>
             <small>
               <i className="px-2 bi bi-info-circle opacity-75"></i>
-              <span className="txt-red">Declining</span> a package will flag it for removal and send a notification to any relevant parties. Declined packages will also show up in exports.
+              <span className="txt-red">Declining</span> a package will flag it for removal, send a notification to any relevant parties and force errors that show up in exports and other views.
             </small>
             <small>
               <i className="px-2 bi bi-info-circle opacity-75"></i>
