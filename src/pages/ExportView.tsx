@@ -162,7 +162,7 @@ export default function ExportView() {
         {/* TODO: only show on safari user agent */}
         <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill opacity-75"></i>
         We are aware of an issue causing the PDF export to not behave according to our specification in Safari and Firefox.
-        Unfortunately we are at the mercy of Safari aligning their browser specifications with the rest of the industry.
+        Unfortunately we are at the mercy of said browsers aligning their browser specifications with the rest of the industry.
       </small>
       <hr />
       <div
