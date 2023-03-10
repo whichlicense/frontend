@@ -263,3 +263,8 @@ section button{
 .list-group-item {
   border: none !important;
 }
+@media print {
+  .remove-in-print {
+    display: none;
+  }
+}
