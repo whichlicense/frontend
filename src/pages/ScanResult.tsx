@@ -16,7 +16,7 @@
  */
 
 import { useState } from "react";
-import { Col, ListGroup, Row, Stack } from "react-bootstrap";
+import { Button, ButtonGroup, Col, ListGroup, Row, Stack } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
@@ -69,6 +69,9 @@ export default function ScanResult() {
     }
   ]);
 
+  // TODO: for resolve -> if not licensed allow a lawyer to say "this is fine" or "this is not fine"
+  // TODO: here's a long list of all the files that have not been licensed. please review and accept, decline or resolve
+
   return (
     <div>
       <InlineCard
@@ -77,6 +80,27 @@ export default function ScanResult() {
         handleClose={() => setShowResolveLicense(false)}
       >
         <Row className="g-3">
+          <Col xs={12}>
+            <Stack gap={1}>
+            <ButtonGroup>
+              <Button className="bg-green">Accept license</Button>
+              <Button className="bg-red">Decline package</Button>
+              <Button className="bg-blue">Resolve the below entered information</Button>
+            </ButtonGroup>
+            <small>
+              <i className="px-2 bi bi-info-circle opacity-75"></i>
+              <span className="txt-green">Accepting</span> a license will accept this package, its current license and any associated risks.
+            </small>
+            <small>
+              <i className="px-2 bi bi-info-circle opacity-75"></i>
+              <span className="txt-red">Declining</span> a package will flag it for removal and send a notification to any relevant parties. Declined packages will also show up in exports.
+            </small>
+            <small>
+              <i className="px-2 bi bi-info-circle opacity-75"></i>
+              <span className="txt-blue">Resolving</span> takes in the changes that has been entered within this card as the "truth".
+            </small>
+            </Stack>
+          </Col>
           <Col xs={6}>
             <RegularCard title={"License details"} minHeight="20vh">
               <h5>License: MIT</h5>
