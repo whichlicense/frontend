@@ -40,11 +40,10 @@ export default function NavigationBar() {
       </div>
 
       <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
-        <br />
-        {open && <h3 style={{ fontSize: "100%" }}>WhichLicense</h3>}
-        <br />
-
         <Stack gap={2} className="flex-grow-0 mb-auto">
+          <div className="pt-2 pb-3">
+          {open ? <h3 style={{ fontSize: "100%" }}>WhichLicense</h3> : <br />}
+          </div>
           <NavBarButton
             onClick={() => navigate("/dashboard")}
             text={"Dashboard"}
