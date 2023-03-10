@@ -325,6 +325,8 @@ export default function ExportView() {
         show={showExportOptions}
         handleClose={() => setShowExportOptions(false)}
       >
+        {/* TODO: make the items here-in a double decker list and in description tell a little about what
+        the option does */}
         <Stack gap={2}>
           <div className="d-flex justify-content-between">
             Background color
