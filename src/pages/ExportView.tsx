@@ -39,17 +39,16 @@ export default function ExportView() {
   const [printSettings, setPrintSettings] = useState({
     background: "#1e1e1e",
     showLegend: true,
-    transitiveIncluded: true,
+    showTopLevelDependencies: true,
+    showTransitiveDependencies: true,
     showCustomNotes: false,
     showNoticeAndWarning: true,
     addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
   // TODO: take in scan ID as url parameter.. go from there.
-  // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
   // TODO: add chart display with associated options
   // TODO: table of contents generation
-  // TODO: only export licenses as an ability (by removing top-level deps in export options)
   // TODO: link license to their license text (if available)
 
   useToolBar([
@@ -271,35 +270,37 @@ export default function ExportView() {
               </Col>
             )}
 
-            <Col xs={12}>
-              <RegularCard title="Top-level Dependencies" maxHeight="100%">
-                <ListGroup>
-                  {Array.from({ length: 100 }).map((_, idx) => (
-                    <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
-                      <Row>
-                        <Col xs={6}>Dependency {idx}</Col>
-                        <Col xs={2}>
-                          <div>1.0.0</div>
-                        </Col>
-                        <Col xs={2}>
-                          <Badge className="bg-grey txt-dark-1">MIT</Badge>
-                        </Col>
-                        <Col xs={2} className="d-flex justify-content-end">
-                          <Badge className="bg-green txt-dark-1">
-                            Compliant
-                          </Badge>
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-                <br />
-                <br />
-                <br />
-              </RegularCard>
-            </Col>
+            {printSettings.showTopLevelDependencies && (
+              <Col xs={12}>
+                <RegularCard title="Top-level Dependencies" maxHeight="100%">
+                  <ListGroup>
+                    {Array.from({ length: 100 }).map((_, idx) => (
+                      <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
+                        <Row>
+                          <Col xs={6}>Dependency {idx}</Col>
+                          <Col xs={2}>
+                            <div>1.0.0</div>
+                          </Col>
+                          <Col xs={2}>
+                            <Badge className="bg-grey txt-dark-1">MIT</Badge>
+                          </Col>
+                          <Col xs={2} className="d-flex justify-content-end">
+                            <Badge className="bg-green txt-dark-1">
+                              Compliant
+                            </Badge>
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                  <br />
+                  <br />
+                  <br />
+                </RegularCard>
+              </Col>
+            )}
 
-            {printSettings.transitiveIncluded &&
+            {printSettings.showTransitiveDependencies &&
               Array.from({ length: 100 }).map((_, idx) => (
                 <Col xs={16}>
                   <RegularCard
@@ -392,16 +393,30 @@ export default function ExportView() {
           </div>
 
           <div className="d-flex justify-content-between">
+            Show top-level dependencies
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  showTopLevelDependencies: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.showTopLevelDependencies}
+            />
+          </div>
+
+          <div className="d-flex justify-content-between">
             Include transitive dependencies
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
                   ...printSettings,
-                  transitiveIncluded: e.target.checked,
+                  showTransitiveDependencies: e.target.checked,
                 });
               }}
               type={"checkbox"}
-              defaultChecked={printSettings.transitiveIncluded}
+              defaultChecked={printSettings.showTransitiveDependencies}
             />
           </div>
 
