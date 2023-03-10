@@ -54,6 +54,18 @@ export default function ExportView() {
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
+      title: "Share",
+      icon: "bi bi-share",
+      onClick: () => {
+
+      },
+    },
+    {
+      type: ToolBarItemType.SEPARATOR,
+      color: "bg-white"
+    },
+    {
+      type: ToolBarItemType.BUTTON,
       title: "Export options",
       icon: "bi bi-sliders",
       onClick: () => {
