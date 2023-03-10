@@ -41,13 +41,12 @@ export default function ExportView() {
     showLegend: true,
     transitiveIncluded: true,
     showCustomNotes: false,
+    showNoticeAndWarning: true,
     addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
   // TODO: take in scan ID as url parameter.. go from there.
   // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
-  // TODO: find a way to show when a dependencies license has been manually resolves (maybe in notice box or as a status)
-  // TODO: legend box for compliance statuses
   // TODO: add chart display with associated options
   // TODO: table of contents generation
   // TODO: only export licenses as an ability (by removing top-level deps in export options)
@@ -190,14 +189,14 @@ export default function ExportView() {
                 items of a given type */}
                   <Stack gap={2}>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-green">Compliant</span> - A given
                       package and its transitive dependencies are licensed under
                       the same license or a compatible license with each
                       associated license having a high confidence.
                     </small>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-green">Resolved</span> - A given
                       package has been{" "}
                       <b>marked compliant by an authorized user</b>. This is
@@ -206,27 +205,27 @@ export default function ExportView() {
                       license.
                     </small>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-red">Incompliant</span> - A given
                       package has transitive dependencies that contain a license
                       which is perceived to be incompatible with its license
                       license.
                     </small>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-red">Rejected</span> - A given
                       package was rejected <b>by an authorized user</b>.
                       Rejection typically happens when an incompatible license
                       was found and proven to be a potential risk factor.
                     </small>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-yellow">Unresolved</span> - A given
                       package has unresolved issues (e.g., a license with low
                       confidence or an unknown license).
                     </small>
                     <small className="ps-2">
-                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <i className="pe-2 bi bi bi-info-circle-fill opacity-75"></i>
                       <span className="txt-yellow">Missing dependency</span> - A
                       given package has a dependency that was not found in the
                       dependency resolution system. This is typically caused by
@@ -253,6 +252,25 @@ export default function ExportView() {
                 </a>
               </RegularCard>
             </Col>
+
+            {printSettings.showNoticeAndWarning && (
+              <Col xs={12}>
+                <RegularCard title="Warnings and Notices" maxHeight="100%">
+                  <Stack gap={2}>
+                    <small className="ps-2">
+                      <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill opacity-75"></i>
+                      Some warning message here
+                    </small>
+
+                    <small className="ps-2">
+                      <i className="txt-blue pe-2 bi bi bi-info-circle-fill opacity-75"></i>
+                      Some notice message here
+                    </small>
+                  </Stack>
+                </RegularCard>
+              </Col>
+            )}
+
             <Col xs={12}>
               <RegularCard title="Top-level Dependencies" maxHeight="100%">
                 <ListGroup>
@@ -280,6 +298,7 @@ export default function ExportView() {
                 <br />
               </RegularCard>
             </Col>
+
             {printSettings.transitiveIncluded &&
               Array.from({ length: 100 }).map((_, idx) => (
                 <Col xs={16}>
@@ -355,6 +374,20 @@ export default function ExportView() {
               }}
               type={"checkbox"}
               defaultChecked={printSettings.showLegend}
+            />
+          </div>
+
+          <div className="d-flex justify-content-between">
+            Show warnings and notices box
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  showNoticeAndWarning: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.showNoticeAndWarning}
             />
           </div>
 
