@@ -25,6 +25,7 @@ export type BgColors =
     | "bg-green"
     | "bg-red"
     | "bg-deep-red"
+    | "bg-white"
     | "bg-purple";
 
 export type TxtColors =
