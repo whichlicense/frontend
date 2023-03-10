@@ -16,7 +16,14 @@
  */
 
 import { useState } from "react";
-import { Button, ButtonGroup, Col, ListGroup, Row, Stack } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Col,
+  ListGroup,
+  Row,
+  Stack,
+} from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import DependencyList from "../components/Lists/DependencyList";
@@ -65,8 +72,8 @@ export default function ScanResult() {
       icon: "bi bi-file-earmark-arrow-down",
       onClick: () => {
         navigate("/export-view");
-      }
-    }
+      },
+    },
   ]);
 
   // TODO: for resolve -> if not licensed allow a lawyer to say "this is fine" or "this is not fine"
@@ -82,23 +89,29 @@ export default function ScanResult() {
         <Row className="g-3">
           <Col xs={12}>
             <Stack gap={1}>
-            <ButtonGroup>
-              <Button className="bg-green">Accept package</Button>
-              <Button className="bg-red">Decline package</Button>
-              <Button className="bg-blue">Resolve the below entered information</Button>
-            </ButtonGroup>
-            <small>
-              <i className="px-2 bi bi-info-circle opacity-75"></i>
-              <span className="txt-green">Accepting</span> a package will allow the package, its current license and any associated risks.
-            </small>
-            <small>
-              <i className="px-2 bi bi-info-circle opacity-75"></i>
-              <span className="txt-red">Declining</span> a package will flag it for removal, send a notification to any relevant parties and force errors that show up in exports and other views.
-            </small>
-            <small>
-              <i className="px-2 bi bi-info-circle opacity-75"></i>
-              <span className="txt-blue">Resolving</span> takes in the changes that has been entered within this card as the "truth".
-            </small>
+              <ButtonGroup>
+                <Button className="bg-green">Accept package</Button>
+                <Button className="bg-red">Decline package</Button>
+                <Button className="bg-blue">
+                  Resolve the below entered information
+                </Button>
+              </ButtonGroup>
+              <small>
+                <i className="px-2 bi bi-info-circle opacity-75"></i>
+                <span className="txt-green">Accepting</span> a package will
+                allow the package, its current license and any associated risks.
+              </small>
+              <small>
+                <i className="px-2 bi bi-info-circle opacity-75"></i>
+                <span className="txt-red">Declining</span> a package will flag
+                it for removal, send a notification to any relevant parties and
+                force errors that show up in exports and other views.
+              </small>
+              <small>
+                <i className="px-2 bi bi-info-circle opacity-75"></i>
+                <span className="txt-blue">Resolving</span> takes in the changes
+                that has been entered within this card as the "truth".
+              </small>
             </Stack>
           </Col>
           <Col xs={6}>
@@ -164,17 +177,17 @@ export default function ScanResult() {
        */}
 
       <Row className="g-3">
-        <Col>
-          <Stack direction="horizontal" gap={3}>
-            <RegularCard title={"Version"} fadeIn>
-              <h6>Semantic: 2.0.5</h6>
-              <h6>Original: Ver-2.0.5_alpha #2</h6>
-            </RegularCard>
-            <RegularCard title={"Notice"} fadeIn>
-              {/* TODO: list here with the notices of this specific package */}
-              <h5>Something click to resolve..</h5>
-            </RegularCard>
-          </Stack>
+        <Col xs={12} md={4}>
+          <RegularCard title={"Version"} fadeIn minHeight="8vh" maxHeight="8vh">
+            <h6>Semantic: 2.0.5</h6>
+            <h6>Original: Ver-2.0.5_alpha #2</h6>
+          </RegularCard>
+        </Col>
+        <Col xs={12} md={8}>
+          <RegularCard title={"Notice"} fadeIn minHeight="8vh" maxHeight="8vh">
+            {/* TODO: list here with the notices of this specific package */}
+            <h5>Something click to resolve..</h5>
+          </RegularCard>
         </Col>
 
         {/* TODO: collapsed item with the tree in it.. */}
