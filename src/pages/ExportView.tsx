@@ -38,18 +38,20 @@ export default function ExportView() {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [printSettings, setPrintSettings] = useState({
     background: "#1e1e1e",
+    showLegend: true,
     transitiveIncluded: true,
     showCustomNotes: false,
-    addLicenses: false
+    addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
   // TODO: take in scan ID as url parameter.. go from there.
   // TODO: show box with 'issues' or 'notes' if applicable, add ability to turn this off in export settings
-  // TODO: find a way to show when a dependencies license has been manually resolves (maybe in notice box or something)
+  // TODO: find a way to show when a dependencies license has been manually resolves (maybe in notice box or as a status)
+  // TODO: legend box for compliance statuses
   // TODO: add chart display with associated options
   // TODO: table of contents generation
-  // TODO: ability to include license text from all the modules in the export!
   // TODO: only export licenses as an ability (by removing top-level deps in export options)
+  // TODO: link license to their license text (if available)
 
   useToolBar([
     {
@@ -181,6 +183,61 @@ export default function ExportView() {
               </Col>
             )}
 
+            {printSettings.showLegend && (
+              <Col xs={12}>
+                <RegularCard title="Legend" maxHeight="100%">
+                  {/* TODO: move to component and allow conditional rendering of each item for when a report does not have
+                items of a given type */}
+                  <Stack gap={2}>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-green">Compliant</span> - A given
+                      package and its transitive dependencies are licensed under
+                      the same license or a compatible license with each
+                      associated license having a high confidence.
+                    </small>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-green">Resolved</span> - A given
+                      package has been{" "}
+                      <b>marked compliant by an authorized user</b>. This is
+                      typically done when a license with low confidence or an
+                      unknown license is found, and thus marked, a compatible
+                      license.
+                    </small>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-red">Incompliant</span> - A given
+                      package has transitive dependencies that contain a license
+                      which is perceived to be incompatible with its license
+                      license.
+                    </small>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-red">Rejected</span> - A given
+                      package was rejected <b>by an authorized user</b>.
+                      Rejection typically happens when an incompatible license
+                      was found and proven to be a potential risk factor.
+                    </small>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-yellow">Unresolved</span> - A given
+                      package has unresolved issues (e.g., a license with low
+                      confidence or an unknown license).
+                    </small>
+                    <small className="ps-2">
+                      <i className="pe-2 bi bi-info-circle opacity-75"></i>
+                      <span className="txt-yellow">Missing dependency</span> - A
+                      given package has a dependency that was not found in the
+                      dependency resolution system. This is typically caused by
+                      a dependency being private or the repository containing
+                      those dependencies not being accessible.
+                    </small>
+                  </Stack>
+                </RegularCard>
+              </Col>
+            )}
+
             <Col xs={6}>
               <RegularCard title="Status" minHeight="100px">
                 <h4 className="txt-green">Compliant</h4>
@@ -245,20 +302,21 @@ export default function ExportView() {
                 </Col>
               ))}
 
-            {printSettings.addLicenses && Array.from({ length: 10 }).map((_, idx) => (
-              <Col xs={12}>
-                <RegularCard title={`License ${idx}`} maxHeight="100%">
-                  <div
-                    className="bg-transparent"
-                    style={{
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {LICENSE_1}
-                  </div>
-                </RegularCard>
-              </Col>
-            ))}
+            {printSettings.addLicenses &&
+              Array.from({ length: 10 }).map((_, idx) => (
+                <Col xs={12}>
+                  <RegularCard title={`License ${idx}`} maxHeight="100%">
+                    <div
+                      className="bg-transparent"
+                      style={{
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {LICENSE_1}
+                    </div>
+                  </RegularCard>
+                </Col>
+              ))}
           </Row>
         </Container>
       </div>
@@ -281,6 +339,20 @@ export default function ExportView() {
                   background: e.target.value,
                 });
               }}
+            />
+          </div>
+
+          <div className="d-flex justify-content-between">
+            Show legend box
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  showLegend: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.showLegend}
             />
           </div>
 
@@ -311,7 +383,6 @@ export default function ExportView() {
               defaultChecked={printSettings.showCustomNotes}
             />
           </div>
-
 
           <div className="d-flex justify-content-between">
             Add all used licenses as text
