@@ -164,6 +164,9 @@ b {
 .txt-white {
   color: var(--color-text-light) !important;
 }
+.txt-red {
+  color: var(--color-red) !important;
+}
 
 
 
