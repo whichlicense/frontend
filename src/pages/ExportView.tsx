@@ -58,7 +58,17 @@ export default function ExportView() {
       title: "Share",
       icon: "bi bi-share",
       onClick: () => {
-
+        try{
+          navigator.share({
+            // TODO: meaningful title
+            title: "WhichLicense result",
+            // TODO: meaningful text
+            text: "ReactJS 1.0.0",
+            url: window.location.href,
+          });
+        }catch(_){
+          navigator.clipboard.writeText(window.location.href);
+        }
       },
     },
     {
