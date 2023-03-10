@@ -118,7 +118,7 @@ export default function ExportView() {
         ${[
           ...document.querySelectorAll('link[rel="stylesheet"], style'),
         ].reduce((acc, node) => (acc += node.outerHTML), "")}
-        <style>
+        <style type="text/css" media="print">
             @page {
                 size: A4;
                 margin: 0 !important;
@@ -161,9 +161,10 @@ export default function ExportView() {
       <br />
       <small className="text-muted">
         {/* TODO: only show on safari user agent */}
-        <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill opacity-75"></i>
+        <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
         We are aware of an issue causing the PDF export to not behave according to our specification in Safari and Firefox.
         Unfortunately we are at the mercy of said browsers aligning their browser specifications with the rest of the industry.
+        For FireFox we recommend going into the settings manually and changing the default print settings to paper size A4 and turning on the "print backgrounds" settings.
       </small>
       <hr />
       <div
