@@ -49,6 +49,7 @@ export default function ExportView() {
   // TODO: add chart display with associated options
   // TODO: table of contents generation
   // TODO: ability to include license text from all the modules in the export!
+  // TODO: only export licenses as an ability (by removing top-level deps in export options)
 
   useToolBar([
     {
