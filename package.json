@@ -16,6 +16,7 @@
     "chart.js": "^4.2.1",
     "chartjs-chart-treemap": "^2.3.0",
     "html2pdf.js": "^0.10.1",
+    "mermaid": "^10.0.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-bootstrap": "^2.7.2",
@@ -29,7 +30,7 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "FAST_REFRESH=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
