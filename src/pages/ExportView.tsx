@@ -27,6 +27,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import Mermaid from "../components/Charts/Mermaid";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { downloadPlainText } from "../components/utils/download";
@@ -43,6 +44,7 @@ export default function ExportView() {
     showTransitiveDependencies: true,
     showCustomNotes: false,
     showNoticeAndWarning: true,
+    showDependencyMap: true,
     addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
@@ -58,7 +60,7 @@ export default function ExportView() {
       title: "Share",
       icon: "bi bi-share",
       onClick: () => {
-        try{
+        try {
           navigator.share({
             // TODO: meaningful title
             title: "WhichLicense result",
@@ -66,14 +68,14 @@ export default function ExportView() {
             text: "ReactJS 1.0.0",
             url: window.location.href,
           });
-        }catch(_){
+        } catch (_) {
           navigator.clipboard.writeText(window.location.href);
         }
       },
     },
     {
       type: ToolBarItemType.SEPARATOR,
-      color: "bg-white"
+      color: "bg-white",
     },
     {
       type: ToolBarItemType.BUTTON,
@@ -160,6 +162,100 @@ export default function ExportView() {
     }, 500);
   };
 
+  // TODO: remove me.. only for testing
+  function getRandomInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  type TTestDependency = {
+    id: string;
+    name: string;
+    version: string;
+    license: string;
+    compliant: boolean;
+    dependencies: Array<TTestDependency> | undefined;
+  };
+  // TODO: remove me.. only for testing
+  const test_nested_dependencies = Array.from({ length: 3 }, (_, i) => {
+    return {
+      id: `P${i}`,
+      name: `Top level dependency ${i}`,
+      version: `${getRandomInt(1, 10)}.${getRandomInt(1, 10)}.${getRandomInt(
+        1,
+        50
+      )}`,
+      license: LICENSE_1,
+      compliant: getRandomInt(0, 1) === 1,
+      dependencies: Array.from({ length: getRandomInt(1, 4) }, (_, j) => {
+        return {
+          id: `P${i}.${j}`,
+          name: `Package ${i}.${j}`,
+          version: `${getRandomInt(1, 10)}.${getRandomInt(
+            1,
+            10
+          )}.${getRandomInt(1, 50)}`,
+          license: LICENSE_1,
+          compliant: getRandomInt(0, 1) === 1,
+          dependencies: Array.from(
+            { length: getRandomInt(1, 3) },
+            (_, k) => {
+              return {
+                id: `P${i}.${j}.${k}`,
+                name: `Package ${i}.${j}.${k}`,
+                version: `${getRandomInt(1, 10)}.${getRandomInt(
+                  1,
+                  10
+                )}.${getRandomInt(1, 50)}`,
+                license: LICENSE_1,
+                compliant: getRandomInt(0, 1) === 1,
+                dependencies: Array.from(
+                  { length: getRandomInt(1, 3) },
+                  (_, l) => {
+                    return {
+                      id: `P${i}.${j}.${k}.${l}`,
+                      name: `Package ${i}.${j}.${k}.${l}`,
+                      version: `${getRandomInt(1, 10)}.${getRandomInt(
+                        1,
+                        10
+                      )}.${getRandomInt(1, 50)}`,
+                      license: LICENSE_1,
+                      compliant: getRandomInt(0, 1) === 1,
+                      dependencies: Array.from({ length: 2 }, (_, m) => {
+                        return {
+                          id: `P${i}.${j}.${k}.${l}.${m}`,
+                          name: `Package ${i}.${j}.${k}.${l}.${m}`,
+                          version: `${getRandomInt(1, 10)}.${getRandomInt(
+                            1,
+                            10
+                          )}.${getRandomInt(1, 50)}`,
+                          license: LICENSE_1,
+                          compliant: getRandomInt(0, 1) === 1,
+                          dependencies: []
+                        };
+                      }),
+                    };
+                  }
+                ),
+              };
+            }
+          ),
+        };
+      }),
+    };
+  });
+
+  function traverseAndRenderMermaid(
+    level: number,
+    node: typeof test_nested_dependencies[0]
+  ) {
+    const classes = node.compliant ? "\n:::bg-green" : "\n:::bg-red";
+    let mermaidString = `${"\t".repeat(level)}${node.name}${classes}\n`;
+    for (const dep of node.dependencies) {
+      mermaidString += traverseAndRenderMermaid(level + 1, dep);
+    }
+    return mermaidString;
+  }
+
   return (
     <div>
       <h1>Export view</h1>
@@ -172,9 +268,12 @@ export default function ExportView() {
       <small className="text-muted">
         {/* TODO: only show on safari user agent */}
         <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
-        We are aware of an issue causing the PDF export to not behave according to our specification in Safari and Firefox.
-        Unfortunately we are at the mercy of said browsers aligning their browser specifications with the rest of the industry.
-        For FireFox we recommend going into the settings manually and changing the default print settings to paper size A4 and turning on the "print backgrounds" settings.
+        We are aware of an issue causing the PDF export to not behave according
+        to our specification in Safari and Firefox. Unfortunately we are at the
+        mercy of said browsers aligning their browser specifications with the
+        rest of the industry. For FireFox we recommend going into the settings
+        manually and changing the default print settings to paper size A4 and
+        turning on the "print backgrounds" settings.
       </small>
       <hr />
       <div
@@ -301,6 +400,24 @@ export default function ExportView() {
               </Col>
             )}
 
+            {printSettings.showDependencyMap && (
+              <Col>
+                <RegularCard
+                  title={"Dependency map"}
+                  minHeight="100%"
+                  maxHeight="100%"
+                >
+                  <Mermaid
+                    content={`mindmap
+\tReactJS
+${test_nested_dependencies
+  .map((node) => traverseAndRenderMermaid(2, node))
+  .join("")}`}
+                  ></Mermaid>
+                </RegularCard>
+              </Col>
+            )}
+
             {printSettings.showTopLevelDependencies && (
               <Col xs={12}>
                 <RegularCard title="Top-level Dependencies" maxHeight="100%">
@@ -420,6 +537,20 @@ export default function ExportView() {
               }}
               type={"checkbox"}
               defaultChecked={printSettings.showNoticeAndWarning}
+            />
+          </div>
+
+          <div className="d-flex justify-content-between">
+            Show dependency map graph
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  showDependencyMap: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.showDependencyMap}
             />
           </div>
 
