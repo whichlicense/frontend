@@ -45,13 +45,13 @@ export function InlineCard(props: InlineCardProps) {
   }
 
   useEffect(() => {
-    const docRoot = document.getElementById('page-content')
+    const docRoot = document.body
     if (props.show) {
-      docRoot?.classList.remove('scale_reset')
-      docRoot?.classList.add('scale_back')
+      docRoot?.classList.remove('inline_card_closed')
+      docRoot?.classList.add('inline_card_open')
     } else {
-      docRoot?.classList.remove('scale_back')
-      docRoot?.classList.add('scale_reset')
+      docRoot?.classList.remove('inline_card_open')
+      docRoot?.classList.add('inline_card_closed')
     }
   }, [props.show])
 

@@ -15,20 +15,33 @@
  *   limitations under the License.
  */
 
-.shadow-fade-in {
-    box-shadow: -2px 2px 2px 0px rgb(0 0 0 / 24%);
-    animation: shadow-fade-in 1s ease-in 0s 1 normal none;
+body.inline_card_closed .shadow-fade-in {
+    box-shadow: -2px 2px 2px 0px rgb(0 0 0 / 24%); /* final stage */
+    animation: shadow-fade-in 1s ease-in-out 0s 1 normal none;
+    animation-direction: normal;
 }
+body.inline_card_open .shadow-fade-in {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); /* final stage */
+    animation: shadow-fade-out 0.6s ease 0s 1 normal none;
+    animation-direction: normal;
+}
+
 @keyframes shadow-fade-in {
 	0% {
-		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+		box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
 	}
-
 	100% {
 		box-shadow: -2px 2px 2px 0px rgb(0 0 0 / 24%);
 	}
 }
-
+@keyframes shadow-fade-out {
+    0% {
+		box-shadow: -2px 2px 2px 0px rgb(0 0 0 / 24%);
+	}
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+	}
+}
 
 
 .scroll-indicator-anim {
