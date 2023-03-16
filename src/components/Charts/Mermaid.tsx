@@ -15,16 +15,10 @@
  *   limitations under the License.
  */
 
-import React, {
+import {
   Suspense,
   useDeferredValue,
-  useEffect,
-  useId,
-  useLayoutEffect,
   useMemo,
-  useRef,
-  useState,
-  useTransition,
 } from "react";
 import mermaid from "mermaid";
 import "../../styles/Mermaid.css";
@@ -43,39 +37,58 @@ mermaid.initialize({
   },
 });
 
+const wrapPromise = (promise: Promise<string>) => {
+  let status = "pending";
+  let result: string;
+  let suspender = promise.then(
+    (r) => {
+      status = "success";
+      result = r;
+    },
+    (e) => {
+      status = "error";
+      result = e;
+    }
+  );
+  return {
+    read() {
+      if (status === "pending") {
+        throw suspender;
+      } else if (status === "error") {
+        throw result;
+      } else if (status === "success") {
+        return result;
+      }
+    },
+  };
+}
+const renderSVG = async (svgId: string, mermaidCode: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { svg, bindFunctions } = await mermaid.render(svgId, mermaidCode);
+  return svg;
+};
+
 export default function Mermaid(props: { content: string }) {
-  const cid = useId();
   const svgId = useMemo(() => Date.now().toString(36), []);
-  const [svg, setSvg] = useState<string | null>("");
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const svg = useMemo(()=>wrapPromise(renderSVG(svgId, props.content)), [props.content]);
+  /**
+   * any user-given input could trigger an expensive operation. for this reason, we use useDeferredValue to
+   * use old data (graph) until the new one is available for printing.
+   * This gives the illusion that things are faster than they actually are.
+   * */
   const defferedSvg = useDeferredValue(svg);
 
-  // prevent blocking the UI on large mermaid renderings
-  const [isPending, startTransition] = useTransition();
-
-  const renderSVG = async () => {
-    const { svg, bindFunctions } = await mermaid.render(svgId, props.content);
-    return svg;
-  };
-
-  useEffect(() => {
-    renderSVG().then((svg) => {
-      console.log(svg);
-      startTransition(() => {
-        setSvg(svg);
-      });
-    });
-
-    // document.getElementById(cid)!.removeAttribute("data-processed");
-    // setTimeout(() => {
-    //     mermaid.contentLoaded();
-    //     mermaid.run({
-    //         nodes: [document.getElementById(cid)!],
-    //     })
-    // }, 1)
-  }, [props.content]);
+  const Graph = () => {
+    const t = defferedSvg.read();
+    return (
+      <div dangerouslySetInnerHTML={{ __html: t || "" }}></div>
+    )
+  }
   return (
-    <div>
-      <div dangerouslySetInnerHTML={{ __html: defferedSvg! }}></div>
-    </div>
+    <Suspense fallback={<h1>Loading</h1>}>
+      <Graph />
+    </Suspense>
   );
 }
