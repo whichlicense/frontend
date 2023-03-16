@@ -251,7 +251,7 @@ ${test_nested_dependencies
   }
 
   return (
-    <div>
+    <div className="fade-in-forward">
       <h1>Export view</h1>
       <small className="text-muted">
         Please note that the export view only serves as a rough visual
