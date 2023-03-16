@@ -20,8 +20,10 @@ import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 import { useToolBar } from "../components/Hooks/useToolBar";
+import ScanList from "../components/Lists/ScanList";
 import { ProviderType } from "../components/Provider/Provider";
 import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/Provider/Rendering/ProviderMismatchHandler";
+import { ComplianceStatus } from "../components/typings/DependencyStatus";
 import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
@@ -144,38 +146,26 @@ export default function Dashboard() {
 
         <Col xs={12} className="g-3">
           <RegularCard title={"Recent scans"} maxHeight="30vh" fadeIn>
-            <ListGroup variant="flush">
-              <ListGroup.Item className="bg-dark-1 text-bg-dark">
-                <div className="d-flex justify-content-between">
-                  <div>
-                    <h5>Scan 1</h5>
-                  </div>
-                  Jan 20, 2021
-                  <div>
-                    <Badge bg="danger">Non-compliant</Badge>
-                  </div>
-                </div>
-                <hr className="text-muted" />
-              </ListGroup.Item>
-
-              {Array.from({ length: 3 }).map((_, idx) => (
-                <ListGroup.Item
-                  onClick={() => navigate("/scan-result/000")}
-                  className="bg-dark-1 text-bg-dark"
-                >
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <h5>Scan {idx + 2}</h5>
-                    </div>
-                    Jan 20, 2021
-                    <div>
-                      <Badge bg="success">Compliant</Badge>
-                    </div>
-                  </div>
-                  <hr className="text-muted" />
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
+            <ScanList scans={[
+              {
+                name: "WhichLicense",
+                date: new Date().toISOString(),
+                status: ComplianceStatus.COMPLIANT,
+                link: "/scan-result/000"
+              },
+              {
+                name: "WhichLicense",
+                date: new Date().toISOString(),
+                status: ComplianceStatus.NON_COMPLIANT,
+                link: "/scan-result/000"
+              },
+              {
+                name: "WhichLicense",
+                date: new Date().toISOString(),
+                status: ComplianceStatus.UNKNOWN,
+                link: "/scan-result/000"
+              },
+            ]} />
           </RegularCard>
         </Col>
       </Row>
