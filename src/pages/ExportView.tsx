@@ -39,14 +39,6 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-type TTestDependency = {
-  id: string;
-  name: string;
-  version: string;
-  license: string;
-  compliant: boolean;
-  dependencies: Array<TTestDependency> | undefined;
-};
 // TODO: remove me.. only for testing
 const test_nested_dependencies = Array.from({ length: 3 }, (_, i) => {
   return {
