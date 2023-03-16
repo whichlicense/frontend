@@ -39,7 +39,7 @@ export default function NavigationBar() {
           </Button>
       </div>
 
-      <section className="align-self-center rounded container clamp w-100 d-flex flex-column">
+      <section className="align-self-center rounded container clamp w-100 d-flex flex-column shadow-fade-in">
         <Stack gap={2} className="flex-grow-0 mb-auto">
           <div className="pt-2 pb-3">
           {open ? <h3 style={{ fontSize: "100%" }}>WhichLicense</h3> : <br />}
