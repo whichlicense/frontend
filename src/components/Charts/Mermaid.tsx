@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useId, useLayoutEffect, useMemo } from "react";
 import mermaid from "mermaid";
 import "../../styles/Mermaid.css"
 
@@ -34,15 +34,15 @@ mermaid.initialize({
 });
 
 export default function Mermaid(props: {content: string}) {
-    const cid = useMemo(() => "mermaid-" + (Math.random() * 100).toString(36) + Date.now().toString(36), []);
-
+    const cid = useId();
     useEffect(() => {
+        document.getElementById(cid)!.removeAttribute("data-processed");
         setTimeout(() => {
             mermaid.contentLoaded();
             mermaid.run({
                 nodes: [document.getElementById(cid)!],
             })
         }, 1)
-    }, [props.content]);
+    }, [cid, props.content]);
   return <pre id={cid} className="mermaid">{props.content}</pre>;
 }
