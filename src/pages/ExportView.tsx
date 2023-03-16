@@ -134,7 +134,7 @@ export default function ExportView() {
   // TODO: add chart display with associated options
   // TODO: table of contents generation
   // TODO: link license to their license text (if available)
-  // TODO: ensure we include our FONT via some URL or something...
+  // TODO: ensure we include our FONT via some URL (CDN?) or something... we can host it on the server is required
 
   useToolBar([
     {
