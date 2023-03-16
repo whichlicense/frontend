@@ -20,6 +20,7 @@ import { hasScrollBar } from "./scroll";
 
 type ScrollIndicatorProps = {
     bodyRef: React.RefObject<any>;
+    children?: JSX.Element;
 }
 export default function ScrollIndicator(props: ScrollIndicatorProps){
     const [show, setShow] = useState(hasScrollBar(props.bodyRef));
@@ -33,8 +34,8 @@ export default function ScrollIndicator(props: ScrollIndicatorProps){
     return (
         <div>
         {show && (
-          <div style={{ position: "absolute", bottom: "0", left: "50%" }}>
-            <i className="text-muted bi bi-chevron-compact-down"></i>
+          <div className="scroll-indicator-anim" style={{ position: "absolute", bottom: "0", left: "50%" }}>
+            {props.children || <i className="text-muted bi bi-chevron-compact-down"></i>}
           </div>
         )}
         </div>
