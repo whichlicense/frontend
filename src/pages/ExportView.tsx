@@ -496,8 +496,7 @@ ${test_nested_dependencies
         {/* TODO: make the items here-in a double decker list and in description tell a little about what
         the option does */}
         <Stack gap={2}>
-          <div className="d-flex justify-content-between">
-            Background color
+        <Stack direction="horizontal" gap={3}>
             <Form.Control
               type="color"
               id="bgColor"
@@ -510,11 +509,11 @@ ${test_nested_dependencies
                 });
               }}
             />
-          </div>
+            Background color
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Show legend box
-            <Form.Check
+            <Stack direction="horizontal" gap={3}>
+              <Form.Check
               onChange={(e) => {
                 setPrintSettings({
                   ...printSettings,
@@ -524,10 +523,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showLegend}
             />
-          </div>
+              Show legend box
+            </Stack>
 
-          <div className="d-flex justify-content-between">
-            Show warnings and notices box
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -538,10 +537,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showNoticeAndWarning}
             />
-          </div>
+            Show warnings and notices box
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Show dependency map graph
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -552,10 +551,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showDependencyMap}
             />
-          </div>
+            Show dependency map graph
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Show top-level dependencies
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -566,10 +565,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showTopLevelDependencies}
             />
-          </div>
+            Show top-level dependencies
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Include transitive dependencies
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -580,10 +579,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showTransitiveDependencies}
             />
-          </div>
+            Include transitive dependencies
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Add custom notes box
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -594,10 +593,10 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showCustomNotes}
             />
-          </div>
+            Add custom notes box
+          </Stack>
 
-          <div className="d-flex justify-content-between">
-            Add all used licenses as text
+          <Stack direction="horizontal" gap={3}>
             <Form.Check
               onChange={(e) => {
                 setPrintSettings({
@@ -608,7 +607,8 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.addLicenses}
             />
-          </div>
+            Add all used licenses as text
+          </Stack>
         </Stack>
       </InlineCard>
     </div>
