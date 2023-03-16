@@ -15,6 +15,25 @@
  *   limitations under the License.
  */
 
+.scroll-indicator-anim {
+    animation: scroll-indicator-anim 2.1s ease-in-out 0s infinite alternate forwards;
+}
+@keyframes scroll-indicator-anim {
+	0% {
+		transform: translateY(0);
+        opacity: 0.7;
+	}
+
+	50% {
+        opacity: 0.6;
+		transform: translateY(-2.2px);
+	}
+    100% {
+        opacity: 0.6;
+		transform: translateY(-2.2px);
+	}
+}
+
 .fade-in-forward {
     -webkit-animation: fade-in-forward 1s both;
     animation: fade-in-forward 1s both;
