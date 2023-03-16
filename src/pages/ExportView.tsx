@@ -34,20 +34,20 @@ import { downloadPlainText } from "../components/utils/download";
 import { LICENSE_1 } from "../components/utils/TEST_LICENSES";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
-  // TODO: remove me.. only for testing
-  function getRandomInt(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
+// TODO: remove me.. only for testing
+function getRandomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
-  type TTestDependency = {
-    id: string;
-    name: string;
-    version: string;
-    license: string;
-    compliant: boolean;
-    dependencies: Array<TTestDependency> | undefined;
-  };
-  // TODO: remove me.. only for testing
+type TTestDependency = {
+  id: string;
+  name: string;
+  version: string;
+  license: string;
+  compliant: boolean;
+  dependencies: Array<TTestDependency> | undefined;
+};
+// TODO: remove me.. only for testing
 const test_nested_dependencies = Array.from({ length: 3 }, (_, i) => {
   return {
     id: `P${i}`,
@@ -62,55 +62,49 @@ const test_nested_dependencies = Array.from({ length: 3 }, (_, i) => {
       return {
         id: `P${i}.${j}`,
         name: `Package ${i}.${j}`,
-        version: `${getRandomInt(1, 10)}.${getRandomInt(
+        version: `${getRandomInt(1, 10)}.${getRandomInt(1, 10)}.${getRandomInt(
           1,
-          10
-        )}.${getRandomInt(1, 50)}`,
+          50
+        )}`,
         license: LICENSE_1,
         compliant: getRandomInt(0, 1) === 1,
-        dependencies: Array.from(
-          { length: getRandomInt(1, 3) },
-          (_, k) => {
-            return {
-              id: `P${i}.${j}.${k}`,
-              name: `Package ${i}.${j}.${k}`,
-              version: `${getRandomInt(1, 10)}.${getRandomInt(
-                1,
-                10
-              )}.${getRandomInt(1, 50)}`,
-              license: LICENSE_1,
-              compliant: getRandomInt(0, 1) === 1,
-              dependencies: Array.from(
-                { length: getRandomInt(1, 3) },
-                (_, l) => {
+        dependencies: Array.from({ length: getRandomInt(1, 3) }, (_, k) => {
+          return {
+            id: `P${i}.${j}.${k}`,
+            name: `Package ${i}.${j}.${k}`,
+            version: `${getRandomInt(1, 10)}.${getRandomInt(
+              1,
+              10
+            )}.${getRandomInt(1, 50)}`,
+            license: LICENSE_1,
+            compliant: getRandomInt(0, 1) === 1,
+            dependencies: Array.from({ length: getRandomInt(1, 3) }, (_, l) => {
+              return {
+                id: `P${i}.${j}.${k}.${l}`,
+                name: `Package ${i}.${j}.${k}.${l}`,
+                version: `${getRandomInt(1, 10)}.${getRandomInt(
+                  1,
+                  10
+                )}.${getRandomInt(1, 50)}`,
+                license: LICENSE_1,
+                compliant: getRandomInt(0, 1) === 1,
+                dependencies: Array.from({ length: 2 }, (_, m) => {
                   return {
-                    id: `P${i}.${j}.${k}.${l}`,
-                    name: `Package ${i}.${j}.${k}.${l}`,
+                    id: `P${i}.${j}.${k}.${l}.${m}`,
+                    name: `Package ${i}.${j}.${k}.${l}.${m}`,
                     version: `${getRandomInt(1, 10)}.${getRandomInt(
                       1,
                       10
                     )}.${getRandomInt(1, 50)}`,
                     license: LICENSE_1,
                     compliant: getRandomInt(0, 1) === 1,
-                    dependencies: Array.from({ length: 2 }, (_, m) => {
-                      return {
-                        id: `P${i}.${j}.${k}.${l}.${m}`,
-                        name: `Package ${i}.${j}.${k}.${l}.${m}`,
-                        version: `${getRandomInt(1, 10)}.${getRandomInt(
-                          1,
-                          10
-                        )}.${getRandomInt(1, 50)}`,
-                        license: LICENSE_1,
-                        compliant: getRandomInt(0, 1) === 1,
-                        dependencies: []
-                      };
-                    }),
+                    dependencies: [],
                   };
-                }
-              ),
-            };
-          }
-        ),
+                }),
+              };
+            }),
+          };
+        }),
       };
     }),
   };
@@ -244,15 +238,12 @@ export default function ExportView() {
     }, 500);
   };
 
-
-
-
   const constructedMermaidGraph = useMemo(() => {
     return `mindmap
 \tReactJS
 ${test_nested_dependencies
   .map((node) => traverseAndRenderMermaid(2, node))
-  .join("")}`
+  .join("")}`;
   }, [test_nested_dependencies]);
 
   function traverseAndRenderMermaid(
@@ -418,9 +409,7 @@ ${test_nested_dependencies
                   minHeight="100%"
                   maxHeight="100%"
                 >
-                  <Mermaid
-                    content={constructedMermaidGraph}
-                  ></Mermaid>
+                  <Mermaid content={constructedMermaidGraph}></Mermaid>
                 </RegularCard>
               </Col>
             )}
@@ -503,7 +492,7 @@ ${test_nested_dependencies
         {/* TODO: make the items here-in a double decker list and in description tell a little about what
         the option does */}
         <Stack gap={2}>
-        <Stack direction="horizontal" gap={3}>
+          <Stack direction="horizontal" gap={3}>
             <Form.Control
               type="color"
               id="bgColor"
@@ -519,8 +508,8 @@ ${test_nested_dependencies
             Background color
           </Stack>
 
-            <Stack direction="horizontal" gap={3}>
-              <Form.Check
+          <Stack direction="horizontal" gap={3}>
+            <Form.Check
               onChange={(e) => {
                 setPrintSettings({
                   ...printSettings,
@@ -530,8 +519,8 @@ ${test_nested_dependencies
               type={"checkbox"}
               defaultChecked={printSettings.showLegend}
             />
-              Show legend box
-            </Stack>
+            Show legend box
+          </Stack>
 
           <Stack direction="horizontal" gap={3}>
             <Form.Check
