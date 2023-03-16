@@ -15,9 +15,19 @@
  *   limitations under the License.
  */
 
-import React, { useEffect, useId, useLayoutEffect, useMemo } from "react";
+import React, {
+  Suspense,
+  useDeferredValue,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import mermaid from "mermaid";
-import "../../styles/Mermaid.css"
+import "../../styles/Mermaid.css";
 
 mermaid.initialize({
   startOnLoad: true,
@@ -30,19 +40,42 @@ mermaid.initialize({
     primaryColor: "#2b2b2b",
     primaryTextColor: "#f5f5f5",
     secondaryColor: "#ff0000",
-  }
+  },
 });
 
-export default function Mermaid(props: {content: string}) {
-    const cid = useId();
-    useEffect(() => {
-        document.getElementById(cid)!.removeAttribute("data-processed");
-        setTimeout(() => {
-            mermaid.contentLoaded();
-            mermaid.run({
-                nodes: [document.getElementById(cid)!],
-            })
-        }, 1)
-    }, [cid, props.content]);
-  return <pre id={cid} className="mermaid">{props.content}</pre>;
+export default function Mermaid(props: { content: string }) {
+  const cid = useId();
+  const svgId = useMemo(() => Date.now().toString(36), []);
+  const [svg, setSvg] = useState<string | null>("");
+  const defferedSvg = useDeferredValue(svg);
+
+  // prevent blocking the UI on large mermaid renderings
+  const [isPending, startTransition] = useTransition();
+
+  const renderSVG = async () => {
+    const { svg, bindFunctions } = await mermaid.render(svgId, props.content);
+    return svg;
+  };
+
+  useEffect(() => {
+    renderSVG().then((svg) => {
+      console.log(svg);
+      startTransition(() => {
+        setSvg(svg);
+      });
+    });
+
+    // document.getElementById(cid)!.removeAttribute("data-processed");
+    // setTimeout(() => {
+    //     mermaid.contentLoaded();
+    //     mermaid.run({
+    //         nodes: [document.getElementById(cid)!],
+    //     })
+    // }, 1)
+  }, [props.content]);
+  return (
+    <div>
+      <div dangerouslySetInnerHTML={{ __html: defferedSvg! }}></div>
+    </div>
+  );
 }
