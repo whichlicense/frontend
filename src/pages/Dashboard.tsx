@@ -16,7 +16,6 @@
  */
 
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
 import { useToolBar } from "../components/Hooks/useToolBar";
@@ -28,7 +27,6 @@ import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const {getProviderType} = useProviderContext()
   useToolBar([
     {
