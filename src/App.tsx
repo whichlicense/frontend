@@ -28,8 +28,6 @@ import ScanResult from "./pages/ScanResult";
 import { Button, Col, Container, Row, Stack } from "react-bootstrap";
 import ScrollIndicator from "./components/utils/ScrollIndicator";
 import { DrawerContextProvider } from "./context/DrawerContext";
-import BackButton from "./components/Toolbar/BackButton";
-import HelpButton from "./components/Toolbar/HelpButton";
 import ToolBarManager from "./components/Toolbar/ToolBarManager";
 import { ToolBarContextProvider } from "./context/ToolBarContext";
 import LicenseInfo from "./pages/LicenseInfo";
@@ -38,53 +36,66 @@ import { ProviderContextProvider } from "./context/ProviderContext";
 import Notifications from "./pages/Notifications";
 import ExportView from "./pages/ExportView";
 import Payment from "./pages/Payment";
+import { Register } from "./pages/Register";
+import { AuthContextProvider } from "./context/AuthContext";
+import { Login } from "./pages/Login";
 
 function App() {
   const mainContentRef = useRef(null);
   return (
     <Router>
-      <Container fluid className="noise">
-        <ProviderContextProvider>
-          <DrawerContextProvider>
-            <Stack
-              direction="horizontal"
-              className="d-flex align-items-center w-100"
-              style={{ height: "100vh" }}
-            >
-              <NavigationBar />
-              <div className="flex-grow-1 flex-fill d-flex">
-                <Container fluid>
-                  <ToolBarContextProvider>
-                    <ToolBarManager />
+      <AuthContextProvider>
+        <Container fluid className="noise">
+          <ProviderContextProvider>
+            <DrawerContextProvider>
+              <Stack
+                direction="horizontal"
+                className="d-flex align-items-center w-100"
+                style={{ height: "100vh" }}
+              >
+                <NavigationBar />
+                <div className="flex-grow-1 flex-fill d-flex">
+                  <Container fluid>
+                    <ToolBarContextProvider>
+                      <ToolBarManager />
 
-                    <section
-                      ref={mainContentRef}
-                      className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
-                    >
-                      <Routes>
-                        <Route path="/search" element={<Search />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route
-                          path="/scan-result/:id"
-                          element={<ScanResult />}
-                        />
-                        <Route path="/license/:id" element={<LicenseInfo />} />
-                        <Route path="/notifications" element={<Notifications />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/payment" element={<Payment />} />
-                        <Route path="/export-view" element={<ExportView />} />
-                        <Route path="/test" element={<Test />} />
-                        <Route path="/" element={<Home />} />
-                      </Routes>
-                      <ScrollIndicator bodyRef={mainContentRef} />
-                    </section>
-                  </ToolBarContextProvider>
-                </Container>
-              </div>
-            </Stack>
-          </DrawerContextProvider>
-        </ProviderContextProvider>
-      </Container>
+                      <section
+                        ref={mainContentRef}
+                        className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
+                      >
+                        <Routes>
+                          <Route path="/search" element={<Search />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route
+                            path="/scan-result/:id"
+                            element={<ScanResult />}
+                          />
+                          <Route
+                            path="/license/:id"
+                            element={<LicenseInfo />}
+                          />
+                          <Route
+                            path="/notifications"
+                            element={<Notifications />}
+                          />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="/payment" element={<Payment />} />
+                          <Route path="/export-view" element={<ExportView />} />
+                          <Route path="/test" element={<Test />} />
+                          <Route path="/register" element={<Register />} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/" element={<Home />} />
+                        </Routes>
+                        <ScrollIndicator bodyRef={mainContentRef} />
+                      </section>
+                    </ToolBarContextProvider>
+                  </Container>
+                </div>
+              </Stack>
+            </DrawerContextProvider>
+          </ProviderContextProvider>
+        </Container>
+      </AuthContextProvider>
     </Router>
   );
 }
