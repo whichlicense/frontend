@@ -17,6 +17,7 @@
 import RevolutCheckout from "@revolut/checkout";
 import { Button, Col, ProgressBar, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
@@ -41,6 +42,10 @@ type RevolutOrder = {
 };
 
 export default function Payment() {
+  useForceAuth({
+    ifState: AuthState.LOGGED_OUT,
+    travelTo: "/login",
+  });
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
