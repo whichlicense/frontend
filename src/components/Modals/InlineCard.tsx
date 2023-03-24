@@ -113,6 +113,7 @@ export function InlineCard(props: InlineCardProps) {
         onTouchStart={onCardDragStart}
         onTouchEnd={onCardDragEnd}
         ref={cardRef}
+        backdropClassName="backdrop-inward"
       >
         <div className="drag-bar" onTouchMove={(e: any) => onCardDrag(e)}>
           <hr />
