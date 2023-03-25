@@ -22,12 +22,14 @@ type NavBarButtonProps = {
   onClick?: () => void;
   collapsed?: boolean;
   selected?: boolean;
+  disabled?: boolean;
 };
 export default function NavBarButton(props: NavBarButtonProps) {
   return (
     <Button
       onClick={() => props.onClick && props.onClick()}
-      className={"shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "")}
+      className={"NavBarButton shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "")}
+      disabled={props.disabled}
     >
       <Stack direction="horizontal">
         <i className={props.iconClass}></i>

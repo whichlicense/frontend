@@ -31,3 +31,9 @@
 .tool-bar-button-group > .btn:last-child {
     border-top-right-radius: 0 !important;
 }
+
+.NavBarButton:disabled {
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+    pointer-events: all !important;
+}

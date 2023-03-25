@@ -20,10 +20,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBarButton from "./NavBarButton";
 import "./Navbar.css";
 import { useDrawerContext } from "../../context/DrawerContext";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const auth = useAuthContext();
   const {open, setOpen} = useDrawerContext()
 
     // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
@@ -77,6 +79,7 @@ export default function NavigationBar() {
           />
 
           <NavBarButton
+            disabled={!auth.isLoggedIn()}
             onClick={() => navigate("/notifications")}
             text={"Notifications"}
             iconClass={"bi bi-bell"}
