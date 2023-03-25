@@ -72,6 +72,7 @@ export default function NavigationBar() {
 
           <NavBarButton
             onClick={() => navigate("/accounts")}
+            disabled={!auth.isLoggedIn()}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
             collapsed={!open}
