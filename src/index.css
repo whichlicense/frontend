@@ -271,3 +271,7 @@ section button{
     display: none;
   }
 }
+
+.clickable {
+  cursor: pointer;
+}
