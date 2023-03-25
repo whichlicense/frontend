@@ -50,7 +50,7 @@ export default function NavigationBar() {
           </div>
           <NavBarButton
             disabled={!auth.isLoggedIn()}
-            onClick={() => navigate("/dashboard")}
+            onClick={() => auth.isLoggedIn() ? navigate("/dashboard") : navigate("/login")}
             text={"Dashboard"}
             iconClass={"bi bi-building-check"}
             collapsed={!open}
