@@ -21,6 +21,7 @@ import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
+import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 /*
@@ -70,6 +71,7 @@ export default function Payment() {
         },
       },
   ]);
+  const auth = useAuthContext();
 
   const [showChangePlan, setShowChangePlan] = useState(false);
 
@@ -143,27 +145,27 @@ export default function Payment() {
         <Col xs={12} md={6}>
           <RegularCard title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
-              <small className="text-truncate">Remaining: 93 min</small>
+              <small className="text-truncate">Remaining: {auth.user ? auth.user?.plan.total_minutes - auth.user?.plan.leftover_minutes : 0}</small>
               <hr />
               <ProgressBar>
                 <ProgressBar
                   className="bg-yellow"
                   striped
                   variant="warning"
-                  now={10}
+                  now={auth.user?.plan.leftover_minutes || 0}
                   key={1}
                 />
                 <ProgressBar
                   className="bg-blue"
                   striped
                   variant="info"
-                  now={90}
+                  now={auth.user ? auth.user?.plan.total_minutes - auth.user?.plan.leftover_minutes : 0}
                   key={2}
                 />
               </ProgressBar>
               <div className="d-flex justify-content-between">
-                <small>7 minutes</small>
-                <small>100 minutes</small>
+                <small>{auth.user?.plan.leftover_minutes || 0} minutes</small>
+                <small>{auth.user ? auth.user?.plan.total_minutes : 0} minutes</small>
               </div>
             </div>
           </RegularCard>
