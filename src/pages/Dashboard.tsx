@@ -18,6 +18,7 @@
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import HBarChart from "../components/Charts/HBarChart";
+import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import ScanList from "../components/Lists/ScanList";
 import { ProviderType } from "../components/Provider/Provider";
@@ -27,6 +28,10 @@ import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Dashboard() {
+  useForceAuth({
+    ifState: AuthState.LOGGED_OUT,
+    travelTo: "/login",
+  });
   const {getProviderType} = useProviderContext()
   useToolBar([
     {

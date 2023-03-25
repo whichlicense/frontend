@@ -49,6 +49,7 @@ export default function NavigationBar() {
             {open ? <h3 style={{ fontSize: "100%" }}>WhichLicense</h3> : <br />}
           </div>
           <NavBarButton
+            disabled={!auth.isLoggedIn()}
             onClick={() => navigate("/dashboard")}
             text={"Dashboard"}
             iconClass={"bi bi-building-check"}
