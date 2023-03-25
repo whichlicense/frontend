@@ -15,80 +15,97 @@
  *   limitations under the License.
  */
 
-
-import axios, { AxiosResponse } from "axios"
-import { createContext, useState, useContext, useMemo } from "react"
-import FullScreenLoader from "../components/Loaders/FullScreenLoader"
-import { useEffectOnce } from "../components/utils/useEffectOnce"
-import { CONFIG } from "../CONFIG"
+import axios, { AxiosResponse } from "axios";
+import { createContext, useState, useContext, useMemo } from "react";
+import FullScreenLoader from "../components/Loaders/FullScreenLoader";
+import { useEffectOnce } from "../components/utils/useEffectOnce";
+import { CONFIG } from "../CONFIG";
 
 export const AuthContext = createContext<{
-    user: TUser | null,
-    isLoggedIn: () => boolean,
-    login: (email: string, password: string) => Promise<any>,
-    logout: () => void,
-    register: (d: Omit<TUser & {password: string}, 'token'>) => Promise<AxiosResponse<any, any>>,
-    isLoggedInMemo: boolean
-}>({} as any)
+  user: TUser | null;
+  isLoggedIn: () => boolean;
+  login: (email: string, password: string) => Promise<any>;
+  logout: () => void;
+  register: (
+    d: Omit<TUser & { password: string }, "token">
+  ) => Promise<AxiosResponse<any, any>>;
+  isLoggedInMemo: boolean;
+}>({} as any);
 
 export type TUserToken = {
-    token: string
-}
+  token: string;
+};
 export type TUser = {
-    firstName: string, lastName?: string, email:string
-} & TUserToken
-  
-  export const AuthContextProvider = (props: any) => {
-    const [user, setUser] = useState<TUser | null>(null);
-    const [loading, setLoading] = useState(true);
+  firstName: string;
+  lastName?: string;
+  email: string;
+} & TUserToken;
 
+export type TUserPlan = {
+  account_id: number;
+  leftover_minutes: number;
+  plan: number;
+  total_minutes: number;
+};
 
-    useEffectOnce(()=>{
-        const token = localStorage.getItem('token')
-        if (token) {
-            axios.get(`${CONFIG.gateway_url}/me`, {headers: {Authorization: `Bearer ${token}`}}).then(res => {
-                setUser({
-                    ...res.data,
-                    token
-                });
-                setLoading(false);
-            })
-        } else {
-            setLoading(false)
-        }
-    })
+export const AuthContextProvider = (props: any) => {
+  const [user, setUser] = useState<TUser & {plan: TUserPlan} | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    const isLoggedIn = () => {
-        return user !== null;
-    }
-
-    const isLoggedInMemo = useMemo(()=>user !== null, [user])
-
-    const login = async (email: string, password: string) => {
-        return await axios.post(`${CONFIG.gateway_url}/login`, {email, password}).then(res => {
-            if (res.data.token) {
-                setUser(res.data)
-                localStorage.setItem('token', res.data.token)
-            }
-            return res.data;
+  useEffectOnce(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get(`${CONFIG.gateway_url}/me`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
+        .then((res) => {
+          console.log(res.data);
+          setUser({
+            ...res.data,
+            token,
+          });
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
+  });
 
-    const register = async (d: Omit<TUser & {password: string}, 'token'>) => {
-        return await axios.post(`${CONFIG.gateway_url}/register`, d);
-    }
+  const isLoggedIn = () => {
+    return user !== null;
+  };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
-    }
+  const isLoggedInMemo = useMemo(() => user !== null, [user]);
 
-    return (
-      <AuthContext.Provider value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout }}>
-        {loading ? <FullScreenLoader /> : props.children}
-      </AuthContext.Provider>
-    )
-  }
-  
-  export const useAuthContext = () => useContext(AuthContext)
-  
+  const login = async (email: string, password: string) => {
+    return await axios
+      .post(`${CONFIG.gateway_url}/login`, { email, password })
+      .then((res) => {
+        if (res.data.token) {
+          setUser(res.data);
+          localStorage.setItem("token", res.data.token);
+        }
+        return res.data;
+      });
+  };
+
+  const register = async (d: Omit<TUser & { password: string }, "token">) => {
+    return await axios.post(`${CONFIG.gateway_url}/register`, d);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout }}
+    >
+      {loading ? <FullScreenLoader /> : props.children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuthContext = () => useContext(AuthContext);
