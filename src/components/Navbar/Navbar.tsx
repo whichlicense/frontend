@@ -73,7 +73,7 @@ export default function NavigationBar() {
           />
 
           <NavBarButton
-            onClick={() => navigate("/accounts")}
+            onClick={() => auth.isLoggedIn() ? navigate("/accounts") : navigate("/login")}
             disabled={!auth.isLoggedIn()}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
@@ -83,7 +83,7 @@ export default function NavigationBar() {
 
           <NavBarButton
             disabled={!auth.isLoggedIn()}
-            onClick={() => navigate("/notifications")}
+            onClick={() => auth.isLoggedIn() ? navigate("/notifications") : navigate("/login")}
             text={"Notifications"}
             iconClass={"bi bi-bell"}
             collapsed={!open}
@@ -128,7 +128,7 @@ export default function NavigationBar() {
 
         <NavBarButton
           disabled={!auth.isLoggedIn()}
-          onClick={() => navigate("/payment")}
+          onClick={() => auth.isLoggedIn() ? navigate("/payment") : navigate("/login")}
           text={"Payment"}
           collapsed={!open}
           iconClass={"bi bi-credit-card"}
