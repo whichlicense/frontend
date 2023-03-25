@@ -17,14 +17,16 @@
 
 
 import axios, { AxiosResponse } from "axios"
-import { createContext, useState, useContext } from "react"
+import { createContext, useState, useContext, useMemo } from "react"
 import { CONFIG } from "../CONFIG"
 
 export const AuthContext = createContext<{
     user: TUser | null,
     isLoggedIn: () => boolean,
     login: (email: string, password: string) => Promise<any>,
-    register: (d: Omit<TUser & {password: string}, 'token'>) => Promise<AxiosResponse<any, any>>
+    logout: () => void,
+    register: (d: Omit<TUser & {password: string}, 'token'>) => Promise<AxiosResponse<any, any>>,
+    isLoggedInMemo: boolean
 }>({} as any)
 
 export type TUserToken = {
@@ -41,6 +43,8 @@ export type TUser = {
         return user !== null
     }
 
+    const isLoggedInMemo = useMemo(()=>user !== null, [user])
+
     const login = async (email: string, password: string) => {
         return await axios.post(`${CONFIG.gateway_url}/login`, {email, password}).then(res => {
             if (res.data.token) {
@@ -54,8 +58,12 @@ export type TUser = {
         return await axios.post(`${CONFIG.gateway_url}/register`, d);
     }
 
+    const logout = () => {
+        setUser(null)
+    }
+
     return (
-      <AuthContext.Provider value={{ user, isLoggedIn, login, register }}>
+      <AuthContext.Provider value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout }}>
         {props.children}
       </AuthContext.Provider>
     )

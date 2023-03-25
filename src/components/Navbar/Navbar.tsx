@@ -26,25 +26,27 @@ export default function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuthContext();
-  const {open, setOpen} = useDrawerContext()
+  const { open, setOpen } = useDrawerContext();
 
-    // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
+  // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
 
   return (
     <div className={`${open ? "nav-open" : "nav-closed"}`}>
       <div className="position-relative">
-      <Button
-            onClick={() => setOpen(x=>!x)}
-            className={`bg-yellow text-dark position-absolute ${open ? 'nav-collapse-button' : 'nav-expand-button'}`}
-          >
-            <i className={`bi bi-caret-${open ? 'left' : 'right'}-fill`}></i>
-          </Button>
+        <Button
+          onClick={() => setOpen((x) => !x)}
+          className={`bg-yellow text-dark position-absolute ${
+            open ? "nav-collapse-button" : "nav-expand-button"
+          }`}
+        >
+          <i className={`bi bi-caret-${open ? "left" : "right"}-fill`}></i>
+        </Button>
       </div>
 
       <section className="align-self-center rounded container clamp w-100 d-flex flex-column shadow-fade-in">
         <Stack gap={2} className="flex-grow-0 mb-auto">
           <div className="pt-2 pb-3">
-          {open ? <h3 style={{ fontSize: "100%" }}>WhichLicense</h3> : <br />}
+            {open ? <h3 style={{ fontSize: "100%" }}>WhichLicense</h3> : <br />}
           </div>
           <NavBarButton
             onClick={() => navigate("/dashboard")}
@@ -97,7 +99,7 @@ export default function NavigationBar() {
           />
         </Stack>
 
-        {open && (
+        {open && auth.isLoggedInMemo && (
           <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
             <small className="text-truncate">Remaining: 93 min</small>
             <hr />
@@ -125,6 +127,7 @@ export default function NavigationBar() {
         )}
 
         <NavBarButton
+          disabled={!auth.isLoggedIn()}
           onClick={() => navigate("/payment")}
           text={"Payment"}
           collapsed={!open}
@@ -133,11 +136,22 @@ export default function NavigationBar() {
 
         <hr className="text-muted mx-1" />
 
-        <NavBarButton
-          text={"Logout"}
-          collapsed={!open}
-          iconClass={"bi bi-arrow-left-circle"}
-        />
+        {auth.isLoggedInMemo ? (
+          <NavBarButton
+            text={"Logout"}
+            collapsed={!open}
+            onClick={() => auth.logout()}
+            iconClass={"bi bi-arrow-left-circle"}
+          />
+        ) : (
+          <NavBarButton
+            text={"Login"}
+            collapsed={!open}
+            onClick={() => navigate("/login")}
+            iconClass={"bi bi-person-circle"}
+          />
+        )}
+
         <br />
       </section>
     </div>
