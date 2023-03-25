@@ -18,6 +18,7 @@
 
 import axios, { AxiosResponse } from "axios"
 import { createContext, useState, useContext, useMemo } from "react"
+import FullScreenLoader from "../components/Loaders/FullScreenLoader"
 import { useEffectOnce } from "../components/utils/useEffectOnce"
 import { CONFIG } from "../CONFIG"
 
@@ -39,6 +40,7 @@ export type TUser = {
   
   export const AuthContextProvider = (props: any) => {
     const [user, setUser] = useState<TUser | null>(null);
+    const [loading, setLoading] = useState(true);
 
 
     useEffectOnce(()=>{
@@ -48,8 +50,11 @@ export type TUser = {
                 setUser({
                     ...res.data,
                     token
-                })
+                });
+                setLoading(false);
             })
+        } else {
+            setLoading(false)
         }
     })
 
@@ -80,7 +85,7 @@ export type TUser = {
 
     return (
       <AuthContext.Provider value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout }}>
-        {props.children}
+        {loading ? <FullScreenLoader /> : props.children}
       </AuthContext.Provider>
     )
   }
