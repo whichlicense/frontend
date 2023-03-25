@@ -17,8 +17,13 @@
 
 import { Button, Form, InputGroup, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 
 export default function Notifications() {
+  useForceAuth({
+    ifState: AuthState.LOGGED_OUT,
+    travelTo: "/login",
+  })
   // TODO: what to receive emails for? everything? have a list that they can toggle stuff on and off?
   // TODO: webhooks for what? everything? have a list that they can toggle stuff on and off?
   return (
