@@ -15,10 +15,12 @@
  *   limitations under the License.
  */
 import RevolutCheckout from "@revolut/checkout";
+import { useState } from "react";
 import { Button, Col, ProgressBar, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
+import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
 /*
@@ -54,8 +56,7 @@ export default function Payment() {
       txtColor: "txt-dark-1",
       icon: "bi bi-building-up",
       onClick: () => {
-        // TODO: implement
-        console.log("Change plan");
+        setShowChangePlan(true);
       },
     },
     {
@@ -69,6 +70,8 @@ export default function Payment() {
         },
       },
   ]);
+
+  const [showChangePlan, setShowChangePlan] = useState(false);
 
   const TOP_UP_OPTIONS = [
     {
@@ -169,9 +172,8 @@ export default function Payment() {
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
-              <h6>Cost per month: €3.00</h6>
-              <h6>Next billing date: August 12, 2023</h6>
-              <h6>Billed to: John Doe - xxxxxxx 6453</h6>
+              <h6>Cost per month: N/A {/** €3.00 */}</h6>
+              <h6>Next billing date: N/A</h6>
             </div>
           </RegularCard>
         </Col>
@@ -203,6 +205,44 @@ export default function Payment() {
           </Stack>
         </Col>
       </Row>
+
+      <InlineCard title="Change plan" show={showChangePlan} handleClose={()=>setShowChangePlan(false)}>
+        <>
+        <Row>
+          <Col xs={12} md={6}>
+            <RegularCard title="Basic (current)" minHeight="35vh" maxHeight="30vh" bg="bg-blue">
+              <div>
+                <h2 className="text-truncate display-6">Plan: Basic</h2>
+                <h6>Cost per month: Depends on usage</h6>
+                <hr />
+                <h6>Features:</h6>
+                <ul>
+                  <li>Top-up when you feel like it</li>
+                  <li>1 Project</li>
+                </ul>
+              </div>
+            </RegularCard>
+          </Col>
+          <Col xs={12} md={6}>
+            <RegularCard title="Unlimited" minHeight="35vh" maxHeight="30vh" className="clickable">
+              <div>
+                <h2 className="text-truncate display-6">Plan: Basic</h2>
+                <h6>Cost per month: €20</h6>
+                <hr />
+                <h6>Features:</h6>
+                <ul>
+                  <li>Unlimited minutes</li>
+                  <li>Unlimited project</li>
+                  <li>Sub account system</li>
+                  <li>Priority scanning</li>
+                  <li>Notifications</li>
+                </ul>
+              </div>
+            </RegularCard>
+          </Col>
+        </Row>
+        </>
+      </InlineCard>
     </div>
   );
 }
