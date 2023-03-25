@@ -18,6 +18,7 @@
 
 import axios, { AxiosResponse } from "axios"
 import { createContext, useState, useContext, useMemo } from "react"
+import { useEffectOnce } from "../components/utils/useEffectOnce"
 import { CONFIG } from "../CONFIG"
 
 export const AuthContext = createContext<{
@@ -37,10 +38,23 @@ export type TUser = {
 } & TUserToken
   
   export const AuthContextProvider = (props: any) => {
-    const [user, setUser] = useState<TUser | null>(null)
+    const [user, setUser] = useState<TUser | null>(null);
+
+
+    useEffectOnce(()=>{
+        const token = localStorage.getItem('token')
+        if (token) {
+            axios.get(`${CONFIG.gateway_url}/me`, {headers: {Authorization: `Bearer ${token}`}}).then(res => {
+                setUser({
+                    ...res.data,
+                    token
+                })
+            })
+        }
+    })
 
     const isLoggedIn = () => {
-        return user !== null
+        return user !== null;
     }
 
     const isLoggedInMemo = useMemo(()=>user !== null, [user])
@@ -49,6 +63,7 @@ export type TUser = {
         return await axios.post(`${CONFIG.gateway_url}/login`, {email, password}).then(res => {
             if (res.data.token) {
                 setUser(res.data)
+                localStorage.setItem('token', res.data.token)
             }
             return res.data;
         })
@@ -59,7 +74,8 @@ export type TUser = {
     }
 
     const logout = () => {
-        setUser(null)
+        localStorage.removeItem('token');
+        setUser(null);
     }
 
     return (
