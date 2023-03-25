@@ -16,13 +16,13 @@
  */
 
 import axios, { AxiosResponse } from "axios";
-import { createContext, useState, useContext, useMemo } from "react";
+import { createContext, useState, useContext, useMemo, useEffect } from "react";
 import FullScreenLoader from "../components/Loaders/FullScreenLoader";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 
 export const AuthContext = createContext<{
-  user: TUser | null;
+  user: TUser & {plan: TUserPlan} | null;
   isLoggedIn: () => boolean;
   login: (email: string, password: string) => Promise<any>;
   logout: () => void;
@@ -32,14 +32,11 @@ export const AuthContext = createContext<{
   isLoggedInMemo: boolean;
 }>({} as any);
 
-export type TUserToken = {
-  token: string;
-};
 export type TUser = {
   firstName: string;
   lastName?: string;
   email: string;
-} & TUserToken;
+};
 
 export type TUserPlan = {
   account_id: number;
@@ -50,40 +47,54 @@ export type TUserPlan = {
 
 export const AuthContextProvider = (props: any) => {
   const [user, setUser] = useState<TUser & {plan: TUserPlan} | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = async () => {
+    setLoading(true);
+    axios
+      .get(`${CONFIG.gateway_url}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setUser(res.data);
+        setLoading(false);
+      }).catch((e) => {
+        logout();
+        setLoading(false);
+        // TODO: toast error message if required.
+      })
+  }
+
   useEffectOnce(() => {
-    const token = localStorage.getItem("token");
     if (token) {
-      axios
-        .get(`${CONFIG.gateway_url}/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          console.log(res.data);
-          setUser({
-            ...res.data,
-            token,
-          });
-          setLoading(false);
-        });
+        fetchUser();
     } else {
       setLoading(false);
     }
   });
 
+
+
+  useEffect(() => {
+    fetchUser()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
+
+
   const isLoggedIn = () => {
-    return user !== null;
+    return user !== null || token !== null;
   };
 
-  const isLoggedInMemo = useMemo(() => user !== null, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isLoggedInMemo = useMemo(() => isLoggedIn(), [user]);
 
   const login = async (email: string, password: string) => {
     return await axios
       .post(`${CONFIG.gateway_url}/login`, { email, password })
       .then((res) => {
         if (res.data.token) {
-          setUser(res.data);
+          setToken(res.data.token);
           localStorage.setItem("token", res.data.token);
         }
         return res.data;
@@ -97,6 +108,7 @@ export const AuthContextProvider = (props: any) => {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    setToken(null);
   };
 
   return (
