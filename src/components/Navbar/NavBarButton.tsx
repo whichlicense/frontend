@@ -28,8 +28,7 @@ export default function NavBarButton(props: NavBarButtonProps) {
   return (
     <Button
       onClick={() => props.onClick && props.onClick()}
-      className={"NavBarButton shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "")}
-      disabled={props.disabled}
+      className={"NavBarButton shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "") + (props.disabled ? " disabled" : "")}
     >
       <Stack direction="horizontal">
         <i className={props.iconClass}></i>
