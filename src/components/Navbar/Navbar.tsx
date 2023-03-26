@@ -50,7 +50,9 @@ export default function NavigationBar() {
           </div>
           <NavBarButton
             disabled={!auth.isLoggedIn()}
-            onClick={() => auth.isLoggedIn() ? navigate("/dashboard") : navigate("/login")}
+            onClick={() =>
+              auth.isLoggedIn() ? navigate("/dashboard") : navigate("/login")
+            }
             text={"Dashboard"}
             iconClass={"bi bi-building-check"}
             collapsed={!open}
@@ -74,7 +76,9 @@ export default function NavigationBar() {
           />
 
           <NavBarButton
-            onClick={() => auth.isLoggedIn() ? navigate("/accounts") : navigate("/login")}
+            onClick={() =>
+              auth.isLoggedIn() ? navigate("/accounts") : navigate("/login")
+            }
             disabled={!auth.isLoggedIn()}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
@@ -84,7 +88,11 @@ export default function NavigationBar() {
 
           <NavBarButton
             disabled={!auth.isLoggedIn()}
-            onClick={() => auth.isLoggedIn() ? navigate("/notifications") : navigate("/login")}
+            onClick={() =>
+              auth.isLoggedIn()
+                ? navigate("/notifications")
+                : navigate("/login")
+            }
             text={"Notifications"}
             iconClass={"bi bi-bell"}
             collapsed={!open}
@@ -102,34 +110,47 @@ export default function NavigationBar() {
 
         {open && auth.isLoggedInMemo && (
           <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
-            <small className="text-truncate">Remaining: 93 min</small>
+            <small className="text-truncate">
+              Remaining:{" "}
+              {auth.user
+                ? auth.user?.plan.total_minutes -
+                  auth.user?.plan.leftover_minutes
+                : 0}
+            </small>
             <hr />
             <ProgressBar>
               <ProgressBar
                 className="bg-yellow"
                 striped
                 variant="warning"
-                now={10}
+                now={auth.user?.plan.leftover_minutes || 0}
                 key={1}
               />
               <ProgressBar
                 className="bg-blue"
                 striped
                 variant="info"
-                now={90}
+                now={
+                  auth.user
+                    ? auth.user?.plan.total_minutes -
+                      auth.user?.plan.leftover_minutes
+                    : 0
+                }
                 key={2}
               />
             </ProgressBar>
             <div className="d-flex justify-content-between">
-              <small>7</small>
-              <small>100</small>
+              <small>{auth.user?.plan.leftover_minutes || 0}</small>
+              <small>{auth.user ? auth.user?.plan.total_minutes : 0}</small>
             </div>
           </Card>
         )}
 
         <NavBarButton
           disabled={!auth.isLoggedIn()}
-          onClick={() => auth.isLoggedIn() ? navigate("/payment") : navigate("/login")}
+          onClick={() =>
+            auth.isLoggedIn() ? navigate("/payment") : navigate("/login")
+          }
           text={"Payment"}
           collapsed={!open}
           iconClass={"bi bi-credit-card"}
