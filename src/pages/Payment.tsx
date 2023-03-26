@@ -15,14 +15,19 @@
  *   limitations under the License.
  */
 import RevolutCheckout from "@revolut/checkout";
+import axios from "axios";
 import { useState } from "react";
 import { Button, Col, ProgressBar, Row, Stack } from "react-bootstrap";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
+import { useEffectOnce } from "../components/utils/useEffectOnce";
+import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { PlanDetailsTable } from "../types/plan";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -61,19 +66,20 @@ export default function Payment() {
       },
     },
     {
-        type: ToolBarItemType.BUTTON,
-        title: "Change payment details",
-        icon: "bi bi-credit-card",
-        onClick: () => {
+      type: ToolBarItemType.BUTTON,
+      title: "Change payment details",
+      icon: "bi bi-credit-card",
+      onClick: () => {
         // TODO: implement
 
-          console.log("Change plan");
-        },
+        console.log("Change plan");
       },
+    },
   ]);
   const auth = useAuthContext();
 
   const [showChangePlan, setShowChangePlan] = useState(false);
+  const [plans, setPlans] = useState<PlanDetailsTable[]>([]);
 
   const TOP_UP_OPTIONS = [
     {
@@ -106,14 +112,24 @@ export default function Payment() {
       id: "top-up-30",
       price: 15,
     },
-
   ];
 
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
+  const getAvailablePlans = async () => {
+    const res = await axios.get(`${CONFIG.gateway_url}/plans/get-all`);
+    return res.data;
+  };
+
+  useEffectOnce(() => {
+    getAvailablePlans().then((data) => {
+      setPlans(data);
+    });
+  });
+
   const createOrder = async () => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await fetch(`http://localhost:8000/create-payment-order`).then(
+    return (await fetch(`${CONFIG.gateway_url}/create-payment-order`).then(
       (res) => {
         return res.json();
       }
@@ -145,7 +161,13 @@ export default function Payment() {
         <Col xs={12} md={6}>
           <RegularCard title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
-              <small className="text-truncate">Remaining: {auth.user ? auth.user?.plan.total_minutes - auth.user?.plan.leftover_minutes : 0}</small>
+              <small className="text-truncate">
+                Remaining:{" "}
+                {auth.user
+                  ? auth.user?.plan.total_minutes -
+                    auth.user?.plan.leftover_minutes
+                  : 0}
+              </small>
               <hr />
               <ProgressBar>
                 <ProgressBar
@@ -159,13 +181,20 @@ export default function Payment() {
                   className="bg-blue"
                   striped
                   variant="info"
-                  now={auth.user ? auth.user?.plan.total_minutes - auth.user?.plan.leftover_minutes : 0}
+                  now={
+                    auth.user
+                      ? auth.user?.plan.total_minutes -
+                        auth.user?.plan.leftover_minutes
+                      : 0
+                  }
                   key={2}
                 />
               </ProgressBar>
               <div className="d-flex justify-content-between">
                 <small>{auth.user?.plan.leftover_minutes || 0} minutes</small>
-                <small>{auth.user ? auth.user?.plan.total_minutes : 0} minutes</small>
+                <small>
+                  {auth.user ? auth.user?.plan.total_minutes : 0} minutes
+                </small>
               </div>
             </div>
           </RegularCard>
@@ -184,7 +213,10 @@ export default function Payment() {
           <Stack gap={3}>
             <div>
               <h2 className="mb-0">Top-up options</h2>
-              <small className="text-muted">Top-up in a pinch or choose to pay manually instead of a subscription</small>
+              <small className="text-muted">
+                Top-up in a pinch or choose to pay manually instead of a
+                subscription
+              </small>
             </div>
 
             <Row className="g-2">
@@ -197,9 +229,14 @@ export default function Payment() {
                     overflowY="hidden"
                   >
                     <h5>€{option.price}</h5>
-                    <Button onClick={()=>{
+                    <Button
+                      onClick={() => {
                         checkout(option.id);
-                    }} className="w-100">Buy</Button>
+                      }}
+                      className="w-100"
+                    >
+                      Buy
+                    </Button>
                   </RegularCard>
                 </Col>
               ))}
@@ -208,41 +245,39 @@ export default function Payment() {
         </Col>
       </Row>
 
-      <InlineCard title="Change plan" show={showChangePlan} handleClose={()=>setShowChangePlan(false)}>
+      <InlineCard
+        title="Change plan"
+        show={showChangePlan}
+        handleClose={() => setShowChangePlan(false)}
+      >
         <>
-        <Row>
-          <Col xs={12} md={6}>
-            <RegularCard title="Basic (current)" minHeight="35vh" maxHeight="30vh" bg="bg-blue">
-              <div>
-                <h2 className="text-truncate display-6">Plan: Basic</h2>
-                <h6>Cost per month: Depends on usage</h6>
-                <hr />
-                <h6>Features:</h6>
-                <ul>
-                  <li>Top-up when you feel like it</li>
-                  <li>1 Project</li>
-                </ul>
-              </div>
-            </RegularCard>
-          </Col>
-          <Col xs={12} md={6}>
-            <RegularCard title="Unlimited" minHeight="35vh" maxHeight="30vh" className="clickable">
-              <div>
-                <h2 className="text-truncate display-6">Plan: Basic</h2>
-                <h6>Cost per month: €20</h6>
-                <hr />
-                <h6>Features:</h6>
-                <ul>
-                  <li>Unlimited minutes</li>
-                  <li>Unlimited project</li>
-                  <li>Sub account system</li>
-                  <li>Priority scanning</li>
-                  <li>Notifications</li>
-                </ul>
-              </div>
-            </RegularCard>
-          </Col>
-        </Row>
+          <Row>
+            {plans
+              .filter((p) => p.available)
+              .map((plan) => {
+                const isCurrentPlan = auth.user?.plan.plan === plan.id;
+                return (
+                  <Col xs={12} md={6}>
+                    <RegularCard
+                      title={`Basic ${isCurrentPlan ? "(current)" : ""}`}
+                      minHeight="35vh"
+                      maxHeight="30vh"
+                      bg={isCurrentPlan ? "bg-blue" : undefined}
+                    >
+                      <div>
+                        <h2 className="text-truncate display-6">
+                          Plan: {plan.name}
+                        </h2>
+                        <h6>Cost per month: {plan.price_per_month || "N/A"}</h6>
+                        <hr />
+                        <h6>Description:</h6>
+                        <ReactMarkdown>{plan.description}</ReactMarkdown>
+                      </div>
+                    </RegularCard>
+                  </Col>
+                );
+              })}
+          </Row>
         </>
       </InlineCard>
     </div>
