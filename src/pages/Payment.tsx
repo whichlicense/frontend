@@ -16,7 +16,7 @@
  */
 import RevolutCheckout from "@revolut/checkout";
 import axios from "axios";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Col, ProgressBar, Row, Stack } from "react-bootstrap";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import RegularCard from "../components/Cards/RegularCard";
@@ -27,7 +27,7 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
-import { PlanDetailsTable } from "../types/plan";
+import { OrderInventoryTable, PlanDetailsTable } from "../types/schema";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -79,7 +79,7 @@ export default function Payment() {
   const auth = useAuthContext();
 
   const [showChangePlan, setShowChangePlan] = useState(false);
-  const [plans, setPlans] = useState<PlanDetailsTable[]>([]);
+  const [plans, setPlans] = useState<(PlanDetailsTable & Omit<OrderInventoryTable, 'id'>)[]>([]);
 
   const TOP_UP_OPTIONS = [
     {
@@ -114,6 +114,10 @@ export default function Payment() {
     },
   ];
 
+  const userPlan = useMemo(()=>{
+    return plans.find((plan) => plan.id === auth.user?.plan.plan);
+  }, [auth.user?.plan.plan, plans])
+
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
   const getAvailablePlans = async () => {
@@ -123,15 +127,20 @@ export default function Payment() {
 
   useEffectOnce(() => {
     getAvailablePlans().then((data) => {
+      console.log(data);
       setPlans(data);
     });
   });
 
   const createOrder = async () => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await fetch(`${CONFIG.gateway_url}/create-payment-order`).then(
+    return (await axios(`${CONFIG.gateway_url}/create-payment-order`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then(
       (res) => {
-        return res.json();
+        return res.data;
       }
     )) as Promise<RevolutOrder>;
   };
@@ -203,7 +212,7 @@ export default function Payment() {
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
-              <h6>Cost per month: N/A {/** €3.00 */}</h6>
+              <h6>Cost per month: {userPlan?.price === null ? "N/A" : `€${userPlan?.price}`}</h6>
               <h6>Next billing date: N/A</h6>
             </div>
           </RegularCard>
@@ -268,7 +277,7 @@ export default function Payment() {
                         <h2 className="text-truncate display-6">
                           Plan: {plan.name}
                         </h2>
-                        <h6>Cost per month: {plan.price_per_month || "N/A"}</h6>
+                        <h6>Cost per month: {plan.price === null ? "N/A" : `€${plan.price}`}</h6>
                         <hr />
                         <h6>Description:</h6>
                         <ReactMarkdown>{plan.description}</ReactMarkdown>
