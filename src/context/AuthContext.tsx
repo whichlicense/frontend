@@ -30,6 +30,7 @@ export const AuthContext = createContext<{
     d: Omit<TUser & { password: string }, "token">
   ) => Promise<AxiosResponse<any, any>>;
   isLoggedInMemo: boolean;
+  token: string | null;
 }>({} as any);
 
 export type TUser = {
@@ -113,7 +114,7 @@ export const AuthContextProvider = (props: any) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout }}
+      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout, token }}
     >
       {loading ? <FullScreenLoader /> : props.children}
     </AuthContext.Provider>
