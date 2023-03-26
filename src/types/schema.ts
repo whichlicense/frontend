@@ -106,6 +106,15 @@ export interface PlanDetailsTable {
   order_inventory_id: string;
 }
 
+export interface TopUpOptionsTable {
+    id: number;
+    minutes: number;
+    /**
+     * References ```OrderInventoryTable.id```
+    */
+    order_inventory_id: string;
+  }
+
 /**
  * All available payment items within our system shall appear in this table.
  * It is the intention that other tables making use of price information shall reference this table.
