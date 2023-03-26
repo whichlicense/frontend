@@ -27,7 +27,7 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
-import { OrderInventoryTable, PlanDetailsTable } from "../types/schema";
+import { OrderInventoryTable, PlanDetailsTable, TopUpOptionsTable } from "../types/schema";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -80,39 +80,8 @@ export default function Payment() {
 
   const [showChangePlan, setShowChangePlan] = useState(false);
   const [plans, setPlans] = useState<(PlanDetailsTable & Omit<OrderInventoryTable, 'id'>)[]>([]);
+  const [topUpOptions, setTopUpOptions] = useState<(TopUpOptionsTable & Omit<OrderInventoryTable, 'id'>)[]>([]);
 
-  const TOP_UP_OPTIONS = [
-    {
-      title: "5 minutes",
-      id: "top-up-5",
-      price: 2.5,
-    },
-    {
-      title: "10 minutes",
-      id: "top-up-10",
-      price: 5,
-    },
-    {
-      title: "15 minutes",
-      id: "top-up-15",
-      price: 7.5,
-    },
-    {
-      title: "20 minutes",
-      id: "top-up-20",
-      price: 10,
-    },
-    {
-      title: "25 minutes",
-      id: "top-up-25",
-      price: 12.5,
-    },
-    {
-      title: "30 minutes",
-      id: "top-up-30",
-      price: 15,
-    },
-  ];
 
   const userPlan = useMemo(()=>{
     return plans.find((plan) => plan.id === auth.user?.plan.plan);
@@ -125,16 +94,25 @@ export default function Payment() {
     return res.data;
   };
 
+  const getTopUpOptuons = async () => {
+    const res = await axios.get(`${CONFIG.gateway_url}/top-up/get-options`);
+    return res.data;
+  }
+
   useEffectOnce(() => {
     getAvailablePlans().then((data) => {
-      console.log(data);
       setPlans(data);
     });
+
+    getTopUpOptuons().then((data) => {
+      console.log(data);
+      setTopUpOptions(data);
+    })
   });
 
-  const createOrder = async () => {
+  const createOrder = async (inventoryItemId: string) => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await axios(`${CONFIG.gateway_url}/create-payment-order`, {
+    return (await axios(`${CONFIG.gateway_url}/create-payment-order/${inventoryItemId}`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
       },
@@ -146,7 +124,7 @@ export default function Payment() {
   };
 
   const checkout = (orderId: string) => {
-    createOrder().then((data) => {
+    createOrder(orderId).then((data) => {
       if (!data.public_id) return;
       // TODO: conditionally use sandbox or production based on NPM environment
       RevolutCheckout(data.public_id, "sandbox").then((instance) => {
@@ -229,18 +207,18 @@ export default function Payment() {
             </div>
 
             <Row className="g-2">
-              {TOP_UP_OPTIONS.map((option) => (
+              {topUpOptions.map((option) => (
                 <Col xs={12} md={2}>
                   <RegularCard
-                    title={option.title}
+                    title={`${option.minutes} minutes`}
                     minHeight="11vh"
                     maxHeight="11vh"
                     overflowY="hidden"
                   >
-                    <h5>€{option.price}</h5>
+                    <h5>€{(option.price / 100).toFixed(2)}</h5>
                     <Button
                       onClick={() => {
-                        checkout(option.id);
+                        checkout(option.order_inventory_id);
                       }}
                       className="w-100"
                     >
