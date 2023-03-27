@@ -24,6 +24,7 @@ import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import PlanUsageBar from "../components/ProgressBars/PlanUsageBar";
+import SectionHeading from "../components/Typography/SectionHeading";
 import { formatMinorPrice } from "../components/utils/currency";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
@@ -221,15 +222,8 @@ export default function Payment() {
           </RegularCard>
         </Col>
         <Col xs={12}>
-          <hr />
           <Stack gap={3}>
-            <div>
-              <h2 className="mb-0">Top-up options</h2>
-              <small className="text-muted">
-                Top-up in a pinch or choose to pay manually instead of a
-                subscription
-              </small>
-            </div>
+            <SectionHeading title="Top-up options" size="2" divider subtitle="Top-up in a pinch or choose to pay manually instead of a subscription" />
 
             <Row className="g-2">
               {topUpOptions.map((option) => (
@@ -256,16 +250,11 @@ export default function Payment() {
           </Stack>
         </Col>
         <Col xs={12}>
-          <hr />
           <Stack gap={3}>
             <div>
-              <h2 className="mb-0">Payment history</h2>
-              <small className="text-muted">
-                Payment history entries are deleted after they are older than{" "}
-                <b>N</b> days. <br />
-              </small>
-              {paymentHistory.some((e)=>e.state === "PENDING")}
-              <small>
+            <SectionHeading title="TPayment history" size="2" divider subtitle="Payment history entries are deleted after they are older than N days" />
+              {paymentHistory.some((e)=>e.state === "PENDING") && (
+                <small>
                 <i className="txt-yellow bi bi-info-circle-fill pe-2"></i>Press
                 on any{" "}
                 <span className="btn not-clickable bg-yellow txt-dark-1">
@@ -273,6 +262,7 @@ export default function Payment() {
                 </span>{" "}
                 payment to manually complete it.
               </small>
+              )}
             </div>
 
             <RegularCard minHeight="100%" maxHeight="100%">
