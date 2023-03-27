@@ -40,7 +40,7 @@ export default function BackButton(props: BackButtonProps) {
   };
   return (
     <Button
-      className={`bg-yellow text-dark page-back-button shadow-sm`}
+      className={`bg-purple text-dark page-back-button shadow-sm`}
       onClick={goBack}
     >
       <Stack direction="horizontal">
