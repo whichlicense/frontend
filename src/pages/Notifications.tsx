@@ -15,34 +15,90 @@
  *   limitations under the License.
  */
 
-import { Button, Form, InputGroup, Stack } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
+import { useToolBar } from "../components/Hooks/useToolBar";
+import { ToolBarItemType } from "../context/ToolBarContext";
 
 export default function Notifications() {
   useForceAuth({
     ifState: AuthState.LOGGED_OUT,
     travelTo: "/login",
-  })
+  });
+
+  useToolBar([
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Save",
+      // TODO: turn green or something when there's an item to save
+      disabled: true,
+      onClick: () => {},
+    }
+  ])
   // TODO: what to receive emails for? everything? have a list that they can toggle stuff on and off?
   // TODO: webhooks for what? everything? have a list that they can toggle stuff on and off?
   return (
     <div>
       <Stack gap={2}>
-        <RegularCard title="Basic notifications">
-          <small className="text-muted">
+        <h6 className="display-6">Email notifications</h6>
+        <small className="text-muted">
             Press the buttons after each input to enable or disable their
             functionality.
           </small>
+        <RegularCard minHeight="100%" maxHeight="100%">
           <div>
-            <br />
             <InputGroup className="mb-3">
               <Form.Control placeholder="Email to" />
               <Button className="bg-green txt-dark-1">Enabled</Button>
             </InputGroup>
+            <hr />
+            <h4 className="mb-0">Conditions</h4>
+            <small className="text-muted">Trigger conditions. an email will be sent for each type</small>
+          <Row className="pt-3">
+            <Col md={4}>
+              <Form.Check type="checkbox" label="New scan initiated" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Scan completed" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Scan failed" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Scan requires attention" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Project compliancy change" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Report created" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Report deleted" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Sub account created" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Sub account changed" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Sub account deleted" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Project added" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Project removed" />
+            </Col>
+            <Col md={4}>
+              <Form.Check type="checkbox" label="Project information changed" />
+            </Col>
+          </Row>
           </div>
         </RegularCard>
-        <RegularCard title="Advanced notifications">
+        <RegularCard title="WebHook notifications">
           <InputGroup className="mb-3">
             <Form.Control placeholder="WebHook call url" />
             <Button className="bg-grey txt-white">Help</Button>
