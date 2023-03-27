@@ -192,9 +192,9 @@ export default function Payment() {
         <Col xs={12} md={4}>
           <RegularCard bg="bg-purple" title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
-              <small className="text-truncate">
+              <h5 className="text-truncate">
                 Remaining: {auth.user ? auth.user?.plan.leftover_minutes : 0}
-              </small>
+              </h5>
               <hr />
               <PlanUsageBar
                 total_minutes={auth.user?.plan.total_minutes || 0}
