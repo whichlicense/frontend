@@ -252,7 +252,7 @@ export default function Payment() {
         <Col xs={12}>
           <Stack gap={3}>
             <div>
-            <SectionHeading title="TPayment history" size="2" divider subtitle="Payment history entries are deleted after they are older than N days" />
+            <SectionHeading title="Payment history" size="2" divider subtitle="Payment history entries are deleted after they are older than N days" />
               {paymentHistory.some((e)=>e.state === "PENDING") && (
                 <small>
                 <i className="txt-yellow bi bi-info-circle-fill pe-2"></i>Press
