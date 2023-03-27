@@ -38,7 +38,7 @@
   --button-color-dark: black;
 
   --color-text-light: rgb(240,240,240);
-  --page-clamp: 96vh;
+  --page-clamp: 96dvh;
 
   --border-radius-normal: 12px;
   --border-radius-heavy: 14px;
