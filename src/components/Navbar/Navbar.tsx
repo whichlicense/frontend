@@ -21,6 +21,8 @@ import NavBarButton from "./NavBarButton";
 import "./Navbar.css";
 import { useDrawerContext } from "../../context/DrawerContext";
 import { useAuthContext } from "../../context/AuthContext";
+import { useMemo } from "react";
+import PlanUsageBar from "../ProgressBars/PlanUsageBar";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
@@ -118,27 +120,7 @@ export default function NavigationBar() {
                 : 0}
             </small>
             <hr />
-            <ProgressBar>
-              <ProgressBar
-                className="bg-yellow"
-                striped
-                variant="warning"
-                now={auth.user?.plan.leftover_minutes || 0}
-                key={1}
-              />
-              <ProgressBar
-                className="bg-blue"
-                striped
-                variant="info"
-                now={
-                  auth.user
-                    ? auth.user?.plan.total_minutes -
-                      auth.user?.plan.leftover_minutes
-                    : 0
-                }
-                key={2}
-              />
-            </ProgressBar>
+            <PlanUsageBar total_minutes={auth.user?.plan.total_minutes || 0} leftover_minutes={auth.user?.plan.leftover_minutes || 0}  />
             <div className="d-flex justify-content-between">
               <small>{auth.user?.plan.leftover_minutes || 0}</small>
               <small>{auth.user ? auth.user?.plan.total_minutes : 0}</small>
