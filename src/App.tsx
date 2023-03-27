@@ -39,6 +39,7 @@ import Payment from "./pages/Payment";
 import { Register } from "./pages/Register";
 import { AuthContextProvider } from "./context/AuthContext";
 import { Login } from "./pages/Login";
+import SubAccounts from "./pages/SubAccounts";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -84,6 +85,7 @@ function App() {
                           <Route path="/test" element={<Test />} />
                           <Route path="/register" element={<Register />} />
                           <Route path="/login" element={<Login />} />
+                          <Route path="/sub-accounts" element={<SubAccounts />} />
                           <Route path="/" element={<Home />} />
                         </Routes>
                         <ScrollIndicator bodyRef={mainContentRef} />

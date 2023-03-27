@@ -79,13 +79,13 @@ export default function NavigationBar() {
 
           <NavBarButton
             onClick={() =>
-              auth.isLoggedIn() ? navigate("/accounts") : navigate("/login")
+              auth.isLoggedIn() ? navigate("/sub-accounts") : navigate("/login")
             }
             disabled={!auth.isLoggedIn()}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
             collapsed={!open}
-            selected={location.pathname === "/accounts"}
+            selected={location.pathname === "/sub-accounts"}
           />
 
           <NavBarButton
