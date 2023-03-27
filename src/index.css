@@ -14,7 +14,9 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
+/* 
+Good primaries: Blue, purple, white, some greens
+ */
 :root{
   /* the higher the black number the lighter of a black it is */
   --color-black: #000000;
@@ -23,11 +25,11 @@
   --color-page-background: rgb(16, 16, 16);
 
   --color-grey: #818b8e;
-  --color-blue: #68a3f7;
+  --color-blue: #7bd9f5;
   --color-yellow: #eed256;
   --color-red: #f67676;
   --color-deep-red: #ff0000;
-  --color-purple: rgb(155, 123, 245);
+  --color-purple: #9b7bf5;
   --color-green: #70e597;
 
   --color-section-background: rgb(30, 30, 30);
