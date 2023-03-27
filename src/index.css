@@ -275,3 +275,6 @@ section button{
 .clickable {
   cursor: pointer;
 }
+.not-clickable {
+  cursor: none !important;
+}
