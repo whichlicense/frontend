@@ -16,5 +16,5 @@
  */
 
 export const CONFIG = {
-    gateway_url: "http://localhost:8080",
+    gateway_url: "http://localhost:8081",
 }
