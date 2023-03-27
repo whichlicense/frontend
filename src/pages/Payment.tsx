@@ -189,8 +189,8 @@ export default function Payment() {
     <div>
       {/* <Button onClick={checkout}>Checkout</Button> */}
       <Row className="g-4">
-        <Col xs={12} md={6}>
-          <RegularCard title="Usage" minHeight="20vh" maxHeight="20vh">
+        <Col xs={12} md={4}>
+          <RegularCard bg="bg-purple" title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
               <small className="text-truncate">
                 Remaining: {auth.user ? auth.user?.plan.leftover_minutes : 0}
@@ -209,7 +209,7 @@ export default function Payment() {
             </div>
           </RegularCard>
         </Col>
-        <Col xs={12} md={6}>
+        <Col xs={12} md={8}>
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
