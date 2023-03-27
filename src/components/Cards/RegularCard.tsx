@@ -89,6 +89,7 @@ export default function RegularCard(props: RegularCardProps) {
             maxHeight: props.maxHeight || "15vh",
             minHeight: props.minHeight || "unset",
             overflowY: props.overflowY || "auto",
+            overflowX: "hidden",
           }}
           ref={bodyRef}
         >
