@@ -29,6 +29,7 @@ export const AuthContext = createContext<{
   register: (
     d: Omit<TUser & { password: string }, "token">
   ) => Promise<AxiosResponse<any, any>>;
+  refresh: () => Promise<void>;
   isLoggedInMemo: boolean;
   token: string | null;
 }>({} as any);
@@ -112,9 +113,13 @@ export const AuthContextProvider = (props: any) => {
     setToken(null);
   };
 
+  const refresh = async () => {
+    await fetchUser();
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout, token }}
+      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout, token, refresh }}
     >
       {loading ? <FullScreenLoader /> : props.children}
     </AuthContext.Provider>
