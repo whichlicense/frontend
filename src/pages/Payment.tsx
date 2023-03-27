@@ -17,17 +17,23 @@
 import RevolutCheckout from "@revolut/checkout";
 import axios from "axios";
 import { useMemo, useState } from "react";
-import { Button, Col, ProgressBar, Row, Stack } from "react-bootstrap";
+import { Button, Col, Row, Spinner, Stack, Table } from "react-bootstrap";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
+import PlanUsageBar from "../components/ProgressBars/PlanUsageBar";
+import { formatMinorPrice } from "../components/utils/currency";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
-import { OrderInventoryTable, PlanDetailsTable, TopUpOptionsTable } from "../types/schema";
+import {
+  OrderInventoryTable,
+  PlanDetailsTable,
+  TopUpOptionsTable,
+} from "../types/schema";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -79,13 +85,34 @@ export default function Payment() {
   const auth = useAuthContext();
 
   const [showChangePlan, setShowChangePlan] = useState(false);
-  const [plans, setPlans] = useState<(PlanDetailsTable & Omit<OrderInventoryTable, 'id'>)[]>([]);
-  const [topUpOptions, setTopUpOptions] = useState<(TopUpOptionsTable & Omit<OrderInventoryTable, 'id'>)[]>([]);
+  const [plans, setPlans] = useState<
+    (PlanDetailsTable & Omit<OrderInventoryTable, "id">)[]
+  >([]);
+  const [topUpOptions, setTopUpOptions] = useState<
+    (TopUpOptionsTable & Omit<OrderInventoryTable, "id">)[]
+  >([]);
 
+  const [paymentHistory, setPaymentHistory] = useState<
+    {
+      id: number;
+      type: "PAYMENT" | "REFUND" | "CHARGEBACK";
+      value: number;
+      state:
+        | "PENDING"
+        | "PROCESSING"
+        | "AUTHORISED"
+        | "COMPLETED"
+        | "CANCELLED"
+        | "FAILED";
+      created_date: string;
+      checkout_url: string;
+      description: string;
+    }[]
+  >([]);
 
-  const userPlan = useMemo(()=>{
+  const userPlan = useMemo(() => {
     return plans.find((plan) => plan.id === auth.user?.plan.plan);
-  }, [auth.user?.plan.plan, plans])
+  }, [auth.user?.plan.plan, plans]);
 
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
@@ -94,37 +121,52 @@ export default function Payment() {
     return res.data;
   };
 
-  const getTopUpOptuons = async () => {
+  const getTopUpOptions = async () => {
     const res = await axios.get(`${CONFIG.gateway_url}/top-up/get-options`);
     return res.data;
-  }
+  };
+
+  const getPaymentHistory = async () => {
+    const res = await axios.get(
+      `${CONFIG.gateway_url}/payment/account-history`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data;
+  };
 
   useEffectOnce(() => {
     getAvailablePlans().then((data) => {
       setPlans(data);
     });
 
-    getTopUpOptuons().then((data) => {
-      console.log(data);
+    getTopUpOptions().then((data) => {
       setTopUpOptions(data);
-    })
+    });
+
+    getPaymentHistory().then((data) => {
+      setPaymentHistory(data);
+    });
   });
 
-  const createOrder = async (inventoryItemId: string) => {
+  const topUpOrder = async (topUpId: number) => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await axios(`${CONFIG.gateway_url}/create-payment-order/${inventoryItemId}`, {
+    return (await axios(`${CONFIG.gateway_url}/payment/top-up/${topUpId}`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
       },
-    }).then(
-      (res) => {
-        return res.data;
-      }
-    )) as Promise<RevolutOrder>;
+    }).then((res) => {
+      return res.data;
+    })) as Promise<RevolutOrder>;
   };
 
-  const checkout = (orderId: string) => {
-    createOrder(orderId).then((data) => {
+  const topUpCheckout = (topUpId: number) => {
+    console.log("Checkout", topUpId);
+    topUpOrder(topUpId).then((data) => {
       if (!data.public_id) return;
       // TODO: conditionally use sandbox or production based on NPM environment
       RevolutCheckout(data.public_id, "sandbox").then((instance) => {
@@ -134,6 +176,7 @@ export default function Payment() {
             console.log("Payment success");
             // TODO: toast
             // TODO: update usage information by re-requesting from the server?
+            auth.refresh();
           },
           // TODO: deal with errors
         });
@@ -149,34 +192,13 @@ export default function Payment() {
           <RegularCard title="Usage" minHeight="20vh" maxHeight="20vh">
             <div>
               <small className="text-truncate">
-                Remaining:{" "}
-                {auth.user
-                  ? auth.user?.plan.total_minutes -
-                    auth.user?.plan.leftover_minutes
-                  : 0}
+                Remaining: {auth.user ? auth.user?.plan.leftover_minutes : 0}
               </small>
               <hr />
-              <ProgressBar>
-                <ProgressBar
-                  className="bg-yellow"
-                  striped
-                  variant="warning"
-                  now={auth.user?.plan.leftover_minutes || 0}
-                  key={1}
-                />
-                <ProgressBar
-                  className="bg-blue"
-                  striped
-                  variant="info"
-                  now={
-                    auth.user
-                      ? auth.user?.plan.total_minutes -
-                        auth.user?.plan.leftover_minutes
-                      : 0
-                  }
-                  key={2}
-                />
-              </ProgressBar>
+              <PlanUsageBar
+                total_minutes={auth.user?.plan.total_minutes || 0}
+                leftover_minutes={auth.user?.plan.leftover_minutes || 0}
+              />
               <div className="d-flex justify-content-between">
                 <small>{auth.user?.plan.leftover_minutes || 0} minutes</small>
                 <small>
@@ -190,7 +212,10 @@ export default function Payment() {
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
               <h2 className="text-truncate display-6">Plan: Basic</h2>
-              <h6>Cost per month: {userPlan?.price === null ? "N/A" : `€${userPlan?.price}`}</h6>
+              <h6>
+                Cost per month:{" "}
+                {userPlan?.price === null ? "N/A" : `€${userPlan?.price}`}
+              </h6>
               <h6>Next billing date: N/A</h6>
             </div>
           </RegularCard>
@@ -215,10 +240,10 @@ export default function Payment() {
                     maxHeight="11vh"
                     overflowY="hidden"
                   >
-                    <h5>€{(option.price / 100).toFixed(2)}</h5>
+                    <h5>€{formatMinorPrice(option.price)}</h5>
                     <Button
                       onClick={() => {
-                        checkout(option.order_inventory_id);
+                        topUpCheckout(option.id);
                       }}
                       className="w-100"
                     >
@@ -228,6 +253,101 @@ export default function Payment() {
                 </Col>
               ))}
             </Row>
+          </Stack>
+        </Col>
+        <Col xs={12}>
+          <hr />
+          <Stack gap={3}>
+            <div>
+              <h2 className="mb-0">Payment history</h2>
+              <small className="text-muted">
+                Payment history entries are deleted after they are older than{" "}
+                <b>N</b> days. <br />
+              </small>
+              {paymentHistory.some((e)=>e.state === "PENDING")}
+              <small>
+                <i className="txt-yellow bi bi-info-circle-fill pe-2"></i>Press
+                on any{" "}
+                <span className="btn not-clickable bg-yellow txt-dark-1">
+                  pending
+                </span>{" "}
+                payment to manually complete it.
+              </small>
+            </div>
+
+            <RegularCard minHeight="100%" maxHeight="100%">
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th className="d-flex align-content-end justify-content-end">
+                      State
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paymentHistory.map((payment) => {
+                    return (
+                      <tr>
+                        <td>{payment.description}</td>
+                        <td>€{formatMinorPrice(payment.value)}</td>
+                        <td>{new Date(payment.created_date).toISOString()}</td>
+                        <td className="d-flex align-content-end justify-content-end">
+                          {payment.state === "PENDING" && (
+                            <a
+                              className="btn bg-yellow txt-dark-1"
+                              target="_blank"
+                              rel="noreferrer"
+                              href={payment.checkout_url}
+                            >
+                              Pending
+                            </a>
+                          )}
+                          {payment.state === "AUTHORISED" && (
+                            <Button
+                              className="bg-blue"
+                              onClick={() => window.open(payment.checkout_url)}
+                            >
+                              Authorized
+                            </Button>
+                          )}
+                          {payment.state === "PROCESSING" && (
+                            <Button className="bg-grey txt-white disabled">
+                              <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                                className="me-2 txt-white"
+                              />
+                              Processing
+                            </Button>
+                          )}
+                          {payment.state === "CANCELLED" && (
+                            <Button className="disabled bg-red txt-dark-1">
+                              Cancelled
+                            </Button>
+                          )}
+                          {payment.state === "FAILED" && (
+                            <Button className="disabled bg-red txt-dark-1">
+                              Failed
+                            </Button>
+                          )}
+                          {payment.state === "COMPLETED" && (
+                            <Button className="bg-green txt-dark-1 disabled">
+                              Completed
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            </RegularCard>
           </Stack>
         </Col>
       </Row>
@@ -255,7 +375,10 @@ export default function Payment() {
                         <h2 className="text-truncate display-6">
                           Plan: {plan.name}
                         </h2>
-                        <h6>Cost per month: {plan.price === null ? "N/A" : `€${plan.price}`}</h6>
+                        <h6>
+                          Cost per month:{" "}
+                          {plan.price === null ? "N/A" : `€${plan.price}`}
+                        </h6>
                         <hr />
                         <h6>Description:</h6>
                         <ReactMarkdown>{plan.description}</ReactMarkdown>
