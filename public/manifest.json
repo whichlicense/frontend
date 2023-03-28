@@ -1,6 +1,7 @@
 {
   "short_name": "WhichLicense",
   "name": "WhichLicense Dashboard",
+  "id": "com.whichlicense.dashboard",
   "icons": [
     {
       "src": "logo48.png",
