@@ -103,17 +103,17 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
     <div>
       <div className="position-relative">
         <div
-          className="position-absolute w-100 d-flex justify-content-between"
-          style={{ zIndex: 1 }}
+          className="position-absolute w-100 d-flex justify-content-between align-items-start"
+          style={{ zIndex: 1, height: '50px' }}
         >
           <Stack
             direction="horizontal"
-            className="w-100 d-flex justify-content-start no-scrollbar"
+            className="w-100 d-flex justify-content-start no-scrollbar align-items-start"
             style={{
               overflowX: "auto",
             }}
           >
-            <ButtonGroup className="tool-bar-button-group">
+            <ButtonGroup className="tool-bar-button-group shadow-sm shadow-fade-in">
               <BackButton />
               {items.length > 0 &&
                 renderToolBarItem(

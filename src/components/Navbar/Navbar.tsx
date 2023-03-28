@@ -37,7 +37,7 @@ export default function NavigationBar() {
       <div className="position-relative">
         <Button
           onClick={() => setOpen((x) => !x)}
-          className={`bg-purple text-dark position-absolute ${
+          className={`bg-purple text-dark position-absolute shadow-sm ${
             open ? "nav-collapse-button" : "nav-expand-button"
           }`}
         >
