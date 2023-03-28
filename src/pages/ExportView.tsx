@@ -278,10 +278,10 @@ ${test_nested_dependencies
       >
         <Container fluid className="py-3">
           <Row className="g-3">
-            <Col xs={6}>
-              <Image src="http://localhost:3001/logo192.png" />
+            <Col xs={3} className="pb-2">
+              <Image fluid src="http://192.168.1.130:3007/logo512.png" />
             </Col>
-            <Col xs={6} className="text-end">
+            <Col xs={9} className="text-end">
               <Stack gap={1}>
                 <h6 className="display-4">ReactJS</h6>
                 <h6>Version: 1.0.0</h6>
