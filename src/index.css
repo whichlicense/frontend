@@ -40,13 +40,17 @@ Good primaries: Blue, purple, white, some greens
   --button-color-dark: black;
 
   --color-text-light: rgb(240,240,240);
-  --page-clamp: 96dvh;
+  --page-clamp: 96svh;
 
   --border-radius-normal: 12px;
   --border-radius-heavy: 14px;
 
   /* Bootstrap overrides */
   --bs-body-color: var(--color-text-light);
+}
+
+html, body, #root {
+  height: 100%;
 }
 
 @font-face {

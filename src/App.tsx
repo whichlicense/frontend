@@ -46,13 +46,12 @@ function App() {
   return (
     <Router>
       <AuthContextProvider>
-        <Container fluid className="noise">
+        <Container fluid className="noise h-100">
           <ProviderContextProvider>
             <DrawerContextProvider>
               <Stack
                 direction="horizontal"
-                className="d-flex align-items-center w-100"
-                style={{ height: "100vh" }}
+                className="d-flex align-items-center w-100 h-100"
               >
                 <NavigationBar />
                 <div className="flex-grow-1 flex-fill d-flex">
