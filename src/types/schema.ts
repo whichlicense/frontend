@@ -123,3 +123,25 @@ export interface OrderInventoryTable {
   id: string;
   price: number;
 }
+
+export interface AccountPermissionsTable {
+  id: number;
+
+  /**
+   * References ```AccountTable.id```
+   */
+  account_id: number;
+
+  add_project: boolean;
+  edit_project: boolean;
+  remove_project: boolean;
+  initiate_scan: boolean;
+  accept_package: boolean;
+  reject_package: boolean;
+  resolve_package: boolean;
+  view_package_notes: boolean;
+  edit_package_notes: boolean;
+  create_sub_account: boolean;
+  edit_sub_account: boolean;
+  delete_sub_account: boolean;
+}
