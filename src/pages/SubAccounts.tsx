@@ -26,8 +26,13 @@ import SectionHeading from "../components/Typography/SectionHeading";
 import { mapKey } from "../components/utils/mapKey";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
+import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { AccountPermissionsTable, AccountTable } from "../types/schema";
 
+type TSubAccountAndPermissions = AccountTable & {
+  permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
+};
 export default function SubAccounts() {
   useForceAuth({
     ifState: AuthState.LOGGED_OUT,
@@ -56,17 +61,77 @@ export default function SubAccounts() {
     },
   ]);
 
+  const auth = useAuthContext();
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
+    []
+  );
   const [showAddSubAccountCard, setShowAddSubAccountCard] = useState(false);
 
   const getAvailablePermissions = async () => {
-    return (await axios.get(`${CONFIG.gateway_url}/settings/get-available-permissions`)).data as string[];
-  }
+    return (
+      await axios.get(
+        `${CONFIG.gateway_url}/settings/get-available-permissions`
+      )
+    ).data as string[];
+  };
+
+  const getSubAccounts = async () => {
+    return (
+      await axios.get(`${CONFIG.gateway_url}/sub-account/get-all`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+    ).data as TSubAccountAndPermissions[];
+  };
+
+  const onAddSubAccount = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+
+    const first_name = data.get("first_name") as string;
+    const last_name = data.get("last_name") as string;
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+
+    const perms = Object.fromEntries(
+      permissions.map((permissionKey) => {
+        return [permissionKey, (e.target as any)[permissionKey].checked];
+      })
+    );
+    axios
+      .post(
+        `${CONFIG.gateway_url}/sub-account/add`,
+        {
+          first_name,
+          last_name,
+          email,
+          password,
+          permissions: perms,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        // TODO: toast success
+      })
+      .catch((err) => {
+        // TODO: toast error
+      });
+  };
 
   useEffectOnce(() => {
     getAvailablePermissions().then((res) => {
-      console.log(res);
       setPermissions(res);
+    });
+
+    getSubAccounts().then((res) => {
+      console.log(res);
+      setSubAccounts(res);
     });
   });
   return (
@@ -75,66 +140,58 @@ export default function SubAccounts() {
         <h1 className="display-5">Sub Accounts</h1>
         <hr />
         <Row>
-          <Col md={6}>
-            <RegularCard title="John Doe" minHeight="22vh" maxHeight="22vh">
-              <Stack gap={1}>
-                <p>Email: example@example.com</p>
-                <h6>Permissions:</h6>
-                <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Col>
-                      <Button className="w-100 not-clickable bg-green txt-dark-1">
-                        <small>Perm example {i}</small>
-                      </Button>
-                    </Col>
-                  ))}
-                </Row>
-              </Stack>
-            </RegularCard>
-          </Col>
-          <Col md={6}>
-            <RegularCard title="John Doe" minHeight="22vh" maxHeight="22vh">
-              <Stack gap={1}>
-                <p>Email: example@example.com</p>
-                <h6>Permissions:</h6>
-                <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Col>
-                      <Button className="w-100 not-clickable bg-green txt-dark-1">
-                        <small>Perm example {i}</small>
-                      </Button>
-                    </Col>
-                  ))}
-                </Row>
-              </Stack>
-            </RegularCard>
-          </Col>
+          {subAccounts.map((subAccount, subAccountIdx) => (
+            <Col md={6}>
+              <RegularCard
+                title={`${subAccount.first_name} ${subAccount.last_name}`}
+                minHeight="22vh"
+                maxHeight="22vh"
+              >
+                <Stack gap={1}>
+                  <p>Email: {subAccount.email}</p>
+                  <h6>Permissions:</h6>
+                  <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
+                    {Object.entries(subAccount.permissions).map(([k, v], i) => (
+                      <Col key={`${subAccountIdx}_${k}_${v}_${i}`}>
+                        <Button className={`w-100 not-clickable bg-${v ? "green" : "red"} txt-dark-1`}>
+                          <small>{mapKey(k)}</small>
+                        </Button>
+                      </Col>
+                    ))}
+                  </Row>
+                </Stack>
+              </RegularCard>
+            </Col>
+          ))}
         </Row>
       </Stack>
 
-      <InlineCard show={showAddSubAccountCard} handleClose={()=>setShowAddSubAccountCard(false)}>
+      <InlineCard
+        show={showAddSubAccountCard}
+        handleClose={() => setShowAddSubAccountCard(false)}
+      >
         <>
           <SectionHeading title={"Add sub account"} size={"1"} />
-          <Form onSubmit={(e)=> {
-            e.preventDefault();
-            Object.entries(e.target).forEach(([key, value]) => {
-              console.log(key, value);
-            });
-            console.log(e)
-          }}>
+          <Form onSubmit={onAddSubAccount}>
             <Row xs={1} md={2}>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>
                     First name<span className="txt-deep-red">*</span>
                   </Form.Label>
-                  <Form.Control placeholder="Enter first name" />
+                  <Form.Control
+                    name="first_name"
+                    placeholder="Enter first name"
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Last name</Form.Label>
-                  <Form.Control placeholder="(optional) Enter last name" />
+                  <Form.Control
+                    name="last_name"
+                    placeholder="(optional) Enter last name"
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -143,14 +200,22 @@ export default function SubAccounts() {
               <Form.Label>
                 Email address<span className="txt-deep-red">*</span>
               </Form.Label>
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Control
+                name="email"
+                type="email"
+                placeholder="Enter email"
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>
                 Password<span className="txt-deep-red">*</span>
               </Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                name="password"
+                type="password"
+                placeholder="Password"
+              />
             </Form.Group>
 
             <SectionHeading title={"Permissions"} size={"2"} divider />
@@ -159,7 +224,11 @@ export default function SubAccounts() {
                 return (
                   <Col>
                     <Form.Group>
-                      <Form.Check name={permissionKey} type="checkbox" label={mapKey(permissionKey)} />
+                      <Form.Check
+                        name={permissionKey}
+                        type="checkbox"
+                        label={mapKey(permissionKey)}
+                      />
                     </Form.Group>
                   </Col>
                 );
