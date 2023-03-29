@@ -18,7 +18,6 @@
 import { Badge, Col, ListGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { GoogleTreeMapChart } from "../components/Charts/GoogleTreeMapChart";
-import HBarChart from "../components/Charts/HBarChart";
 import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import ScanList from "../components/Lists/ScanList";
