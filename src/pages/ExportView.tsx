@@ -198,8 +198,9 @@ export default function ExportView() {
     <head>
         <title>PDF export</title>
         ${[
-          ...document.querySelectorAll('link[rel="stylesheet"], style'),
-        ].reduce((acc, node) => (acc += node.outerHTML), "")}
+          ...document.querySelectorAll('link[rel="stylesheet"], style, script[src]'),
+        ].reduce((acc, node) => (acc += "\n"+node.outerHTML), "")}
+        
         <style type="text/css" media="print">
             @page {
                 size: A4;
