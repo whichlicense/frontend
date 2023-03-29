@@ -27,6 +27,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { GoogleTreeMapChart } from "../components/Charts/GoogleTreeMapChart";
 import Mermaid from "../components/Charts/Mermaid";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
@@ -40,7 +41,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 // TODO: remove me.. only for testing
-const test_nested_dependencies = Array.from({ length: 3 }, (_, i) => {
+const test_nested_dependencies = Array.from({ length: getRandomInt(4, 10) }, (_, i) => {
   return {
     id: `P${i}`,
     name: `Top level dependency ${i}`,
@@ -112,7 +113,8 @@ export default function ExportView() {
     showTransitiveDependencies: true,
     showCustomNotes: false,
     showNoticeAndWarning: true,
-    showDependencyMap: true,
+    showDependencyMindMap: false,
+    showDependencyExposure: true,
     addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
@@ -231,12 +233,13 @@ export default function ExportView() {
   };
 
   const constructedMermaidGraph = useMemo(() => {
-    return `mindmap
+    return printSettings.showDependencyMindMap ? `mindmap
 \tReactJS
 ${test_nested_dependencies
   .map((node) => traverseAndRenderMermaid(2, node))
-  .join("")}`;
-  }, [test_nested_dependencies]);
+  .join("")}` : "";
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [printSettings.showDependencyMindMap, test_nested_dependencies]);
 
   function traverseAndRenderMermaid(
     level: number,
@@ -249,6 +252,29 @@ ${test_nested_dependencies
     }
     return mermaidString;
   }
+
+  function traverseAndRenderForOrgChart(
+    node: typeof test_nested_dependencies[0],
+    parentId: string,
+    contents: [string, string | null, number][]
+  ) {
+    contents.push([node.id, parentId, node.dependencies.length + 1]);
+    for (const dep of node.dependencies) {
+      traverseAndRenderForOrgChart(dep, node.id, contents);
+    }
+  }
+
+  const constructedOrgChartData = useMemo(() => {
+    if(!printSettings.showDependencyExposure) return ([] as [string, string | null, number][])
+    const contents: [string, string | null, number][] = [
+      ["Root", null, 0]
+    ];
+    for (const node of test_nested_dependencies) {
+      traverseAndRenderForOrgChart(node, "Root", contents);
+    }
+    return contents;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [test_nested_dependencies, printSettings.showDependencyExposure]);
 
   return (
     <div className="fade-in-forward">
@@ -394,7 +420,20 @@ ${test_nested_dependencies
               </Col>
             )}
 
-            {printSettings.showDependencyMap && (
+              {printSettings.showDependencyExposure && (
+                <Col xs={12}>
+                  
+                <RegularCard
+                  title={"Dependency exposure"}
+                  minHeight="100%"
+                  maxHeight="100%"
+                >
+                  <GoogleTreeMapChart bg="bg-card" data={constructedOrgChartData} resizableContainerId="nav-content-section" />
+                </RegularCard>
+                </Col>
+              )}
+
+            {printSettings.showDependencyMindMap && (
               <Col>
                 <RegularCard
                   title={"Dependency map"}
@@ -533,13 +572,27 @@ ${test_nested_dependencies
               onChange={(e) => {
                 setPrintSettings({
                   ...printSettings,
-                  showDependencyMap: e.target.checked,
+                  showDependencyMindMap: e.target.checked,
                 });
               }}
               type={"checkbox"}
-              defaultChecked={printSettings.showDependencyMap}
+              defaultChecked={printSettings.showDependencyMindMap}
             />
             Show dependency map graph
+          </Stack>
+
+          <Stack direction="horizontal" gap={3}>
+            <Form.Check
+              onChange={(e) => {
+                setPrintSettings({
+                  ...printSettings,
+                  showDependencyExposure: e.target.checked,
+                });
+              }}
+              type={"checkbox"}
+              defaultChecked={printSettings.showDependencyExposure}
+            />
+            Show dependency exposure (tree map)
           </Stack>
 
           <Stack direction="horizontal" gap={3}>
