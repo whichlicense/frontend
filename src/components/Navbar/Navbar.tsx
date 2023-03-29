@@ -33,7 +33,7 @@ export default function NavigationBar() {
   // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
 
   return (
-    <div className={`${open ? "nav-open" : "nav-closed"}`}>
+    <div id="nav-content-section" className={`${open ? "nav-open" : "nav-closed"}`}>
       <div className="position-relative">
         <Button
           onClick={() => setOpen((x) => !x)}

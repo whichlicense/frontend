@@ -62,6 +62,7 @@ function App() {
                       <section
                         ref={mainContentRef}
                         className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
+                        id="main-content-section"
                       >
                         <Routes>
                           <Route path="/search" element={<Search />} />
