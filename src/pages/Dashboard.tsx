@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Badge, Col, ListGroup, Row } from "react-bootstrap";
+import { Badge, Col, ListGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { GoogleTreeMapChart } from "../components/Charts/GoogleTreeMapChart";
 import HBarChart from "../components/Charts/HBarChart";
@@ -25,6 +25,7 @@ import ScanList from "../components/Lists/ScanList";
 import { ProviderType } from "../components/Provider/Provider";
 import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/Provider/Rendering/ProviderMismatchHandler";
 import { ComplianceStatus } from "../components/typings/DependencyStatus";
+import SectionHeading from "../components/Typography/SectionHeading";
 import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 
@@ -62,15 +63,13 @@ export default function Dashboard() {
     <>
       <Row>
       <Col xs={12} className="g-3 d-flex align-items-stretch">
-      {/* <RegularCard
-        title={<h1 className="display-6 txt-dark-1">Dependency exposure.</h1>}
-        bg="bg-purple"
-        minHeight="35%"
-        maxHeight="100%"
-        fadeIn
-      > */}
+        <Stack>
+        <div className="ps-2">
+          <SectionHeading title="Package exposure" size="6" type="display" />
+        </div>
         <GoogleTreeMapChart />
-      {/* </RegularCard> */}
+        </Stack>
+        
       </Col>
 
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">

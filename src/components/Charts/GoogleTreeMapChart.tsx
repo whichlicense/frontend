@@ -62,11 +62,13 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     minColor: "#9b7bf5",
     midColor: "#eed256",
     maxColor: "#f67676",
-    headerHeight: 15,
-    fontColor: "black",
+    headerHeight: 0, // removes the grey top header
+    fontColor: "#1e1e1e",
     fontFamily: "DMMono",
     fontSize: 20,
     showScale: false,
+    enableHighlight: true,
+    useWeightedAverageForAggregation: true,
   };
   return (
     <Chart
