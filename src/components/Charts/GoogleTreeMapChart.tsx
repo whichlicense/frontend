@@ -16,6 +16,7 @@
  */
 import { Chart } from "react-google-charts";
 import "../../styles/Chart.css"
+import { useElementSize } from "../Hooks/useElementSize";
 
 type TGoogleTreeMapChartProps = {
   /**
@@ -28,6 +29,7 @@ type TGoogleTreeMapChartProps = {
    */
     data: [string, string | null, number][],
     bg: "bg-section" | "bg-card",
+    resizableContainerId?: string,
 };
 export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
   const data = [
@@ -38,6 +40,8 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     ],
     ...props.data
   ];
+  // Forces a re-render (and thus resize) when the supplied element is resized.
+  useElementSize({ id: props.resizableContainerId || "root" });
 
   const options: Chart["props"]["options"] = {
     noColor: "#818b8e",
@@ -53,13 +57,20 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     useWeightedAverageForAggregation: true,
   };
   return (
-    <Chart
-      chartType="TreeMap"
-      width="100%"
-      height="40vh"
-      data={data}
-      options={options}
-      className={`wl-google-chart ${props.bg}`}
-    />
+    <div className="position-relative w-100" style={{
+      height: "40vh",
+    }}>
+      <div className="position-absolute w-100">
+        <Chart
+        chartType="TreeMap"
+        width={`100%`}
+        height="40vh"
+        data={data}
+        options={options}
+        className={`wl-google-chart ${props.bg}`}
+      />
+      </div>
+    
+    </div>
   );
 }
