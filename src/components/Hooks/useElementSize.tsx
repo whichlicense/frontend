@@ -22,7 +22,11 @@ export type TElementSize = {
   width: number | undefined;
   height: number | undefined;
 };
-export function useElementSize(props: { id: string }): TElementSize {
+type TUseElementSizeProps = {
+  id: string;
+  debounce?: number;
+}
+export function useElementSize(props: TUseElementSizeProps): TElementSize {
   const [elementSize, setElementSize] = useState<TElementSize>({
     width: undefined,
     height: undefined,
@@ -31,11 +35,30 @@ export function useElementSize(props: { id: string }): TElementSize {
     const element = document.getElementById(props.id);
     if (!element) return;
 
+    let timeout: number | undefined;
+
     function handleResize() {
-      setElementSize({
-        width: element?.clientWidth,
-        height: element?.clientHeight,
-      });
+      const registerTimeout = () => {
+        timeout = window.setTimeout(() => {
+          setElementSize({
+            width: element?.clientWidth,
+            height: element?.clientHeight,
+          });
+        }, props.debounce)
+      };
+
+      if(props.debounce){
+        if(timeout){
+          window.clearTimeout(timeout);
+          timeout = undefined;
+        }
+        registerTimeout();
+      }else{
+        setElementSize({
+          width: element?.clientWidth,
+          height: element?.clientHeight,
+        });
+      }
     }
     const ro = new ResizeObserver(handleResize);
     ro.observe(element);
