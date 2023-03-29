@@ -17,6 +17,7 @@
 
 import { Badge, Col, ListGroup, Row } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
+import { GoogleTreeMapChart } from "../components/Charts/GoogleTreeMapChart";
 import HBarChart from "../components/Charts/HBarChart";
 import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
@@ -26,6 +27,7 @@ import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/P
 import { ComplianceStatus } from "../components/typings/DependencyStatus";
 import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+
 
 export default function Dashboard() {
   useForceAuth({
@@ -58,52 +60,19 @@ export default function Dashboard() {
   ]);
   return (
     <>
-      <RegularCard
-        title={<h1 className="display-6 text-dark">Information Bar.</h1>}
-        bg="bg-purple"
-        maxHeight="25vh"
-        minHeight="25vh"
-        fadeIn
-      >
-        <HBarChart
-          series={[
-            {
-              data: [
-                {
-                  x: "MIT",
-                  y: 72,
-                },
-                {
-                  x: "Apache 2.0",
-                  y: 30,
-                },
-                {
-                  x: "CC-BY-4.0",
-                  y: 20,
-                },
-                {
-                  x: "intel-acpi",
-                  y: 20,
-                },
-                {
-                  x: "gpl-2.0-plus",
-                  y: 13,
-                },
-                {
-                  x: "x",
-                  y: 40,
-                },
-                {
-                  x: "x",
-                  y: 69,
-                },
-              ],
-            },
-          ]}
-        />
-      </RegularCard>
-
       <Row>
+      <Col xs={12} className="g-3 d-flex align-items-stretch">
+      {/* <RegularCard
+        title={<h1 className="display-6 txt-dark-1">Dependency exposure.</h1>}
+        bg="bg-purple"
+        minHeight="35%"
+        maxHeight="100%"
+        fadeIn
+      > */}
+        <GoogleTreeMapChart />
+      {/* </RegularCard> */}
+      </Col>
+
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
           <ProviderMismatchHandler
           replacingComponent={
