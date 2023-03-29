@@ -43,7 +43,7 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     ...props.data
   ];
   // Forces a re-render (and thus resize) when the supplied element is resized.
-  useElementSize({ id: props.resizableContainerId || "root", debounce: 500 });
+  useElementSize({ id: props.resizableContainerId || "root", debounce: 5 });
 
   const options: Chart["props"]["options"] = {
     noColor: "#818b8e",
