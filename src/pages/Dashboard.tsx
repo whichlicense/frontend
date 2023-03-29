@@ -67,6 +67,7 @@ export default function Dashboard() {
           <SectionHeading title="Package exposure" size="6" type="display" />
         </div>
         <GoogleTreeMapChart
+        resizableContainerId="nav-content-section"
           bg="bg-section"
          data={
           [
