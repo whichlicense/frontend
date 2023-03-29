@@ -32,14 +32,14 @@ Good primaries: Blue, purple, white, some greens
   --color-purple: #9b7bf5;
   --color-green: #70e597;
 
-  --color-section-background: rgb(30, 30, 30);
+  --color-section-background: #1e1e1e;
   --color-highlighted-background: rgb(148, 117, 234);
   
   --color-button-selected: white;
   --button-color-light: rgb(36,37,35);
   --button-color-dark: black;
 
-  --color-text-light: rgb(240,240,240);
+  --color-text-light: #f0f0f0;
   --page-clamp: 96svh;
 
   --border-radius-normal: 12px;
