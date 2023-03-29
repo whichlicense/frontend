@@ -16,8 +16,15 @@
  */
 
 .wl-google-chart rect{
-    stroke: var(--color-section-background) !important;
     rx: 12px !important;
     ry: 12px !important;
     stroke-width: 10;
+}
+
+.wl-google-chart.bg-section rect{
+    stroke: var(--color-section-background) !important;
+}
+
+.wl-google-chart.bg-card rect{
+    stroke: var(--color-dark-2) !important;
 }
