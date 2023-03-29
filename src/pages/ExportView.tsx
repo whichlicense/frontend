@@ -41,67 +41,73 @@ function getRandomInt(min: number, max: number) {
 }
 
 // TODO: remove me.. only for testing
-const test_nested_dependencies = Array.from({ length: getRandomInt(4, 10) }, (_, i) => {
-  return {
-    id: `P${i}`,
-    name: `Top level dependency ${i}`,
-    version: `${getRandomInt(1, 10)}.${getRandomInt(1, 10)}.${getRandomInt(
-      1,
-      50
-    )}`,
-    license: LICENSE_1,
-    compliant: getRandomInt(0, 1) === 1,
-    dependencies: Array.from({ length: getRandomInt(1, 4) }, (_, j) => {
-      return {
-        id: `P${i}.${j}`,
-        name: `Package ${i}.${j}`,
-        version: `${getRandomInt(1, 10)}.${getRandomInt(1, 10)}.${getRandomInt(
-          1,
-          50
-        )}`,
-        license: LICENSE_1,
-        compliant: getRandomInt(0, 1) === 1,
-        dependencies: Array.from({ length: getRandomInt(1, 3) }, (_, k) => {
-          return {
-            id: `P${i}.${j}.${k}`,
-            name: `Package ${i}.${j}.${k}`,
-            version: `${getRandomInt(1, 10)}.${getRandomInt(
-              1,
-              10
-            )}.${getRandomInt(1, 50)}`,
-            license: LICENSE_1,
-            compliant: getRandomInt(0, 1) === 1,
-            dependencies: Array.from({ length: getRandomInt(1, 3) }, (_, l) => {
-              return {
-                id: `P${i}.${j}.${k}.${l}`,
-                name: `Package ${i}.${j}.${k}.${l}`,
-                version: `${getRandomInt(1, 10)}.${getRandomInt(
-                  1,
-                  10
-                )}.${getRandomInt(1, 50)}`,
-                license: LICENSE_1,
-                compliant: getRandomInt(0, 1) === 1,
-                dependencies: Array.from({ length: 2 }, (_, m) => {
+const test_nested_dependencies = Array.from(
+  { length: getRandomInt(4, 10) },
+  (_, i) => {
+    return {
+      id: `P${i}`,
+      name: `Top level dependency ${i}`,
+      version: `${getRandomInt(1, 10)}.${getRandomInt(1, 10)}.${getRandomInt(
+        1,
+        50
+      )}`,
+      license: LICENSE_1,
+      compliant: getRandomInt(0, 1) === 1,
+      dependencies: Array.from({ length: getRandomInt(1, 4) }, (_, j) => {
+        return {
+          id: `P${i}.${j}`,
+          name: `Package ${i}.${j}`,
+          version: `${getRandomInt(1, 10)}.${getRandomInt(
+            1,
+            10
+          )}.${getRandomInt(1, 50)}`,
+          license: LICENSE_1,
+          compliant: getRandomInt(0, 1) === 1,
+          dependencies: Array.from({ length: getRandomInt(1, 3) }, (_, k) => {
+            return {
+              id: `P${i}.${j}.${k}`,
+              name: `Package ${i}.${j}.${k}`,
+              version: `${getRandomInt(1, 10)}.${getRandomInt(
+                1,
+                10
+              )}.${getRandomInt(1, 50)}`,
+              license: LICENSE_1,
+              compliant: getRandomInt(0, 1) === 1,
+              dependencies: Array.from(
+                { length: getRandomInt(1, 3) },
+                (_, l) => {
                   return {
-                    id: `P${i}.${j}.${k}.${l}.${m}`,
-                    name: `Package ${i}.${j}.${k}.${l}.${m}`,
+                    id: `P${i}.${j}.${k}.${l}`,
+                    name: `Package ${i}.${j}.${k}.${l}`,
                     version: `${getRandomInt(1, 10)}.${getRandomInt(
                       1,
                       10
                     )}.${getRandomInt(1, 50)}`,
                     license: LICENSE_1,
                     compliant: getRandomInt(0, 1) === 1,
-                    dependencies: [],
+                    dependencies: Array.from({ length: 2 }, (_, m) => {
+                      return {
+                        id: `P${i}.${j}.${k}.${l}.${m}`,
+                        name: `Package ${i}.${j}.${k}.${l}.${m}`,
+                        version: `${getRandomInt(1, 10)}.${getRandomInt(
+                          1,
+                          10
+                        )}.${getRandomInt(1, 50)}`,
+                        license: LICENSE_1,
+                        compliant: getRandomInt(0, 1) === 1,
+                        dependencies: [],
+                      };
+                    }),
                   };
-                }),
-              };
-            }),
-          };
-        }),
-      };
-    }),
-  };
-});
+                }
+              ),
+            };
+          }),
+        };
+      }),
+    };
+  }
+);
 
 export default function ExportView() {
   const printRef = useRef<HTMLDivElement | null>(null);
@@ -198,8 +204,10 @@ export default function ExportView() {
     <head>
         <title>PDF export</title>
         ${[
-          ...document.querySelectorAll('link[rel="stylesheet"], style, script[src]'),
-        ].reduce((acc, node) => (acc += "\n"+node.outerHTML), "")}
+          ...document.querySelectorAll(
+            'link[rel="stylesheet"], style, script[src]'
+          ),
+        ].reduce((acc, node) => (acc += "\n" + node.outerHTML), "")}
         
         <style type="text/css" media="print">
             @page {
@@ -234,12 +242,14 @@ export default function ExportView() {
   };
 
   const constructedMermaidGraph = useMemo(() => {
-    return printSettings.showDependencyMindMap ? `mindmap
+    return printSettings.showDependencyMindMap
+      ? `mindmap
 \tReactJS
 ${test_nested_dependencies
   .map((node) => traverseAndRenderMermaid(2, node))
-  .join("")}` : "";
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  .join("")}`
+      : "";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [printSettings.showDependencyMindMap, test_nested_dependencies]);
 
   function traverseAndRenderMermaid(
@@ -266,15 +276,14 @@ ${test_nested_dependencies
   }
 
   const constructedOrgChartData = useMemo(() => {
-    if(!printSettings.showDependencyExposure) return ([] as [string, string | null, number][])
-    const contents: [string, string | null, number][] = [
-      ["Root", null, 0]
-    ];
+    if (!printSettings.showDependencyExposure)
+      return [] as [string, string | null, number][];
+    const contents: [string, string | null, number][] = [["Root", null, 0]];
     for (const node of test_nested_dependencies) {
       traverseAndRenderForOrgChart(node, "Root", contents);
     }
     return contents;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [test_nested_dependencies, printSettings.showDependencyExposure]);
 
   return (
@@ -421,18 +430,23 @@ ${test_nested_dependencies
               </Col>
             )}
 
-              {printSettings.showDependencyExposure && (
-                <Col xs={12}>
-                  
+            {printSettings.showDependencyExposure && (
+              <Col xs={12}>
                 <RegularCard
                   title={"Dependency exposure"}
                   minHeight="100%"
                   maxHeight="100%"
                 >
-                  <GoogleTreeMapChart bg="bg-card" data={constructedOrgChartData} resizableContainerId="nav-content-section" />
+                  <GoogleTreeMapChart
+                    bg="bg-card"
+                    data={constructedOrgChartData}
+                    resizableContainerId="nav-content-section"
+                    maxDepth={2}
+                    maxPostDepth={0}
+                  />
                 </RegularCard>
-                </Col>
-              )}
+              </Col>
+            )}
 
             {printSettings.showDependencyMindMap && (
               <Col>

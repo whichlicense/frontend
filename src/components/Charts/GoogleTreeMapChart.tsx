@@ -30,6 +30,8 @@ type TGoogleTreeMapChartProps = {
     data: [string, string | null, number][],
     bg: "bg-section" | "bg-card",
     resizableContainerId?: string,
+    maxDepth?: number,
+    maxPostDepth?: number,
 };
 export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
   const data = [
@@ -55,6 +57,9 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     showScale: false,
     enableHighlight: true,
     useWeightedAverageForAggregation: true,
+
+    maxDepth: props.maxDepth || 1,
+    maxPostDepth: props.maxPostDepth || 0,
   };
   return (
     <div className="position-relative w-100" style={{
