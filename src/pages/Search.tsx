@@ -49,7 +49,7 @@ export default function Search() {
       onClick: () => {},
     },
   ]);
-
+// TODO: instead of showing inlinecard on dep click -> go to scan page
   return (
     <div>
       <br />
