@@ -78,6 +78,7 @@ export default function ScanResult() {
 
   // TODO: for resolve -> if not licensed allow a lawyer to say "this is fine" or "this is not fine"
   // TODO: here's a long list of all the files that have not been licensed. please review and accept, decline or resolve
+  // TODO: show ability to change version of the "view"
 
   return (
     <div>
