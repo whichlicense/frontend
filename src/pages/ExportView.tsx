@@ -315,7 +315,7 @@ ${test_nested_dependencies
         <Container fluid className="py-3">
           <Row className="g-3">
             <Col xs={3} className="pb-2">
-              <Image fluid src="http://192.168.1.130:3007/logo512.png" />
+              <Image fluid src="/logo512.png" />
             </Col>
             <Col xs={9} className="text-end">
               <Stack gap={1}>
