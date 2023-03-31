@@ -52,27 +52,12 @@ export interface AccountPlanTable {
    */
   plan: EAccountPlan;
 }
-export interface SubAccountTable {
-  // TODO: sub account access rights? -> for example: sub accounts can scan or not
-  id: number;
-  /**
-   * References ```AccountTable.id```
-   */
-  account_id: number;
-  first_name: string;
-  last_name: string | null;
-  email: string;
-  password: string;
-  /**
-   * The expertise of the user. for example:
-   *  - ```Legal```
-   * - ```Compliancy```
-   * - ```Management```
-   * - ```ALL  (for all expertise)```
-   *
-   * > Can be used to filter out irrelevant content in the dashboard
-   */
-  expertise: number;
+
+export enum EAccountType {
+  MAIN, SUB
+}
+export enum EAccountDomain {
+  ALL, LEGAL, FINANCE, TECH, OTHER
 }
 export interface AccountTable {
   id: number;
@@ -80,6 +65,14 @@ export interface AccountTable {
   last_name: string | null;
   email: string;
   password: string;
+
+  type: EAccountType;
+  domain: EAccountDomain;
+  /**
+   * References ```AccountTable.id``` only when ```type``` is ```EAccountType.SUB``` indicating
+   * that the account belongs to another account.
+   */
+  parent_account_id: number | null;
 }
 
 /**

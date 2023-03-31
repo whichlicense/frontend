@@ -66,6 +66,7 @@ export default function SubAccounts() {
   const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
     []
   );
+  const [domains, setDomains] = useState<{id: number, name: string, description: string}[]>([]);
   const [showAddSubAccountCard, setShowAddSubAccountCard] = useState(false);
 
   const getAvailablePermissions = async () => {
@@ -86,12 +87,19 @@ export default function SubAccounts() {
     ).data as TSubAccountAndPermissions[];
   };
 
+  const getDomains = async () => {
+    return (
+      await axios.get(`${CONFIG.gateway_url}/domain/get-domains`)
+    ).data as {id: number, name: string, description: string}[]
+  }
+
   const onAddSubAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
 
     const first_name = data.get("first_name") as string;
     const last_name = data.get("last_name") as string;
+    const domain = data.get("domain") as string;
     const email = data.get("email") as string;
     const password = data.get("password") as string;
 
@@ -108,6 +116,7 @@ export default function SubAccounts() {
           last_name,
           email,
           password,
+          domain: parseInt(domain),
           permissions: perms,
         },
         {
@@ -133,6 +142,10 @@ export default function SubAccounts() {
       console.log(res);
       setSubAccounts(res);
     });
+
+    getDomains().then((res) => {
+      setDomains(res);
+    })
   });
   return (
     <>
@@ -148,7 +161,8 @@ export default function SubAccounts() {
                 maxHeight="22vh"
               >
                 <Stack gap={1}>
-                  <p>Email: {subAccount.email}</p>
+                  <span>Email: {subAccount.email}</span>
+                  <span>Domain: {domains.find(d=>d.id === subAccount.domain)?.name || "UNKNOWN"}</span>
                   <h6>Permissions:</h6>
                   <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
                     {Object.entries(subAccount.permissions).map(([k, v], i) => (
@@ -173,8 +187,8 @@ export default function SubAccounts() {
         <>
           <SectionHeading title={"Add sub account"} size={"1"} />
           <Form onSubmit={onAddSubAccount}>
-            <Row xs={1} md={2}>
-              <Col>
+            <Row>
+              <Col md={5}>
                 <Form.Group className="mb-3">
                   <Form.Label>
                     First name<span className="txt-deep-red">*</span>
@@ -185,7 +199,7 @@ export default function SubAccounts() {
                   />
                 </Form.Group>
               </Col>
-              <Col>
+              <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Last name</Form.Label>
                   <Form.Control
@@ -194,9 +208,23 @@ export default function SubAccounts() {
                   />
                 </Form.Group>
               </Col>
-            </Row>
 
-            <Form.Group className="mb-3">
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Domain</Form.Label>
+                  <Form.Select
+                    name="domain"
+                    placeholder="(optional) Enter last name"
+                  >
+                    {domains.map((domain) => {
+                      return <option value={domain.id}>{domain.name}</option>;
+                    })}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+              <Form.Group className="mb-3">
               <Form.Label>
                 Email address<span className="txt-deep-red">*</span>
               </Form.Label>
@@ -206,8 +234,10 @@ export default function SubAccounts() {
                 placeholder="Enter email"
               />
             </Form.Group>
+              </Col>
 
-            <Form.Group className="mb-3">
+              <Col md={6}>
+              <Form.Group className="mb-3">
               <Form.Label>
                 Password<span className="txt-deep-red">*</span>
               </Form.Label>
@@ -217,6 +247,13 @@ export default function SubAccounts() {
                 placeholder="Password"
               />
             </Form.Group>
+              </Col>
+            </Row>
+            
+            
+            
+
+           
 
             <SectionHeading title={"Permissions"} size={"2"} divider />
             <Row xs={1} md={3} lg={4} xxl={5} className="g-2 pt-2">
