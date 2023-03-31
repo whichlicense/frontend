@@ -119,15 +119,15 @@ export default function Dashboard() {
           <RegularCard title={"Projects"} fadeIn>
             <ListGroup variant="flush">
               <ListGroup.Item>
-                <div className="d-flex justify-content-between align-items-start"
+                <Stack direction="horizontal" className="d-flex justify-content-between align-items-start"
                 onClick={()=>{console.log('ss')}}>
-                  <div className="align-self-center">
-                    WhichLicense detection
+                  <div className="align-self-center h5">
+                  <i className="bi bi-github pe-3"></i>WhichLicense detection
                   </div>
                   <div className="align-self-baseline">
                     <Badge bg="secondary">Apache 2.0</Badge>
                   </div>
-                </div>
+                </Stack>
                 <hr className="text-muted" />
               </ListGroup.Item>
             </ListGroup>
