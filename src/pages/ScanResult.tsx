@@ -46,7 +46,7 @@ export default function ScanResult() {
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
-      title: "Resolve License",
+      title: "Resolve Package", // TODO: remove if not required.
       icon: "bi bi-check-circle",
       onClick: () => {
         setShowResolveLicense(true);
@@ -59,6 +59,17 @@ export default function ScanResult() {
       type: ToolBarItemType.BUTTON,
       title: "License info",
       icon: "bi bi-info-circle",
+      onClick: () => {
+        console.log("button clicked");
+      },
+    },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Add as project",
+      icon: "bi bi-cloud-plus",
       onClick: () => {
         console.log("button clicked");
       },
