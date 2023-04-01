@@ -118,7 +118,11 @@ export default function Payment() {
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
   const getAvailablePlans = async () => {
-    const res = await axios.get(`${CONFIG.gateway_url}/plans/get-all`);
+    const res = await axios.get(`${CONFIG.gateway_url}/plans/get-all`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    });
     return res.data;
   };
 
@@ -350,16 +354,15 @@ export default function Payment() {
         <>
           <Row>
             {plans
-              .filter((p) => p.available)
               .map((plan) => {
                 const isCurrentPlan = auth.user?.plan.plan === plan.id;
                 return (
                   <Col xs={12} md={6}>
                     <RegularCard
-                      title={`Basic ${isCurrentPlan ? "(current)" : ""}`}
                       minHeight="35vh"
                       maxHeight="30vh"
                       bg={isCurrentPlan ? "bg-blue" : undefined}
+                      className={isCurrentPlan ? "txt-dark-1" : ""}
                     >
                       <div>
                         <h2 className="text-truncate display-6">
