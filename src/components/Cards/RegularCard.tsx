@@ -34,6 +34,7 @@ type RegularCardProps = {
 
   icon?: string;
   iconColor?: TxtColors;
+  iconClass?: string;
 
   onCardClick?: () => void;
   onIconClick?: () => void;
@@ -77,7 +78,7 @@ export default function RegularCard(props: RegularCardProps) {
                 onClick={() => {
                   props.onIconClick && props.onIconClick();
                 }}
-                className={`${props.icon} ${props.iconColor || ""}`}
+                className={`${props.icon} ${props.iconColor || ""} ${props.iconClass || ""}`}
               ></i>
             </div>
           )}
