@@ -485,13 +485,20 @@ export default function Payment() {
 
       <InlineCard
         title="Change plan"
+        bodyClass="pt-0"
         show={showChangePlan}
         handleClose={() => setShowChangePlan(false)}
       >
         <>
+        <Stack gap={3}>
         {selectedPaymentMethod ? (
-         <h4>The currently selected card ending with <b>{selectedPaymentMethod?.last4}</b> will be charged upon selecting a new plan</h4>
-        ): <h4>No payment methods added to account, a new one will be added upon selecting a new plan</h4>}
+         <div>
+          The currently selected card ending with <b>{selectedPaymentMethod?.last4}</b> (<Button onClick={()=>{
+            setShowChangePlan(false);
+            setShowChangePaymentMethods(true);
+          }} className="txt-dark-1 bg-yellow py-0">Change</Button>) will be charged upon selecting a new plan.
+         </div>
+        ): <div>No payment methods added to account, a new one will be added upon selecting a new plan</div>}
           <Row>
             {plans.map((plan) => {
               const isCurrentPlan = auth.user?.plan.plan === plan.id;
@@ -523,6 +530,7 @@ export default function Payment() {
               );
             })}
           </Row>
+        </Stack>
         </>
       </InlineCard>
 
