@@ -519,7 +519,7 @@ export default function Payment() {
                       </h2>
                       <h6>
                         Cost per month:{" "}
-                        {plan.price === null ? "N/A" : `€${plan.price}`}
+                        {plan.price === null ? "N/A" : `€${formatMinorPrice(plan.price)}`}
                       </h6>
                       <hr />
                       <h6>Description:</h6>
