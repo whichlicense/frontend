@@ -21,8 +21,14 @@ import FullScreenLoader from "../components/Loaders/FullScreenLoader";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 
+
+export type TUserState = TUser & {plan: TUserPlan} & {
+  domain: number;
+  selectedPaymentMethod?: string | null;
+} | null
+
 export const AuthContext = createContext<{
-  user: TUser & {plan: TUserPlan} | null;
+  user: TUserState;
   isLoggedIn: () => boolean;
   login: (email: string, password: string) => Promise<any>;
   logout: () => void;
@@ -48,7 +54,7 @@ export type TUserPlan = {
 };
 
 export const AuthContextProvider = (props: any) => {
-  const [user, setUser] = useState<TUser & {plan: TUserPlan} | null>(null);
+  const [user, setUser] = useState<TUserState>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
