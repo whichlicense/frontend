@@ -413,7 +413,7 @@ export default function Payment() {
                     <th>Description</th>
                     <th>Amount</th>
                     <th>Date</th>
-                    <th className="d-flex align-content-end justify-content-end">
+                    <th className="text-end">
                       State
                     </th>
                   </tr>
@@ -422,10 +422,10 @@ export default function Payment() {
                   {paymentHistory.map((payment) => {
                     return (
                       <tr>
-                        <td>{payment.description}</td>
-                        <td>€{formatMinorPrice(payment.value)}</td>
-                        <td>{new Date(payment.created_date).toISOString()}</td>
-                        <td className="d-flex align-content-end justify-content-end">
+                        <td className="align-middle">{payment.description}</td>
+                        <td className="align-middle">€{formatMinorPrice(payment.value)}</td>
+                        <td className="align-middle">{new Date(payment.created_date).toISOString()}</td>
+                        <td className="text-end">
                           {payment.state === "PENDING" && (
                             <a
                               className="btn bg-yellow txt-dark-1"
