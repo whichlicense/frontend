@@ -75,7 +75,7 @@ export default function Payment() {
     },
     {
       type: ToolBarItemType.BUTTON,
-      title: "Change payment details",
+      title: "Add/Change default payment method",
       icon: "bi bi-credit-card",
       onClick: () => {
         setShowChangePaymentMethods(true);
@@ -165,6 +165,22 @@ export default function Payment() {
     ).then((res)=>{
       // TODO: handle potential errors
       setSavedPaymentMethods(res.data);
+    })
+  }
+
+  const deletePaymentMethod = async (paymentMethodId: string) => {
+    await axios.delete(
+      `${CONFIG.gateway_url}/payment/remove-payment-method/${paymentMethodId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    ).then((res)=>{
+      // TODO: toast here if success
+      getSavedPaymentMethods();
+    }).catch((e)=>{
+      // TODO: toast on error
     })
   }
 
@@ -535,8 +551,7 @@ export default function Payment() {
                     title={<h2 className="display-6">{method.cardholder_name}</h2>}
                     bg={isCurrent ? "bg-blue" : undefined}
                     onIconClick={() => {
-                      // TODO: remove payment method
-                      console.log("remove payment method", method.id);
+                      deletePaymentMethod(method.id)
                     }}
                   >
                     <h6>*****{method.last4}</h6>
