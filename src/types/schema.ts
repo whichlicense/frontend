@@ -75,6 +75,38 @@ export interface AccountTable {
   parent_account_id: number | null;
 }
 
+export interface SavedPaymentMethodsTable {
+  /**
+   * Id comes from the payment provider (e.g., Revolut), and refers to the "The ID of the payment method."
+   */
+  id: string;
+  /**
+   * References ```AccountTable.id``` to indicate which account this payment method belongs to
+   */
+  account_id: number;
+  type: "CARD";
+  saved_for: "CUSTOMER" | "MERCHANT";
+  /**
+   * First 6 digits of the card number also known as the Bank Identification Number (BIN)
+   */
+  bin: string;
+  last4: string;
+  expiry_month: number;
+  expiry_year: number;
+  cardholder_name: string;
+  brand: "VISA" | "MASTERCARD" | "MAESTRO";
+  // funding: "DEBIT" | "CREDIT" | "PREPAID" | "DEFERRED_DEBIT" | "CHARGE",
+  // issuer: "EXAMPLE ISSUER",
+  // issuer_country: "GB",
+
+  // street_line_1: "7",
+  // street_line_2: "Westferry Circus",
+  // post_code: "E144HD",
+  // city: "London",
+  // region: "Greater London",
+  // country_code: "GB"
+}
+
 /**
  * This table contains the details of each plan.
  * > ## NOTE!: Changing the IDs of this table will break plans selected by users. Only add new plans to the end of the list!.
