@@ -160,14 +160,15 @@ export default function Payment() {
 
   const topUpOrder = async (topUpId: number) => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await axios(`${CONFIG.gateway_url}/payment/top-up/${topUpId}`, {
+    return (await axios.post(`${CONFIG.gateway_url}/payment/top-up/${topUpId}`,{}, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
       },
     }).then((res) => {
       return res.data;
-    })) as Promise<RevolutOrder>;
+    })) as Promise<{public_id: string}>;
   };
+
 
   const topUpCheckout = (topUpId: number) => {
     console.log("Checkout", topUpId);
@@ -189,6 +190,40 @@ export default function Payment() {
       });
     });
   };
+
+
+  const subscriptionOrder = async (planId: number) => {
+    // TODO: conditionally use public url or localhost based on NPM environment
+    return (await axios.post(`${CONFIG.gateway_url}/payment/subscribe/${planId}`,{}, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => {
+      return res.data;
+    })) as Promise<{public_id?: string}>;
+  };
+
+  const onChangePlan = (planId: number) => {
+    subscriptionOrder(planId).then((data) => {
+      // success with no public_id -> probably a plan cancellation
+      if(!data.public_id) {
+        auth.refresh();
+        return;
+      }
+      // TODO: conditionally use sandbox or production based on NPM environment
+      RevolutCheckout(data.public_id, "sandbox").then((instance) => {
+        instance.payWithPopup({
+          savePaymentMethodFor: "merchant",
+          onSuccess: () => {
+            // TODO: toast instead?
+            auth.refresh();
+          },
+          // TODO: deal with errors
+        });
+        // TODO: deal with errors
+      });
+    })
+  }
   return (
     <div>
       {/* <Button onClick={checkout}>Checkout</Button> */}
@@ -216,7 +251,7 @@ export default function Payment() {
         <Col xs={12} md={8}>
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
-              <h2 className="text-truncate display-6">Plan: Basic</h2>
+              <h2 className="text-truncate display-6">Plan: {userPlan?.name}</h2>
               <h6>
                 Cost per month:{" "}
                 {userPlan?.price === null ? "N/A" : `€${userPlan?.price}`}
@@ -363,6 +398,9 @@ export default function Payment() {
                       maxHeight="30vh"
                       bg={isCurrentPlan ? "bg-blue" : undefined}
                       className={isCurrentPlan ? "txt-dark-1" : ""}
+                      onCardClick={() => {
+                        onChangePlan(plan.id)
+                      }}
                     >
                       <div>
                         <h2 className="text-truncate display-6">
