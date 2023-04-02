@@ -32,6 +32,8 @@ type RegularCardProps = {
   className?: string;
   fadeIn?: boolean;
 
+  bodyClass?: string;
+
   icon?: string;
   iconColor?: TxtColors;
   iconClass?: string;
@@ -85,7 +87,7 @@ export default function RegularCard(props: RegularCardProps) {
         </div>
 
         <Card.Body
-          className="px-0"
+          className={`px-0 ${props.bodyClass || ""}`}
           style={{
             maxHeight: props.maxHeight || "15vh",
             minHeight: props.minHeight || "unset",

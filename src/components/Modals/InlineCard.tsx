@@ -26,6 +26,7 @@ type InlineCardProps = {
   title?: string
   children: JSX.Element | void
   className?: string
+  bodyClass?: string
   style?: CSSProperties
   maxHeight?: string
   minHeight?: string
@@ -123,7 +124,7 @@ export function InlineCard(props: InlineCardProps) {
             <Offcanvas.Title className="display-5">{props.title}</Offcanvas.Title>
           </Offcanvas.Header>
         )}
-        <Offcanvas.Body>{props.children || <h1>Nothing to see here</h1>}</Offcanvas.Body>
+        <Offcanvas.Body className={`${props.bodyClass || ""}`}>{props.children || <h1>Nothing to see here</h1>}</Offcanvas.Body>
       </Offcanvas>
     </>
   )
