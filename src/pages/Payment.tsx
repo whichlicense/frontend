@@ -33,6 +33,7 @@ import { ToolBarItemType } from "../context/ToolBarContext";
 import {
   OrderInventoryTable,
   PlanDetailsTable,
+  SavedPaymentMethodsTable,
   TopUpOptionsTable,
 } from "../types/schema";
 
@@ -77,9 +78,7 @@ export default function Payment() {
       title: "Change payment details",
       icon: "bi bi-credit-card",
       onClick: () => {
-        // TODO: implement
-
-        console.log("Change plan");
+        setShowChangePaymentMethods(true);
       },
     },
   ]);
@@ -92,6 +91,11 @@ export default function Payment() {
   const [topUpOptions, setTopUpOptions] = useState<
     (TopUpOptionsTable & Omit<OrderInventoryTable, "id">)[]
   >([]);
+
+  const [showChangePaymentMethods, setShowChangePaymentMethods] =
+    useState(false);
+  const [savedPaymentMethods, setSavedPaymentMethods] =
+    useState<SavedPaymentMethodsTable[]>([]);
 
   const [paymentHistory, setPaymentHistory] = useState<
     {
@@ -114,6 +118,12 @@ export default function Payment() {
   const userPlan = useMemo(() => {
     return plans.find((plan) => plan.id === auth.user?.plan.plan);
   }, [auth.user?.plan.plan, plans]);
+
+  const selectedPaymentMethod = useMemo(() => {
+    return savedPaymentMethods.find(
+      (method) => method.id === auth.user?.selectedPaymentMethod
+    );
+  }, [auth.user?.selectedPaymentMethod, savedPaymentMethods])
 
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
@@ -144,6 +154,20 @@ export default function Payment() {
     return res.data;
   };
 
+  const getSavedPaymentMethods = async () => {
+    axios.get(
+      `${CONFIG.gateway_url}/payment/get-saved-payment-methods`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    ).then((res)=>{
+      // TODO: handle potential errors
+      setSavedPaymentMethods(res.data);
+    })
+  }
+
   useEffectOnce(() => {
     getAvailablePlans().then((data) => {
       setPlans(data);
@@ -156,19 +180,26 @@ export default function Payment() {
     getPaymentHistory().then((data) => {
       setPaymentHistory(data);
     });
+
+    getSavedPaymentMethods();
   });
 
   const topUpOrder = async (topUpId: number) => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await axios.post(`${CONFIG.gateway_url}/payment/top-up/${topUpId}`,{}, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`,
-      },
-    }).then((res) => {
-      return res.data;
-    })) as Promise<{public_id: string}>;
+    return (await axios
+      .post(
+        `${CONFIG.gateway_url}/payment/top-up/${topUpId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        return res.data;
+      })) as Promise<{ public_id: string }>;
   };
-
 
   const topUpCheckout = (topUpId: number) => {
     console.log("Checkout", topUpId);
@@ -191,22 +222,60 @@ export default function Payment() {
     });
   };
 
-
   const subscriptionOrder = async (planId: number) => {
     // TODO: conditionally use public url or localhost based on NPM environment
-    return (await axios.post(`${CONFIG.gateway_url}/payment/subscribe/${planId}`,{}, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`,
-      },
-    }).then((res) => {
-      return res.data;
-    })) as Promise<{public_id?: string}>;
+    return (await axios
+      .post(
+        `${CONFIG.gateway_url}/payment/subscribe/${planId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        return res.data;
+      })) as Promise<{ public_id?: string }>;
   };
+
+  const addPaymentMethod = async () => {
+    axios
+      .post(
+        `${CONFIG.gateway_url}/payment/add-payment-method`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if(!res.data.public_id) {
+          // TODO: toast error
+          return;
+        }
+        RevolutCheckout(res.data.public_id, "sandbox").then((instance) => {
+          instance.payWithPopup({
+            savePaymentMethodFor: "merchant",
+            onSuccess: () => {
+              // TODO: loading indicator? use socket instead of timeout?
+              setTimeout(() => {
+                getSavedPaymentMethods();
+              }, 2000);
+            },
+            // TODO: deal with errors
+          });
+          // TODO: deal with errors
+        });
+      });
+  }
 
   const onChangePlan = (planId: number) => {
     subscriptionOrder(planId).then((data) => {
+      console.log(data);
       // success with no public_id -> probably a plan cancellation
-      if(!data.public_id) {
+      if (!data.public_id) {
         auth.refresh();
         return;
       }
@@ -222,14 +291,19 @@ export default function Payment() {
         });
         // TODO: deal with errors
       });
-    })
-  }
+    });
+  };
   return (
     <div>
       {/* <Button onClick={checkout}>Checkout</Button> */}
       <Row className="g-4">
         <Col xs={12} md={4}>
-          <RegularCard bg="bg-purple" title="Usage" minHeight="20vh" maxHeight="20vh">
+          <RegularCard
+            bg="bg-purple"
+            title="Usage"
+            minHeight="20vh"
+            maxHeight="20vh"
+          >
             <div>
               <h5 className="text-truncate">
                 Remaining: {auth.user ? auth.user?.plan.leftover_minutes : 0}
@@ -251,7 +325,9 @@ export default function Payment() {
         <Col xs={12} md={8}>
           <RegularCard title="Subscription" minHeight="20vh" maxHeight="20vh">
             <div>
-              <h2 className="text-truncate display-6">Plan: {userPlan?.name}</h2>
+              <h2 className="text-truncate display-6">
+                Plan: {userPlan?.name}
+              </h2>
               <h6>
                 Cost per month:{" "}
                 {userPlan?.price === null ? "N/A" : `€${userPlan?.price}`}
@@ -262,7 +338,12 @@ export default function Payment() {
         </Col>
         <Col xs={12}>
           <Stack gap={3}>
-            <SectionHeading title="Top-up options" size="2" divider subtitle="Top-up in a pinch or choose to pay manually instead of a subscription" />
+            <SectionHeading
+              title="Top-up options"
+              size="2"
+              divider
+              subtitle="Top-up in a pinch or choose to pay manually instead of a subscription"
+            />
 
             <Row className="g-2">
               {topUpOptions.map((option) => (
@@ -291,16 +372,21 @@ export default function Payment() {
         <Col xs={12}>
           <Stack gap={3}>
             <div>
-            <SectionHeading title="Payment history" size="2" divider subtitle="Payment history entries are deleted after they are older than N days" />
-              {paymentHistory.some((e)=>e.state === "PENDING") && (
+              <SectionHeading
+                title="Payment history"
+                size="2"
+                divider
+                subtitle="Payment history entries are deleted after they are older than N days"
+              />
+              {paymentHistory.some((e) => e.state === "PENDING") && (
                 <small>
-                <i className="txt-yellow bi bi-info-circle-fill pe-2"></i>Press
-                on any{" "}
-                <span className="btn not-clickable bg-yellow txt-dark-1">
-                  pending
-                </span>{" "}
-                payment to manually complete it.
-              </small>
+                  <i className="txt-yellow bi bi-info-circle-fill pe-2"></i>
+                  Press on any{" "}
+                  <span className="btn not-clickable bg-yellow txt-dark-1">
+                    pending
+                  </span>{" "}
+                  payment to manually complete it.
+                </small>
               )}
             </div>
 
@@ -387,39 +473,80 @@ export default function Payment() {
         handleClose={() => setShowChangePlan(false)}
       >
         <>
+        {selectedPaymentMethod ? (
+         <h4>The currently selected card ending with <b>{selectedPaymentMethod?.last4}</b> will be charged upon selecting a new plan</h4>
+        ): <h4>No payment methods added to account, a new one will be added upon selecting a new plan</h4>}
           <Row>
-            {plans
-              .map((plan) => {
-                const isCurrentPlan = auth.user?.plan.plan === plan.id;
-                return (
-                  <Col xs={12} md={6}>
-                    <RegularCard
-                      minHeight="35vh"
-                      maxHeight="30vh"
-                      bg={isCurrentPlan ? "bg-blue" : undefined}
-                      className={isCurrentPlan ? "txt-dark-1" : ""}
-                      onCardClick={() => {
-                        onChangePlan(plan.id)
-                      }}
-                    >
-                      <div>
-                        <h2 className="text-truncate display-6">
-                          Plan: {plan.name}
-                        </h2>
-                        <h6>
-                          Cost per month:{" "}
-                          {plan.price === null ? "N/A" : `€${plan.price}`}
-                        </h6>
-                        <hr />
-                        <h6>Description:</h6>
-                        <ReactMarkdown>{plan.description}</ReactMarkdown>
-                      </div>
-                    </RegularCard>
-                  </Col>
-                );
-              })}
+            {plans.map((plan) => {
+              const isCurrentPlan = auth.user?.plan.plan === plan.id;
+              return (
+                <Col xs={12} md={6}>
+                  <RegularCard
+                    minHeight="35vh"
+                    maxHeight="30vh"
+                    bg={isCurrentPlan ? "bg-blue" : undefined}
+                    className={isCurrentPlan ? "txt-dark-1" : ""}
+                    onCardClick={() => {
+                      onChangePlan(plan.id);
+                    }}
+                  >
+                    <div>
+                      <h2 className="text-truncate display-6">
+                        Plan: {plan.name}
+                      </h2>
+                      <h6>
+                        Cost per month:{" "}
+                        {plan.price === null ? "N/A" : `€${plan.price}`}
+                      </h6>
+                      <hr />
+                      <h6>Description:</h6>
+                      <ReactMarkdown>{plan.description}</ReactMarkdown>
+                    </div>
+                  </RegularCard>
+                </Col>
+              );
+            })}
           </Row>
         </>
+      </InlineCard>
+
+      <InlineCard
+        title="Payment methods"
+        show={showChangePaymentMethods}
+        handleClose={() => setShowChangePaymentMethods(false)}
+      >
+        <div>
+          <Stack gap={3}>
+            <div>
+              Added cards will only appear here when the card authorization is completed.
+              For more information, please check the order history on the payment page.
+            </div>
+            <Button onClick={()=>addPaymentMethod()}>Add new card</Button>
+            <Row xs={1} md={2}>
+              {savedPaymentMethods.map((method) => {
+                const isCurrent = selectedPaymentMethod?.id === method.id;
+                return(
+                <Col>
+                  <RegularCard
+                    icon="bi bi-x-circle-fill"
+                    iconColor="txt-red"
+                    iconClass="fs-4"
+                    className={isCurrent ? "txt-dark-1" : "clickable"}
+                    title={<h2 className="display-6">{method.cardholder_name}</h2>}
+                    bg={isCurrent ? "bg-blue" : undefined}
+                    onIconClick={() => {
+                      // TODO: remove payment method
+                      console.log("remove payment method", method.id);
+                    }}
+                  >
+                    <h6>*****{method.last4}</h6>
+                    <h6>{method.expiry_month}/{method.expiry_year}</h6>
+                  </RegularCard>
+                </Col>
+              )})}
+            </Row>
+          </Stack>
+        </div>
       </InlineCard>
     </div>
   );
