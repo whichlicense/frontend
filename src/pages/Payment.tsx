@@ -36,6 +36,8 @@ import {
   SavedPaymentMethodsTable,
   TopUpOptionsTable,
 } from "../types/schema";
+import { useSignal } from "../components/Hooks/useSignal";
+import { ESignalType } from "../components/Provider/Provider";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -82,6 +84,15 @@ export default function Payment() {
       },
     },
   ]);
+
+  useSignal({
+    signal: ESignalType.MINUTED_CHANGED,
+    callback: () => {
+      console.log("MINUTED_CHANGED");
+      auth.refresh();
+    },
+  })
+
   const auth = useAuthContext();
 
   const [showChangePlan, setShowChangePlan] = useState(false);
@@ -198,6 +209,8 @@ export default function Payment() {
     });
 
     getSavedPaymentMethods();
+
+    
   });
 
   const topUpOrder = async (topUpId: number) => {
@@ -228,8 +241,6 @@ export default function Payment() {
           onSuccess: () => {
             console.log("Payment success");
             // TODO: toast
-            // TODO: update usage information by re-requesting from the server?
-            auth.refresh();
           },
           // TODO: deal with errors
         });
