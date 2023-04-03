@@ -20,6 +20,7 @@ import {
   Button,
   ButtonGroup,
   Col,
+  Form,
   ListGroup,
   Row,
   Stack,
@@ -127,8 +128,17 @@ export default function ScanResult() {
             </Stack>
           </Col>
           <Col xs={6}>
-            <RegularCard title={"License details"} minHeight="20vh">
-              <h5>License: MIT</h5>
+            <RegularCard title={"License details"} minHeight="20vh" maxHeight="20vh">
+              <h5>
+                <Stack direction="horizontal">
+                  <div>License: </div>
+                  <Form.Select className="py-0 bg-yellow w-25 border-0">
+                    <option>MIT - 100% confidence</option>
+                    <option value="1">MIT Modified - 98% confidence</option>
+                    <option value="2">MIT with styling - 79% confidence</option>
+                  </Form.Select>
+                </Stack>
+              </h5>
               <h5>Confidence: 100</h5>
               <h5>
                 Source:{" "}
@@ -142,30 +152,34 @@ export default function ScanResult() {
             </RegularCard>
           </Col>
           <Col xs={6}>
-            <RegularCard title={"Similar licenses"} minHeight="20vh">
-              <ListGroup>
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <ListGroup.Item className="d-flex justify-content-between align-items-start">
-                    <div>MIT-2</div>
-                    <div>Confidence: 98%</div>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+            <RegularCard
+              title="Custom notes"
+              minHeight="20vh"
+              maxHeight="20vh"
+            >
+              <textarea
+                // defaultValue={customNotes}
+                className="w-100 bg-transparent border-0 rounded txt-white"
+                // onBlur={(e) => setCustomNotes(e.target.value)}
+              ></textarea>
             </RegularCard>
           </Col>
-          <Col xs={12}>
-          <RegularCard
-                  title="Custom notes"
-                  minHeight="100px"
-                  maxHeight="100%"
-                >
-                  <textarea
-                    // defaultValue={customNotes}
-                    className="w-100 bg-transparent border-0 rounded txt-white"
-                    // onBlur={(e) => setCustomNotes(e.target.value)}
-                  ></textarea>
-                </RegularCard>
+
+          <Col xs={4}>
+            <RegularCard title={"Permissions"} minHeight="20vh" maxHeight="20vh">
+            </RegularCard>
           </Col>
+
+          <Col xs={4}>
+            <RegularCard title={"Limitations"} minHeight="20vh" maxHeight="20vh">
+            </RegularCard>
+          </Col>
+
+          <Col xs={4}>
+            <RegularCard title={"Conditions"} minHeight="20vh" maxHeight="20vh">
+            </RegularCard>
+          </Col>
+
           <Col xs={12}>
             <RegularCard title={"License difference view"} minHeight="50vh">
               <ReactDiffViewer
