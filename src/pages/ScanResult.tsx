@@ -154,6 +154,19 @@ export default function ScanResult() {
             </RegularCard>
           </Col>
           <Col xs={12}>
+          <RegularCard
+                  title="Custom notes"
+                  minHeight="100px"
+                  maxHeight="100%"
+                >
+                  <textarea
+                    // defaultValue={customNotes}
+                    className="w-100 bg-transparent border-0 rounded txt-white"
+                    // onBlur={(e) => setCustomNotes(e.target.value)}
+                  ></textarea>
+                </RegularCard>
+          </Col>
+          <Col xs={12}>
             <RegularCard title={"License difference view"} minHeight="50vh">
               <ReactDiffViewer
                 oldValue={LICENSE_1}
