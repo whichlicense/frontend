@@ -15,6 +15,8 @@
  *   limitations under the License.
  */
 
+import axios from "axios";
+
 export type ProviderOptions = {
     host: string;
     port: number;
@@ -46,13 +48,44 @@ export enum AccountType {
 
 }
 
+export enum ESignalType {
+    PAYMENT_METHOD_ADDED,
+    PLAN_CHANGED,
+    MINUTED_CHANGED,
+    SCAN_FINISHED,
+    NOTIFICATION
+}
+
+export type TSignalCallBack = (type: ESignalType, data: any) => void;
+
 /**
  * Represents a connection system towards a server.
  */
 export abstract class Provider {
     protected options: ProviderOptions;
+    protected signalSocket: WebSocket;
+    private onSignal: Set<TSignalCallBack>;
     constructor(options: ProviderOptions) {
         this.options = options;
+
+        const savedToken = localStorage.getItem("token");
+
+        this.signalSocket = new WebSocket(`ws://${options.host}:${options.port}/socket/signals`);
+
+        this.signalSocket.addEventListener("open", () => {
+            console.log("Signal socket opened");
+            this.signalSocket.send(savedToken || "NA");
+        })
+
+        this.signalSocket.addEventListener("message", (event) => {
+            const d = JSON.parse(event.data) as { type: ESignalType, data: any };
+            console.log("Received signal in Provder.ts", d);
+            for(const cb of this.onSignal) {
+                cb(d.type, d.data);
+            }
+        })
+
+        this.onSignal = new Set();
     }
 
     // TODO: define type
@@ -72,6 +105,22 @@ export abstract class Provider {
         // TODO: check if there is a local server running and check version
         // TODO: toast with error if version mismatch
         return false;
+    }
+
+    free() {
+        this.signalSocket.close();
+        this.onSignal.clear();
+    }
+
+    onProviderSignal(cb: TSignalCallBack) {
+        this.onSignal.add(cb);
+        return {
+            remove: () => this.removeProviderSignal(cb)
+        }
+    }
+
+    removeProviderSignal(cb: TSignalCallBack) {
+        this.onSignal.delete(cb);
     }
 
 }
