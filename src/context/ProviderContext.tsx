@@ -19,28 +19,35 @@ import { createContext, useState, useContext, useEffect } from "react"
 import { CloudProvider } from "../components/Provider/CloudProvider"
 import { LocalProvider } from "../components/Provider/LocalProvider"
 import { Provider, ProviderType } from "../components/Provider/Provider"
+import { useEffectOnce } from "../components/utils/useEffectOnce"
 
 export const ProviderContext = createContext<{
-    provider: Provider,
-    setProvider: React.Dispatch<React.SetStateAction<Provider>>,
+    provider: Provider | null,
+    setProvider: React.Dispatch<React.SetStateAction<Provider | null>>,
     getProviderType: () => ProviderType
 }>({} as any)
   
   export const ProviderContextProvider = (props: any) => {
-    const [provider, setProvider] = useState<Provider>(
-      new CloudProvider({
-        host: "localhost", // TODO: point to actual cloud
+    const [provider, setProvider] = useState<Provider | null>(null as any);
+
+    useEffectOnce(() => {
+      setProvider(new CloudProvider({
+        host: "192.168.1.130", // TODO: point to actual cloud
         port: 8080, // TODO: point to actual cloud port
-      })
-      // new LocalProvider({
-      //   host: "localhost",
-      //   port: 8080,
-      // })
-    );
+      }))
+    })
+
+    // TODO: what if we log-out and log-in with a different user? does the provider need to be re-created?
 
     const getProviderType = () => {
       return provider instanceof CloudProvider ? ProviderType.CLOUD : ProviderType.LOCAL
     }
+
+    useEffect(() => {
+      return () => {
+        provider?.free()
+      }
+    }, [provider])
 
 
 
