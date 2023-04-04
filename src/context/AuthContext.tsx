@@ -22,6 +22,7 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
+import { toast } from "react-toastify";
 
 
 export type TUserState = TUser & {plan: TUserPlan} & {
@@ -69,7 +70,7 @@ export const AuthContextProvider = (props: any) => {
   useSignal({
     signal: ESignalType.PLAN_CHANGED,
     callback: () => {
-      console.log("authcontext: plan changed")
+      toast.success("Your plan has been changed");
       refresh();
     }
   })
