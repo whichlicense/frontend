@@ -85,13 +85,6 @@ export default function Payment() {
     },
   ]);
 
-  useSignal({
-    signal: ESignalType.MINUTED_CHANGED,
-    callback: () => {
-      console.log("MINUTED_CHANGED");
-      auth.refresh();
-    },
-  })
 
   const auth = useAuthContext();
 
@@ -128,7 +121,7 @@ export default function Payment() {
 
   const userPlan = useMemo(() => {
     return plans.find((plan) => plan.id === auth.user?.plan.plan);
-  }, [auth.user?.plan.plan, plans]);
+  }, [auth.user, plans]);
 
   const selectedPaymentMethod = useMemo(() => {
     return savedPaymentMethods.find(
@@ -301,9 +294,8 @@ export default function Payment() {
   const onChangePlan = (planId: number) => {
     subscriptionOrder(planId).then((data) => {
       console.log(data);
-      // success with no public_id -> probably a plan cancellation
+      // success with no public_id -> probably a plan cancellation or card already saved
       if (!data.public_id) {
-        auth.refresh();
         return;
       }
       // TODO: conditionally use sandbox or production based on NPM environment
@@ -312,7 +304,6 @@ export default function Payment() {
           savePaymentMethodFor: "merchant",
           onSuccess: () => {
             // TODO: toast instead?
-            auth.refresh();
           },
           // TODO: deal with errors
         });

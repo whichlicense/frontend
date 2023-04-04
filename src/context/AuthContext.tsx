@@ -20,6 +20,8 @@ import { createContext, useState, useContext, useMemo, useEffect } from "react";
 import FullScreenLoader from "../components/Loaders/FullScreenLoader";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { CONFIG } from "../CONFIG";
+import { useSignal } from "../components/Hooks/useSignal";
+import { ESignalType } from "../components/Provider/Provider";
 
 
 export type TUserState = TUser & {plan: TUserPlan} & {
@@ -57,6 +59,21 @@ export const AuthContextProvider = (props: any) => {
   const [user, setUser] = useState<TUserState>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
+
+  useSignal({
+    signal: ESignalType.MINUTED_CHANGED,
+    callback: () => {
+      refresh();
+    },
+  })
+  useSignal({
+    signal: ESignalType.PLAN_CHANGED,
+    callback: () => {
+      console.log("authcontext: plan changed")
+      refresh();
+    }
+  })
+
 
   const fetchUser = async () => {
     setLoading(true);
@@ -120,6 +137,7 @@ export const AuthContextProvider = (props: any) => {
   };
 
   const refresh = async () => {
+    console.log("refreshing auth")
     await fetchUser();
   }
 
