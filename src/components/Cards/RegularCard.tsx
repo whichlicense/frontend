@@ -77,8 +77,9 @@ export default function RegularCard(props: RegularCardProps) {
           {props.icon && (
             <div>
               <i
-                onClick={() => {
+                onClick={(e) => {
                   props.onIconClick && props.onIconClick();
+                  e.stopPropagation();
                 }}
                 className={`${props.icon} ${props.iconColor || ""} ${props.iconClass || ""}`}
               ></i>
