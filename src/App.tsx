@@ -41,7 +41,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { Login } from "./pages/Login";
 import SubAccounts from "./pages/SubAccounts";
 
-import 'react-toastify/dist/ReactToastify.min.css';
+import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer } from "react-toastify";
 
 function App() {
@@ -103,7 +103,18 @@ function App() {
             </DrawerContextProvider>
           </Container>
         </AuthContextProvider>
-        <ToastContainer />
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </ProviderContextProvider>
     </Router>
   );
