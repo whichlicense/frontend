@@ -78,11 +78,26 @@ export abstract class Provider {
             this.signalSocket.send(savedToken || "NA");
         })
 
-        this.signalSocket.addEventListener("message", (event) => {
+        this.signalSocket.addEventListener("message", async (event) => {
             const d = JSON.parse(event.data) as { type: ESignalType, data: any };
             if(d.type === ESignalType.NOTIFICATION && d.data?.message){
                 toast.info(d.data.message)
-                
+
+                if(!document.hasFocus()){
+                    let permission = await Notification.requestPermission();
+                    if(permission === "granted") {
+                        const notification = new Notification("WhichLicense", {
+                            body: d.data.message,
+                            icon: "/logo192.png",
+                            image: "/logo192.png",
+                            vibrate: [200, 100, 200, 100, 200, 100, 200],
+                        });
+                        notification.onclick = () => {
+                            window.focus();
+                            notification.close();
+                        }
+                    }
+                }
             }
             console.log("Received signal in Provder.ts", d);
             for(const cb of this.onSignal) {
