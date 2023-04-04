@@ -45,9 +45,9 @@ function App() {
   const mainContentRef = useRef(null);
   return (
     <Router>
-      <AuthContextProvider>
-        <Container fluid className="noise h-100">
-          <ProviderContextProvider>
+      <ProviderContextProvider>
+        <AuthContextProvider>
+          <Container fluid className="noise h-100">
             <DrawerContextProvider>
               <Stack
                 direction="horizontal"
@@ -85,7 +85,10 @@ function App() {
                           <Route path="/test" element={<Test />} />
                           <Route path="/register" element={<Register />} />
                           <Route path="/login" element={<Login />} />
-                          <Route path="/sub-accounts" element={<SubAccounts />} />
+                          <Route
+                            path="/sub-accounts"
+                            element={<SubAccounts />}
+                          />
                           <Route path="/" element={<Home />} />
                         </Routes>
                         <ScrollIndicator bodyRef={mainContentRef} />
@@ -95,9 +98,9 @@ function App() {
                 </div>
               </Stack>
             </DrawerContextProvider>
-          </ProviderContextProvider>
-        </Container>
-      </AuthContextProvider>
+          </Container>
+        </AuthContextProvider>
+      </ProviderContextProvider>
     </Router>
   );
 }
