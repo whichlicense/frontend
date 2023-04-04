@@ -336,6 +336,7 @@ export default function Payment() {
         instance.payWithPopup({
           savePaymentMethodFor: "merchant",
           onSuccess: () => {
+            toast.success("Plan change request added for processing");
           },
           // TODO: deal with errors
         });
