@@ -19,8 +19,6 @@
 import { useEffect } from "react";
 import { useProviderContext } from "../../context/ProviderContext";
 import { ESignalType } from "../Provider/Provider";
-import { useEffectOnce } from "../utils/useEffectOnce";
-
 
 export function useSignal(props: {
     signal: ESignalType,
@@ -31,14 +29,13 @@ export function useSignal(props: {
 
     useEffect(()=>{
         const signalListener = providerCtx.provider?.onProviderSignal((signalType, data)=>{
-            console.log("useSignal: signal", signalType, signalType === signal)
             if(signalType === signal){
                 callback(data)
             }
         });
         return () => {
-            console.log("useSignal: remove signal", signal)
             signalListener?.remove();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [providerCtx])
 }
