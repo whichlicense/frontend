@@ -85,6 +85,13 @@ export default function Payment() {
     },
   ]);
 
+  useSignal({
+    signal: ESignalType.PAYMENT_METHOD_ADDED,
+    callback: () => {
+      getSavedPaymentMethods();
+    }
+  })
+
 
   const auth = useAuthContext();
 
@@ -169,6 +176,29 @@ export default function Payment() {
     ).then((res)=>{
       // TODO: handle potential errors
       setSavedPaymentMethods(res.data);
+    })
+  }
+
+  const changePaymentMethod = async (paymentMethodId: string) => {
+    await axios.patch(
+      `${CONFIG.gateway_url}/payment/change-payment-method/${paymentMethodId}`,
+      {
+        paymentMethodId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }
+    ).then((res)=>{
+      getSavedPaymentMethods();
+      // TODO: this is dirty, refreshing constantly is also dirty, maybe make getSavedPaymentMethods return the updated user or the signal return the new value
+      if(auth.user){
+        auth.user.selectedPaymentMethod = paymentMethodId;
+      }
+      // TODO: toast success
+    }).catch((e)=>{
+      // TODO: toast on error
     })
   }
 
@@ -562,6 +592,9 @@ export default function Payment() {
                     bg={isCurrent ? "bg-blue" : undefined}
                     onIconClick={() => {
                       deletePaymentMethod(method.id)
+                    }}
+                    onCardClick={() => {
+                      changePaymentMethod(method.id)
                     }}
                   >
                     <h6>*****{method.last4}</h6>
