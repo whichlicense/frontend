@@ -25,7 +25,7 @@ import Search from "./pages/Search";
 import Dashboard from "./pages/Dashboard";
 import NavigationBar from "./components/Navbar/Navbar";
 import ScanResult from "./pages/ScanResult";
-import { Button, Col, Container, Row, Stack } from "react-bootstrap";
+import { Container, Stack } from "react-bootstrap";
 import ScrollIndicator from "./components/utils/ScrollIndicator";
 import { DrawerContextProvider } from "./context/DrawerContext";
 import ToolBarManager from "./components/Toolbar/ToolBarManager";
@@ -40,6 +40,9 @@ import { Register } from "./pages/Register";
 import { AuthContextProvider } from "./context/AuthContext";
 import { Login } from "./pages/Login";
 import SubAccounts from "./pages/SubAccounts";
+
+import 'react-toastify/dist/ReactToastify.min.css';
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const mainContentRef = useRef(null);
@@ -100,6 +103,7 @@ function App() {
             </DrawerContextProvider>
           </Container>
         </AuthContextProvider>
+        <ToastContainer />
       </ProviderContextProvider>
     </Router>
   );
