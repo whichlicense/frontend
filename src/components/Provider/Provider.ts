@@ -16,6 +16,7 @@
  */
 
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export type ProviderOptions = {
     host: string;
@@ -79,6 +80,10 @@ export abstract class Provider {
 
         this.signalSocket.addEventListener("message", (event) => {
             const d = JSON.parse(event.data) as { type: ESignalType, data: any };
+            if(d.type === ESignalType.NOTIFICATION && d.data?.message){
+                toast.info(d.data.message)
+                
+            }
             console.log("Received signal in Provder.ts", d);
             for(const cb of this.onSignal) {
                 cb(d.type, d.data);
