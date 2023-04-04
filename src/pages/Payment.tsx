@@ -111,6 +111,7 @@ export default function Payment() {
   const [paymentHistory, setPaymentHistory] = useState<
     {
       id: number;
+      public_id: string;
       type: "PAYMENT" | "REFUND" | "CHARGEBACK";
       value: number;
       state:
@@ -459,14 +460,23 @@ export default function Payment() {
                         <td className="align-middle">{new Date(payment.created_date).toISOString()}</td>
                         <td className="text-end">
                           {payment.state === "PENDING" && (
-                            <a
-                              className="btn bg-yellow txt-dark-1"
-                              target="_blank"
-                              rel="noreferrer"
-                              href={payment.checkout_url}
+                            <Button
+                              className="bg-yellow txt-dark-1"
+                              onClick={()=>{
+                                RevolutCheckout(payment.public_id, "sandbox").then((instance) => {
+                                  instance.payWithPopup({
+                                    savePaymentMethodFor: "merchant",
+                                    onSuccess: () => {
+                                      
+                                    },
+                                    // TODO: deal with errors
+                                  });
+                                  // TODO: deal with errors
+                                });
+                              }}
                             >
                               Pending
-                            </a>
+                            </Button>
                           )}
                           {payment.state === "AUTHORISED" && (
                             <Button
