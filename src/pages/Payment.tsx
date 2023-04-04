@@ -90,9 +90,8 @@ export default function Payment() {
     signal: ESignalType.PAYMENT_METHOD_ADDED,
     callback: () => {
       getSavedPaymentMethods();
-    }
-  })
-
+    },
+  });
 
   const auth = useAuthContext();
 
@@ -106,8 +105,9 @@ export default function Payment() {
 
   const [showChangePaymentMethods, setShowChangePaymentMethods] =
     useState(false);
-  const [savedPaymentMethods, setSavedPaymentMethods] =
-    useState<SavedPaymentMethodsTable[]>([]);
+  const [savedPaymentMethods, setSavedPaymentMethods] = useState<
+    SavedPaymentMethodsTable[]
+  >([]);
 
   const [paymentHistory, setPaymentHistory] = useState<
     {
@@ -136,7 +136,7 @@ export default function Payment() {
     return savedPaymentMethods.find(
       (method) => method.id === auth.user?.selectedPaymentMethod
     );
-  }, [auth.user?.selectedPaymentMethod, savedPaymentMethods])
+  }, [auth.user?.selectedPaymentMethod, savedPaymentMethods]);
 
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
@@ -168,59 +168,64 @@ export default function Payment() {
   };
 
   const getSavedPaymentMethods = async () => {
-    axios.get(
-      `${CONFIG.gateway_url}/payment/get-saved-payment-methods`,
-      {
+    axios
+      .get(`${CONFIG.gateway_url}/payment/get-saved-payment-methods`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
-      }
-    ).then((res)=>{
-      // TODO: handle potential errors
-      setSavedPaymentMethods(res.data);
-    })
-  }
+      })
+      .then((res) => {
+        // TODO: handle potential errors
+        setSavedPaymentMethods(res.data);
+      });
+  };
 
   const changePaymentMethod = async (paymentMethodId: string) => {
-    await axios.patch(
-      `${CONFIG.gateway_url}/payment/change-payment-method/${paymentMethodId}`,
-      {
-        paymentMethodId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
+    await axios
+      .patch(
+        `${CONFIG.gateway_url}/payment/change-payment-method/${paymentMethodId}`,
+        {
+          paymentMethodId,
         },
-      }
-    ).then((res)=>{
-      getSavedPaymentMethods();
-      // TODO: this is dirty, refreshing constantly is also dirty, maybe make getSavedPaymentMethods return the updated user or the signal return the new value
-      if(auth.user){
-        auth.user.selectedPaymentMethod = paymentMethodId;
-      }
-      toast.success("Payment method changed successfully");
-    }).catch((e)=>{
-      console.log("failed to change payment method",e);
-      toast.error(e?.data?.error || "Error changing payment method");
-    })
-  }
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        getSavedPaymentMethods();
+        // TODO: this is dirty, refreshing constantly is also dirty, maybe make getSavedPaymentMethods return the updated user or the signal return the new value
+        if (auth.user) {
+          auth.user.selectedPaymentMethod = paymentMethodId;
+        }
+        toast.success("Payment method changed successfully");
+      })
+      .catch((e) => {
+        console.log("failed to change payment method", e);
+        toast.error(e?.data?.error || "Error changing payment method");
+      });
+  };
 
   const deletePaymentMethod = async (paymentMethodId: string) => {
-    await axios.delete(
-      `${CONFIG.gateway_url}/payment/remove-payment-method/${paymentMethodId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      }
-    ).then((res)=>{
-      getSavedPaymentMethods();
-      toast.success("Payment method deleted successfully");
-    }).catch((e)=>{
-      console.log("failed to delete payment method",e);
-      toast.error(e?.data?.error || "Error deleting payment method");
-    })
-  }
+    await axios
+      .delete(
+        `${CONFIG.gateway_url}/payment/remove-payment-method/${paymentMethodId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        getSavedPaymentMethods();
+        toast.success("Payment method deleted successfully");
+      })
+      .catch((e) => {
+        console.log("failed to delete payment method", e);
+        toast.error(e?.data?.error || "Error deleting payment method");
+      });
+  };
 
   useEffectOnce(() => {
     getAvailablePlans().then((data) => {
@@ -236,8 +241,6 @@ export default function Payment() {
     });
 
     getSavedPaymentMethods();
-
-    
   });
 
   const topUpOrder = async (topUpId: number) => {
@@ -259,23 +262,25 @@ export default function Payment() {
 
   const topUpCheckout = (topUpId: number) => {
     console.log("Checkout", topUpId);
-    topUpOrder(topUpId).then((data) => {
-      if (!data.public_id) return;
-      // TODO: conditionally use sandbox or production based on NPM environment
-      RevolutCheckout(data.public_id, "sandbox").then((instance) => {
-        // work with instance
-        instance.payWithPopup({
-          onSuccess: () => {
-            toast.success("Top up added for processing");
-          },
+    topUpOrder(topUpId)
+      .then((data) => {
+        if (!data.public_id) return;
+        // TODO: conditionally use sandbox or production based on NPM environment
+        RevolutCheckout(data.public_id, "sandbox").then((instance) => {
+          // work with instance
+          instance.payWithPopup({
+            onSuccess: () => {
+              toast.success("Top up added for processing");
+            },
+            // TODO: deal with errors
+          });
           // TODO: deal with errors
         });
-        // TODO: deal with errors
+      })
+      .catch((e) => {
+        console.log("failed to create top up order", e);
+        toast.error(e?.data?.error || "Error creating top up order");
       });
-    }).catch((e)=>{
-      console.log("failed to create top up order",e);
-      toast.error(e?.data?.error || "Error creating top up order");
-    })
   };
 
   const subscriptionOrder = async (planId: number) => {
@@ -307,7 +312,7 @@ export default function Payment() {
         }
       )
       .then((res) => {
-        if(!res.data.public_id) {
+        if (!res.data.public_id) {
           toast.error("Error when adding payment method");
           return;
         }
@@ -321,8 +326,8 @@ export default function Payment() {
           });
           // TODO: deal with errors
         });
-      })
-  }
+      });
+  };
 
   const onChangePlan = (planId: number) => {
     subscriptionOrder(planId).then((data) => {
@@ -448,9 +453,7 @@ export default function Payment() {
                     <th>Description</th>
                     <th>Amount</th>
                     <th>Date</th>
-                    <th className="text-end">
-                      State
-                    </th>
+                    <th className="text-end">State</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -458,19 +461,24 @@ export default function Payment() {
                     return (
                       <tr>
                         <td className="align-middle">{payment.description}</td>
-                        <td className="align-middle">€{formatMinorPrice(payment.value)}</td>
-                        <td className="align-middle">{new Date(payment.created_date).toISOString()}</td>
+                        <td className="align-middle">
+                          €{formatMinorPrice(payment.value)}
+                        </td>
+                        <td className="align-middle">
+                          {new Date(payment.created_date).toISOString()}
+                        </td>
                         <td className="text-end">
                           {payment.state === "PENDING" && (
                             <Button
                               className="bg-yellow txt-dark-1"
-                              onClick={()=>{
-                                RevolutCheckout(payment.public_id, "sandbox").then((instance) => {
+                              onClick={() => {
+                                RevolutCheckout(
+                                  payment.public_id,
+                                  "sandbox"
+                                ).then((instance) => {
                                   instance.payWithPopup({
                                     savePaymentMethodFor: "merchant",
-                                    onSuccess: () => {
-                                      
-                                    },
+                                    onSuccess: () => {},
                                     // TODO: deal with errors
                                   });
                                   // TODO: deal with errors
@@ -534,47 +542,64 @@ export default function Payment() {
         handleClose={() => setShowChangePlan(false)}
       >
         <>
-        <Stack gap={3}>
-        {selectedPaymentMethod ? (
-         <div>
-          The currently selected card ending with <b>{selectedPaymentMethod?.last4}</b> (<Button onClick={()=>{
-            setShowChangePlan(false);
-            setShowChangePaymentMethods(true);
-          }} className="txt-dark-1 bg-yellow py-0">Change</Button>) will be charged upon selecting a new plan.
-         </div>
-        ): <div>No payment methods added to account, a new one will be added upon selecting a new plan</div>}
-          <Row>
-            {plans.map((plan) => {
-              const isCurrentPlan = auth.user?.plan.plan === plan.id;
-              return (
-                <Col xs={12} md={6}>
-                  <RegularCard
-                    minHeight="35vh"
-                    maxHeight="30vh"
-                    bg={isCurrentPlan ? "bg-blue" : undefined}
-                    className={isCurrentPlan ? "txt-dark-1" : ""}
-                    onCardClick={() => {
-                      onChangePlan(plan.id);
-                    }}
-                  >
-                    <div>
-                      <h2 className="text-truncate display-6">
-                        Plan: {plan.name}
-                      </h2>
-                      <h6>
-                        Cost per month:{" "}
-                        {plan.price === null ? "N/A" : `€${formatMinorPrice(plan.price)}`}
-                      </h6>
-                      <hr />
-                      <h6>Description:</h6>
-                      <ReactMarkdown>{plan.description}</ReactMarkdown>
-                    </div>
-                  </RegularCard>
-                </Col>
-              );
-            })}
-          </Row>
-        </Stack>
+          <Stack gap={3}>
+            {selectedPaymentMethod ? (
+              <div>
+                The currently selected card ending with{" "}
+                <b>{selectedPaymentMethod?.last4}</b> (
+                <Button
+                  onClick={() => {
+                    setShowChangePlan(false);
+                    setShowChangePaymentMethods(true);
+                  }}
+                  className="txt-dark-1 bg-yellow py-0"
+                >
+                  Change
+                </Button>
+                ) will be charged upon selecting a new plan.
+              </div>
+            ) : (
+              <div>
+                No payment methods added to account, a new one will be added
+                upon selecting a new plan
+              </div>
+            )}
+            <Row>
+              {plans.map((plan) => {
+                const isCurrentPlan = auth.user?.plan.plan === plan.id;
+                return (
+                  <Col xs={12} md={6}>
+                    <RegularCard
+                      minHeight="35vh"
+                      maxHeight="30vh"
+                      bg={isCurrentPlan ? "bg-blue" : undefined}
+                      className={`${isCurrentPlan ? "" : "clickable"} ${
+                        isCurrentPlan ? "txt-dark-1" : ""
+                      }`}
+                      onCardClick={() => {
+                        if (!isCurrentPlan) onChangePlan(plan.id);
+                      }}
+                    >
+                      <div>
+                        <h2 className="text-truncate display-6">
+                          Plan: {plan.name}
+                        </h2>
+                        <h6>
+                          Cost per month:{" "}
+                          {plan.price === null
+                            ? "N/A"
+                            : `€${formatMinorPrice(plan.price)}`}
+                        </h6>
+                        <hr />
+                        <h6>Description:</h6>
+                        <ReactMarkdown>{plan.description}</ReactMarkdown>
+                      </div>
+                    </RegularCard>
+                  </Col>
+                );
+              })}
+            </Row>
+          </Stack>
         </>
       </InlineCard>
 
@@ -586,34 +611,40 @@ export default function Payment() {
         <div>
           <Stack gap={3}>
             <div>
-              Added cards will only appear here when the card authorization is completed.
-              For more information, please check the order history on the payment page.
+              Added cards will only appear here when the card authorization is
+              completed. For more information, please check the order history on
+              the payment page.
             </div>
-            <Button onClick={()=>addPaymentMethod()}>Add new card</Button>
+            <Button onClick={() => addPaymentMethod()}>Add new card</Button>
             <Row xs={1} md={2}>
               {savedPaymentMethods.map((method) => {
                 const isCurrent = selectedPaymentMethod?.id === method.id;
-                return(
-                <Col>
-                  <RegularCard
-                    icon="bi bi-x-circle-fill"
-                    iconColor="txt-red"
-                    iconClass="fs-4"
-                    className={isCurrent ? "txt-dark-1" : "clickable"}
-                    title={<h2 className="display-6">{method.cardholder_name}</h2>}
-                    bg={isCurrent ? "bg-blue" : undefined}
-                    onIconClick={() => {
-                      deletePaymentMethod(method.id)
-                    }}
-                    onCardClick={() => {
-                      changePaymentMethod(method.id)
-                    }}
-                  >
-                    <h6>*****{method.last4}</h6>
-                    <h6>{method.expiry_month}/{method.expiry_year}</h6>
-                  </RegularCard>
-                </Col>
-              )})}
+                return (
+                  <Col>
+                    <RegularCard
+                      icon="bi bi-x-circle-fill"
+                      iconColor="txt-red"
+                      iconClass="fs-4"
+                      className={isCurrent ? "txt-dark-1" : "clickable"}
+                      title={
+                        <h2 className="display-6">{method.cardholder_name}</h2>
+                      }
+                      bg={isCurrent ? "bg-blue" : undefined}
+                      onIconClick={() => {
+                        deletePaymentMethod(method.id);
+                      }}
+                      onCardClick={() => {
+                        changePaymentMethod(method.id);
+                      }}
+                    >
+                      <h6>*****{method.last4}</h6>
+                      <h6>
+                        {method.expiry_month}/{method.expiry_year}
+                      </h6>
+                    </RegularCard>
+                  </Col>
+                );
+              })}
             </Row>
           </Stack>
         </div>
