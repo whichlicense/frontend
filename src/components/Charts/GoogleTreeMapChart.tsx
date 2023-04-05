@@ -18,6 +18,7 @@ import { Chart, ReactGoogleChartEvent } from "react-google-charts";
 import "../../styles/Chart.css";
 import { useElementSize } from "../Hooks/useElementSize";
 import { useEffectOnce } from "../utils/useEffectOnce";
+import { useMemo } from "react";
 
 type TGoogleTreeMapChartProps = {
   /**
@@ -59,6 +60,8 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
     maxPostDepth: props.maxPostDepth || 0,
   };
 
+  const isSafari = useMemo(()=>/^((?!chrome|android).)*safari/i.test(navigator.userAgent), []);
+
   return (
     <div
       className="position-relative w-100"
@@ -74,11 +77,11 @@ export function GoogleTreeMapChart(props: TGoogleTreeMapChartProps) {
           data={data}
           options={options}
           className={`wl-google-chart ${
-            navigator.userAgent.includes("Safari") ? "" : "not-safari"
+            isSafari ? "" : "not-safari"
           } ${props.bg}`}
           onLoad={() => {
             // I can't believe I have to do this...
-            if (navigator.userAgent.includes("Safari")) {
+            if (isSafari) {
               // I hate safari.
               setTimeout(() => {
                 const x = document.getElementById(uid);
