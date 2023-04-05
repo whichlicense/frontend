@@ -24,7 +24,8 @@
     stroke-width: 10;
 }
 .wl-google-chart.bg-section rect{
-    stroke: var(--color-section-background) !important;
+    stroke: rgb(30, 30, 30) !important;
+    stroke-opacity: 1;
 }
 
 .wl-google-chart.bg-card rect{
