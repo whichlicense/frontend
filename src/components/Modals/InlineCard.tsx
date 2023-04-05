@@ -71,6 +71,8 @@ export function InlineCard(props: InlineCardProps) {
       transform: `translateY(${perc}px)`,
       transition: 'none',
     })
+
+    e.stopPropagation();
     return false
   }
 
