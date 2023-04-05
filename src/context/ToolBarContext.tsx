@@ -75,7 +75,6 @@ export const ToolBarContextProvider = (props: any) => {
   useEffect(() => {
     if (lastLocation === location.pathname) return;
     setLastLocation(location.pathname);
-    setItems([]);
   }, [lastLocation, location]);
 
   return (

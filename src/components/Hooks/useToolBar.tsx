@@ -17,13 +17,15 @@
 
 import { useEffect } from "react";
 import { useToolBarContext, ToolBarItem } from "../../context/ToolBarContext";
+import { useLocation } from "react-router-dom";
 
 
 export function useToolBar(items: ToolBarItem[]){
     const { setItems } = useToolBarContext();
+    const location = useLocation();
 
     useEffect(()=>{
         setItems(items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [location])
 }
