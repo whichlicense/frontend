@@ -101,7 +101,7 @@ export function InlineCard(props: InlineCardProps) {
         show={props.show}
         onHide={handleClose}
         placement={props.placement || 'bottom'}
-        className={`rounded px-3 pb-2 pt-1   shadow section ${
+        className={`rounded px-3 pb-2 pt-1  inline-card shadow ${
           props.className ? props.className : ''
         }`}
         style={{

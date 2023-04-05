@@ -22,7 +22,7 @@ Good primaries: Blue, purple, white, some greens
   --color-black: #000000;
   --color-dark-1: rgb(16, 16, 16);
   --color-dark-2: #2b2b2b;
-  --color-page-background: rgb(16, 16, 16);
+  --color-page-background: radial-gradient(circle, rgb(29, 29, 29) 0%, rgb(16, 16, 16) 100%);
 
   --color-grey: #818b8e;
   --color-blue: #7bd9f5;
@@ -32,8 +32,12 @@ Good primaries: Blue, purple, white, some greens
   --color-purple: #9b7bf5;
   --color-green: #70e597;
 
-  --color-section-background: #1e1e1e;
+  --color-section-background: rgba(30, 30, 30, 0.8);
   --color-highlighted-background: rgb(148, 117, 234);
+  --color-inline-card-background: rgb(33 33 33 / 78%);
+  --backdrop-filter: blur(10px);
+  --backdrop-filter-heavy: blur(20px);
+
   
   --color-button-selected: white;
   --button-color-light: rgb(36,37,35);
@@ -92,7 +96,7 @@ body {
    font-family: Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-page-background);
+  background: var(--color-page-background);
   /* color: whitesmoke; */
   overflow: hidden;
 }
@@ -226,7 +230,8 @@ b {
 }
 
 section{
-  background-color: var(--color-section-background) !important;
+  background: var(--color-section-background) !important;
+  backdrop-filter: var(--backdrop-filter);
 }
 section button{
   background-color: rgb(36, 36, 36) !important;

@@ -40,3 +40,8 @@
         visibility: hidden;
     }
 }
+
+.inline-card {
+    background: var(--color-inline-card-background);
+    backdrop-filter: var(--backdrop-filter-heavy);
+}

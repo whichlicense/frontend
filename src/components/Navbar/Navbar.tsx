@@ -40,6 +40,7 @@ export default function NavigationBar() {
           className={`bg-purple text-dark position-absolute shadow-sm ${
             open ? "nav-collapse-button" : "nav-expand-button"
           }`}
+          style={{zIndex: 1000}}
         >
           <i className={`bi bi-caret-${open ? "left" : "right"}-fill`}></i>
         </Button>
