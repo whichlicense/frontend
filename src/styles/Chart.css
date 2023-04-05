@@ -15,12 +15,15 @@
  *   limitations under the License.
  */
 
-.wl-google-chart rect{
+.wl-google-chart.not-safari rect{
     rx: 12px !important;
     ry: 12px !important;
     stroke-width: 10;
 }
 
+.wl-google-chart rect{
+    stroke-width: 10;
+}
 .wl-google-chart.bg-section rect{
     stroke: var(--color-section-background) !important;
 }
