@@ -26,6 +26,7 @@ type RegularCardProps = {
   bg?: BgColors;
   maxHeight?: string;
   minHeight?: string;
+  height?: string;
   maxWidth?: string;
   minWidth?: string;
   overflowY?: "auto" | "hidden" | "scroll" | "visible";
@@ -61,6 +62,7 @@ export default function RegularCard(props: RegularCardProps) {
       style={{
         maxWidth: props.maxWidth || "unset",
         minWidth: props.minWidth || "unset",
+        height: props.height || "unset",
       }}
       onClick={() => {
         props.onCardClick && props.onCardClick();
