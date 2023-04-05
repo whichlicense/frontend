@@ -21,10 +21,17 @@ import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { TDummyData } from "../types/dummy";
+import { useEffectOnce } from "../components/utils/useEffectOnce";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { CONFIG } from "../CONFIG";
+import { useNavigate } from "react-router-dom";
 
 export default function Search() {
   const [depCardOpen, setDepCardOpen] = useState(false);
   const [filterCardOpen, setFilterCardOpen] = useState(false);
+  const navigate = useNavigate();
   useToolBar([
     {
       type: ToolBarItemType.INPUT,
@@ -49,12 +56,23 @@ export default function Search() {
       onClick: () => {},
     },
   ]);
+
+  const [dummyData, setDummyData] = useState<TDummyData["transitiveDependencies"]>([])
+
+  useEffectOnce(()=>{
+    axios.get(`${CONFIG.gateway_url}/scan/get-scans`, {}).then((res)=>{
+      setDummyData(res.data)
+    }).catch((err)=>{
+      console.log(err)
+      toast.error(err.data.error || "Something went wrong")
+    })
+  })
 // TODO: instead of showing inlinecard on dep click -> go to scan page
   return (
     <div>
       <br />
       <div>
-        <h6 className="display-6">3000 Dependencies scanned</h6>
+        <h6 className="display-6">{dummyData.length} Dependencies scanned</h6>
         <small className="text-muted">
           Enter some information about the dependency you want to search for.
           Use the toolbar above to fine tune your search parameters.
@@ -62,51 +80,30 @@ export default function Search() {
       </div>
       <br />
       <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-3">
-        {Array.from({ length: 40 }).map((_, idx) => (
+        {dummyData.map((data, idx) => (
           <Col>
             <RegularCard
-              minHeight="15vh"
-              title={`Example ${idx}`}
+              height="250px"
+              title={data.name}
+              overflowY="scroll"
               icon="bi bi-arrow-up-right-circle"
               iconColor="txt-purple"
-              onCardClick={() => {
-                setDepCardOpen(true);
+              onCardClick={()=>{
+                navigate(`/scan-result/${data.name.replaceAll("/", "_")}`)
               }}
             >
               <Stack gap={1}>
-                <h6>Manager: NPM</h6>
-                <h6>License: MIT
+                <h6>Manager: {data.ecosystem}</h6>
+                <h6>License: {data.license || "Unknown"}
                   <i className="bi bi-question-circle txt-red ms-2"></i>
                 </h6>
-                <h6>Latest: 1.0.0</h6>
-                <small className="text-muted">Last scan: Jan 20, 2023</small>
+                <h6>Latest: {data.version}</h6>
+                <small className="text-muted">Last scan: UNKNOWN</small>
               </Stack>
             </RegularCard>
           </Col>
         ))}
       </Row>
-
-      <InlineCard
-        title="Dependency X"
-        show={depCardOpen}
-        handleClose={() => setDepCardOpen(false)}
-      >
-        <Stack>
-          <h6>Manager: NPM</h6>
-          <div className="d-flex justify-content-between">
-            <h6>Version:</h6>
-            <Form.Select>
-              <option>1.0.0</option>
-            </Form.Select>
-          </div>
-          <hr />
-          <h5>License history</h5>
-          <ListGroup variant="flush">
-            <ListGroup.Item>0.0.1 - MIT</ListGroup.Item>
-            <ListGroup.Item>0.0.2 - Apache 2.0</ListGroup.Item>
-          </ListGroup>
-        </Stack>
-      </InlineCard>
 
       <InlineCard
         title="Filter"

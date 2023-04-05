@@ -37,6 +37,11 @@ import { ComplianceStatus } from "../components/typings/DependencyStatus";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { TDummyData } from "../types/dummy";
+import { useEffectOnce } from "../components/utils/useEffectOnce";
+import axios from "axios";
+import { CONFIG } from "../CONFIG";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function Dashboard() {
   useForceAuth({
@@ -67,8 +72,30 @@ export default function Dashboard() {
       },
     },
   ]);
+  const auth = useAuthContext();
 
   const [showAddProject, setShowAddProject] = useState(false);
+  const [dummyData, setDummyData] = useState<{
+    name: string,
+    version: string,
+    license: string,
+    ecosystem: string,
+    generated: number,
+    dependencyAmount: number,
+  }[]>()
+
+  useEffectOnce(()=>{
+    // TODO: this needs to be attached to the provider as the calls might change depending on the provider being used...
+    axios.get(`${CONFIG.gateway_url}/scan/personal-scans`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    }).then((res)=>{
+      setDummyData(res.data)
+      console.log(res.data)
+    })
+  })
+
   return (
     <>
       <Row>
@@ -174,26 +201,16 @@ export default function Dashboard() {
         <Col xs={12} className="g-3">
           <RegularCard title={"Recent scans"} maxHeight="30vh" fadeIn>
             <ScanList
-              scans={[
-                {
-                  name: "WhichLicense",
-                  date: new Date().toISOString(),
-                  status: ComplianceStatus.COMPLIANT,
-                  link: "/scan-result/000",
-                },
-                {
-                  name: "WhichLicense",
-                  date: new Date().toISOString(),
-                  status: ComplianceStatus.NON_COMPLIANT,
-                  link: "/scan-result/000",
-                },
-                {
-                  name: "WhichLicense",
-                  date: new Date().toISOString(),
+              scans={dummyData?.map((scan) => {
+                return {
+                  name: scan.name,
+                  date: new Date(scan.generated * 1000),
+                  license: scan.license,
+                  ecosystem: scan.ecosystem,
                   status: ComplianceStatus.UNKNOWN,
-                  link: "/scan-result/000",
-                },
-              ]}
+                  link: `/scan-result/${scan.name}`
+                }
+              }) || []}
             />
           </RegularCard>
         </Col>

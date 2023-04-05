@@ -16,7 +16,7 @@
  */
 
 import { useRef } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import ScrollIndicator from "../utils/ScrollIndicator";
 import "../../styles/Card.css";
 import { BgColors, TxtColors } from "../typings/Colors";
@@ -70,14 +70,12 @@ export default function RegularCard(props: RegularCardProps) {
       id={props.id}
     >
       <div className="p-4">
-        <div className="d-flex justify-content-between">
+        <Row>
           {props.title && props.title.constructor.name === "String" ? (
-            <span className="opacity-75">{props.title}</span>
-          ) : (
-            props.title
-          )}
+            <Col md={10}><span className="opacity-75">{props.title}</span></Col>
+          ) : (<Col md={10}>{props.title}</Col>)}
           {props.icon && (
-            <div>
+            <Col md={2}>
               <i
                 onClick={(e) => {
                   props.onIconClick && props.onIconClick();
@@ -85,9 +83,9 @@ export default function RegularCard(props: RegularCardProps) {
                 }}
                 className={`${props.icon} ${props.iconColor || ""} ${props.iconClass || ""}`}
               ></i>
-            </div>
+            </Col>
           )}
-        </div>
+        </Row>
 
         <Card.Body
           className={`px-0 ${props.bodyClass || ""}`}

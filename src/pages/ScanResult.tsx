@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -34,6 +34,12 @@ import { ToolBarItemType } from "../context/ToolBarContext";
 import ReactDiffViewer from "react-diff-viewer";
 import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
 import { useToolBar } from "../components/Hooks/useToolBar";
+import { useEffectOnce } from "../components/utils/useEffectOnce";
+import axios from "axios";
+import { CONFIG } from "../CONFIG";
+import { useAuthContext } from "../context/AuthContext";
+import { TDummyData } from "../types/dummy";
+import { toast } from "react-toastify";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
@@ -43,6 +49,11 @@ export default function ScanResult() {
   const { id } = useParams();
   const [showResolveLicense, setShowResolveLicense] = useState(false);
   const navigate = useNavigate();
+
+  if(id === undefined){
+    toast.error("No scan id provided");
+    navigate("/dashboard");
+  }
 
   useToolBar([
     {
@@ -88,9 +99,29 @@ export default function ScanResult() {
     },
   ]);
 
+  const auth = useAuthContext();
+
   // TODO: for resolve -> if not licensed allow a lawyer to say "this is fine" or "this is not fine"
   // TODO: here's a long list of all the files that have not been licensed. please review and accept, decline or resolve
   // TODO: show ability to change version of the "view"
+
+  const [dummyData, setDummyData] = useState<TDummyData["directDependencies"][0] & {
+    directDependencies: TDummyData["transitiveDependencies"]
+  }>()
+
+  useEffect(()=>{
+    axios.get(`${CONFIG.gateway_url}/scan/get-scan/${id?.replaceAll("/", "_")}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    }).then((res)=>{
+      setDummyData(res.data)
+      console.log(res.data)
+    }).catch((err)=>{
+      console.log(err)
+      toast.error(err.data.error || "Something went wrong")
+    })
+  }, [auth.token, id])
 
   return (
     <div>
@@ -192,40 +223,38 @@ export default function ScanResult() {
           </Col>
         </Row>
       </InlineCard>
-      <div className="d-flex justify-content-between">
-        <h1 className="display-3">Colors.js</h1>
-        <div>
-          <Stack direction="vertical">
-            <h3 className="display-5 text-end mb-0">
-              {/* TODO: where did we get this license? whats our source? */}
+{/* TODO: where did we get this license? whats our source? */}
               {/* TODO: what about multiple licenses? Some projects allow you to choose..
                 we will need to allow someone to resolve (or choose) one or all? */}
-              MIT
-              <i className="ps-2 align-middle h5 bi bi-info-circle opacity-75"></i>
+      <Row>
+        <Col md={8}>
+          <h1 className="display-5 text-truncate">{dummyData?.name}</h1>
+        </Col>
+        <Col md={4}>
+        <Stack direction="vertical">
+            <h3 className="display-6 text-end mb-0 text-truncate">
+              {dummyData?.license || "No license found"}
+              <i className="ps-2 align-middle h6 bi bi-info-circle opacity-75"></i>
             </h3>
-            <span className="opacity-75">
+            <span className="opacity-75 text-end">
               Confidence: <span className="txt-green">100%</span>
             </span>
           </Stack>
-        </div>
-      </div>
+        </Col>
+      </Row>
       <br />
-
-      {/* TODO: license diffing? error/notice board? pressing notice item to resolve license will open the diffing modal?
-            Toolbar should also have resolve license button.
-       */}
 
       <Row className="g-3">
         <Col xs={12} md={4}>
           <RegularCard title={"Version"} fadeIn minHeight="8vh" maxHeight="8vh">
-            <h6>Semantic: 2.0.5</h6>
-            <h6>Original: Ver-2.0.5_alpha #2</h6>
+            <h6>Semantic: {dummyData?.version || "Not found"}</h6>
+            <h6>Original: UNAVAILABLE</h6>
           </RegularCard>
         </Col>
         <Col xs={12} md={8}>
           <RegularCard title={"Notice"} fadeIn minHeight="8vh" maxHeight="8vh">
             {/* TODO: list here with the notices of this specific package */}
-            <h5>Something click to resolve..</h5>
+            <h5 className="text-muted">All good!</h5>
           </RegularCard>
         </Col>
 
@@ -235,46 +264,15 @@ export default function ScanResult() {
         <Col xs={12}>
           <RegularCard minHeight="50vh" title={"Dependencies"} fadeIn>
             <DependencyList
-              dependencies={[
-                {
-                  name: "colors",
-                  version: "2.0.5",
-                  license: "MIT",
-                  compliance: ComplianceStatus.COMPLIANT,
-                },
-                {
-                  name: "Some awesome dep",
-                  version: "2.0.5",
-                  license: "Apache 2.0",
-                  compliance: ComplianceStatus.COMPLIANT,
-                },
-                {
-                  name: "Not so cool",
-                  version: "2.0.5",
-                  license: "GPL 3.0",
-                  compliance: ComplianceStatus.NON_COMPLIANT,
-                },
-                {
-                  name: "Terrible",
-                  version: "2.0.5",
-                  license: "AGPL",
-                  compliance: ComplianceStatus.NON_COMPLIANT,
-                },
-                {
-                  name: "OH NO!",
-                  version: "2.0.5",
-                  license: "Proprietary",
-                  compliance: ComplianceStatus.NON_COMPLIANT,
-                },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-                { name: "colors", version: "2.0.5", license: "MIT" },
-              ]}
+              dependencies={(dummyData?.directDependencies || []).map((dep)=>{
+                return {
+                  name: dep.name,
+                  version: dep.version,
+                  license: dep.license,
+                  compliance: ComplianceStatus.UNKNOWN,
+                  link: `/scan-result/${dep.name.replaceAll("/", "_")}`
+                }
+              })}
             />
           </RegularCard>
         </Col>

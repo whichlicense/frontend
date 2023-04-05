@@ -17,16 +17,20 @@
 
 import { ListGroup, Row, Col, Badge } from "react-bootstrap";
 import { ComplianceStatus } from "../typings/DependencyStatus";
+import { orNull } from "../../types/dummy";
+import { useNavigate } from "react-router-dom";
 
 type DependencyListProps = {
   dependencies: {
     name: string;
-    version?: string;
-    license?: string;
+    version?: orNull<string>;
+    license?: orNull<string>;
     compliance?: ComplianceStatus;
+    link?: string;
   }[];
 };
 export default function DependencyList(props: DependencyListProps) {
+  const navigate = useNavigate()
   const complianceColor = (compliance?: ComplianceStatus) => {
     switch (compliance) {
       case ComplianceStatus.COMPLIANT:
@@ -42,7 +46,7 @@ export default function DependencyList(props: DependencyListProps) {
   return (
     <ListGroup variant="flush">
       {props.dependencies.map((dep, idx) => (
-        <ListGroup.Item className="ps-0">
+        <ListGroup.Item className="ps-0" onClick={()=>dep.link && navigate(dep.link)}>
           <Row>
             <Col xs={4}>
               <h6>{dep.name}</h6>

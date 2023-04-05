@@ -15,62 +15,71 @@
  *   limitations under the License.
  */
 
-import { ListGroup, Row, Col, Badge } from "react-bootstrap"
+import {
+  ListGroup,
+  Row,
+  Col,
+  Badge,
+  Button,
+  Spinner,
+  Table,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ComplianceStatus } from "../typings/DependencyStatus";
+import { formatMinorPrice } from "../utils/currency";
 
 type ScanListProps = {
-    scans: {
-        name: string,
-        date: string,
-        status: ComplianceStatus
-        link?: string
-    }[]
-}
-export default function ScanList(props: ScanListProps){
-    const navigate = useNavigate();
+  scans: {
+    name: string;
+    date: Date;
+    status: ComplianceStatus;
+    license: string;
+    ecosystem: string;
+    link?: string;
+  }[];
+};
+export default function ScanList(props: ScanListProps) {
+  const navigate = useNavigate();
 
+  // TODO: format date into viewer's format using Intl
 
-    const getBadge = (status: ComplianceStatus) => {
-        switch(status){
-            case ComplianceStatus.COMPLIANT:
-                return <Badge className="bg-green txt-dark-1">Compliant</Badge>
-            case ComplianceStatus.NON_COMPLIANT:
-                return <Badge className="bg-red txt-dark-1">Incompliant</Badge>
-            case ComplianceStatus.UNKNOWN:
-                return <Badge className="bg-yellow txt-dark-1">Unknown</Badge>
-            default:
-                return <Badge bg="warning">N/A</Badge>
-        }
+  const getBadge = (status: ComplianceStatus) => {
+    switch (status) {
+      case ComplianceStatus.COMPLIANT:
+        return <Badge className="bg-green txt-dark-1">Compliant</Badge>;
+      case ComplianceStatus.NON_COMPLIANT:
+        return <Badge className="bg-red txt-dark-1">Incompliant</Badge>;
+      case ComplianceStatus.UNKNOWN:
+        return <Badge className="bg-yellow txt-dark-1">Unknown</Badge>;
+      default:
+        return <Badge bg="warning">N/A</Badge>;
     }
+  };
 
-    return (
-        <ListGroup variant="flush">
-        {props.scans.map((scan, idx) => (
-          <ListGroup.Item
-            onClick={() => navigate("/scan-result/000")}
-            className="bg-dark-1 text-bg-dark"
-          >
-            <Row>
-              <Col xs={6}>
-              <div>
-                <h6>{scan.name}</h6>
-              </div>
-              </Col>
-              <Col xs={6}>
-                <Row>
-                  <Col xs={6} className="d-flex justify-content-end">
-                    <h6>{scan.date}</h6>
-                  </Col>
-                  <Col xs={6} className="d-flex justify-content-end">
-                    {getBadge(scan.status)}
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            <hr className="text-muted" />
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
-    )
+  return (
+    <Table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>License</th>
+          <th>Ecosystem</th>
+          <th>Date</th>
+          <th className="text-end">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {props.scans.map((scan) => {
+          return (
+            <tr onClick={()=>{scan.link && navigate(scan.link)}}>
+              <td className="align-middle">{scan.name}</td>
+              <td className="align-middle">{scan.license}</td>
+              <td className="align-middle">{scan.ecosystem}</td>
+              <td className="align-middle">{scan.date.toISOString()}</td>
+              <td className="text-end">{getBadge(scan.status)}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
 }
