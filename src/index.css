@@ -56,6 +56,7 @@ Good primaries: Blue, purple, white, some greens
 html, body, #root {
   height: 100%;
   overflow: hidden;
+  touch-action: none;
 }
 
 @font-face {
