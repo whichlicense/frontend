@@ -57,7 +57,7 @@ export default function ScanList(props: ScanListProps) {
   };
 
   return (
-    <Table>
+    <Table responsive>
       <thead>
         <tr>
           <th>Name</th>
