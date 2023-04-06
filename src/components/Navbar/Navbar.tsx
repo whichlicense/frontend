@@ -116,8 +116,7 @@ export default function NavigationBar() {
             <small className="text-truncate">
               Remaining:{" "}
               {auth.user
-                ? auth.user?.plan.total_minutes -
-                  auth.user?.plan.leftover_minutes
+                ?  auth.user?.plan.leftover_minutes
                 : 0}
             </small>
             <hr />
