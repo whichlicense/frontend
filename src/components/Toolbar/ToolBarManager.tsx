@@ -27,6 +27,8 @@ import "../../styles/Button.css";
 import { useState } from "react";
 import { InlineCard } from "../Modals/InlineCard";
 import ReactMarkdown from "react-markdown";
+import { useHref, useLocation } from "react-router-dom";
+import { HelpCard } from "./HelpCard";
 
 type ToolBarManagerProps = {};
 export default function ToolBarManager(props: ToolBarManagerProps) {
@@ -42,7 +44,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
         return (
           <Button
             disabled={item.disabled}
-            onClick={()=>!item.disabled && item.onClick()}
+            onClick={() => !item.disabled && item.onClick()}
             className={`fade-in-forward text-truncate ${item.className || ""}${
               item.bgColor || "bg-dark-1"
             } ${item.txtColor || "txt-white"} tool-bar-button`}
@@ -104,7 +106,7 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
       <div className="position-relative">
         <div
           className="position-absolute w-100 d-flex justify-content-between align-items-start"
-          style={{ zIndex: 1, height: '50px' }}
+          style={{ zIndex: 1, height: "50px" }}
         >
           <Stack
             direction="horizontal"
@@ -124,18 +126,18 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
                   0
                 )}
 
-              {items.filter(x=>!x.hidden).map((item, idx) => {
-                return renderToolBarItem(item, idx + 1);
-              })}
+              {items
+                .filter((x) => !x.hidden)
+                .map((item, idx) => {
+                  return renderToolBarItem(item, idx + 1);
+                })}
             </ButtonGroup>
           </Stack>
 
           <HelpButton onClick={onHelpButtonClick} />
         </div>
       </div>
-      <InlineCard show={showHelp} handleClose={() => setShowHelp(false)}>
-        <ReactMarkdown># COMING SOON!</ReactMarkdown>
-      </InlineCard>
+      <HelpCard open={showHelp} handleClose={()=>setShowHelp(false)}  />
     </div>
   );
 }
