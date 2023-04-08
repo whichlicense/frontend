@@ -29,7 +29,7 @@ import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import ScanList from "../components/Lists/ScanList";
 import AddProjectCard from "../components/Modals/AddProject";
-import { ProviderType } from "../components/Provider/Provider";
+import { ESignalType, ProviderType } from "../components/Provider/Provider";
 import ProviderMismatchHandler, {
   ProviderMismatchAction,
 } from "../components/Provider/Rendering/ProviderMismatchHandler";
@@ -42,6 +42,7 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import axios from "axios";
 import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
+import { useSignal } from "../components/Hooks/useSignal";
 
 export default function Dashboard() {
   useForceAuth({
@@ -74,6 +75,23 @@ export default function Dashboard() {
   ]);
   const auth = useAuthContext();
 
+  useSignal({
+    signal: ESignalType.SCAN_FINISHED,
+    callback: () => {
+      getPersonalScans()
+    }
+  })
+
+  const getPersonalScans = () => {
+    axios.get(`${CONFIG.gateway_url}/scan/personal-scans`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    }).then((res)=>{
+      setDummyData(res.data)
+    })
+  }
+
   const [showAddProject, setShowAddProject] = useState(false);
   const [dummyData, setDummyData] = useState<{
     name: string,
@@ -86,14 +104,7 @@ export default function Dashboard() {
 
   useEffectOnce(()=>{
     // TODO: this needs to be attached to the provider as the calls might change depending on the provider being used...
-    axios.get(`${CONFIG.gateway_url}/scan/personal-scans`, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
-      }
-    }).then((res)=>{
-      setDummyData(res.data)
-      console.log(res.data)
-    })
+    getPersonalScans()
   })
 
   return (

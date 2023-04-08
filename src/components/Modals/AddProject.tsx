@@ -18,33 +18,60 @@
 import { Button, Form } from "react-bootstrap";
 import SectionHeading from "../Typography/SectionHeading";
 import { InlineCard } from "./InlineCard";
+import { useState } from "react";
+import axios from "axios";
+import { CONFIG } from "../../CONFIG";
+import { toast } from "react-toastify";
 
 type TAddProjectCardProps = {
-    show: boolean;
-    handleClose?: () => void
-}
-export default function AddProjectCard(props: TAddProjectCardProps){
-    return (
-        <InlineCard show={props.show} handleClose={props.handleClose}>
-        <>
-          <SectionHeading title="Add project" size="6" type="display" />
-          <Form className="pt-2">
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>URL</Form.Label>
-              <Form.Control type="text" placeholder="Enter project url (e.g., github url)" />
-              <Form.Text className="text-muted">
-                <small className="text-muted">
-                  <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
-                  Errors will come here. lorem ipsum dolor sit amet, consectetur
-                </small>
-              </Form.Text>
-            </Form.Group>
+  show: boolean;
+  handleClose?: () => void;
+};
+export default function AddProjectCard(props: TAddProjectCardProps) {
+  const [url, setUrl] = useState<string>("");
 
-            <Button type="submit">
-              Submit
-            </Button>
-          </Form>
-        </>
-      </InlineCard>
-    )
+  const handleUrlChange = (url: string) => {
+    setUrl(url);
+    // TODO: logic here to determine inputs to show based on type of url
+  };
+
+  const handleSubmit = () => {
+    // TODO: move to providers as it is provider specific.
+    axios.post(`${CONFIG.gateway_url}/scan/initiate`, { url }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+    }).catch((e) => {
+      toast.error(e?.data?.error || "Something went wrong");
+    });
+
+    props.handleClose && props.handleClose();
+  }
+  return (
+    <InlineCard show={props.show} handleClose={props.handleClose}>
+      <>
+        <SectionHeading title="Add project" size="6" type="display" />
+        <Form className="pt-2">
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>URL</Form.Label>
+            <Form.Control
+              onChange={(e) => {
+                handleUrlChange(e.target.value);
+              }}
+              type="text"
+              placeholder="Enter project url (e.g., github url)"
+            />
+            <Form.Text className="text-muted">
+              <small className="text-muted">
+                <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
+                Errors will come here. lorem ipsum dolor sit amet, consectetur
+              </small>
+            </Form.Text>
+          </Form.Group>
+
+          <Button onClick={handleSubmit}>Submit</Button>
+        </Form>
+      </>
+    </InlineCard>
+  );
 }
