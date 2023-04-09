@@ -17,10 +17,12 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
+import { TTelemetryEntryCustomEvent, Telemetry } from "../utils/Telemetry";
 
 export type ProviderOptions = {
     host: string;
     port: number;
+    secure?: boolean;
 }
 
 export enum ProviderType {
@@ -71,7 +73,7 @@ export abstract class Provider {
 
         const savedToken = localStorage.getItem("token");
 
-        this.signalSocket = new WebSocket(`ws://${options.host}:${options.port}/socket/signals`);
+        this.signalSocket = new WebSocket(`${options.secure ? 'wss' : 'ws'}://${options.host}:${options.port}/socket/signals`);
 
         this.signalSocket.addEventListener("open", () => {
             console.log("Signal socket opened");
@@ -80,12 +82,12 @@ export abstract class Provider {
 
         this.signalSocket.addEventListener("message", async (event) => {
             const d = JSON.parse(event.data) as { type: ESignalType, data: any };
-            if(d.type === ESignalType.NOTIFICATION && d.data?.message){
+            if (d.type === ESignalType.NOTIFICATION && d.data?.message) {
                 toast.info(d.data.message)
 
-                if(!document.hasFocus()){
+                if (!document.hasFocus()) {
                     let permission = await Notification.requestPermission();
-                    if(permission === "granted") {
+                    if (permission === "granted") {
                         const notification = new Notification("WhichLicense", {
                             body: d.data.message,
                             icon: "/logo192.png",
@@ -100,12 +102,29 @@ export abstract class Provider {
                 }
             }
             console.log("Received signal in Provder.ts", d);
-            for(const cb of this.onSignal) {
+            for (const cb of this.onSignal) {
                 cb(d.type, d.data);
             }
         })
 
         this.onSignal = new Set();
+
+        window.addEventListener("new-telemetry-entry", (e: CustomEventInit<TTelemetryEntryCustomEvent>) => {
+            if (e.detail) {
+                this.onTelemetry(e.detail);
+            }
+        })
+    }
+
+    /**
+     * Is called when a new telemetry entry is created.
+     * @param e The data of the new telemetry entry
+     */
+    onTelemetry(data: TTelemetryEntryCustomEvent) {
+        axios.post(
+            `${this.options.secure ? 'https' : 'http'}://${this.options.host}:${this.options.port}/telemetry`,
+            data
+        );
     }
 
     // TODO: define type
