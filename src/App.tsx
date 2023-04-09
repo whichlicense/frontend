@@ -43,11 +43,18 @@ import SubAccounts from "./pages/SubAccounts";
 
 import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer } from "react-toastify";
+import useNavigationTelemetry from "./components/Hooks/useNavigationTelemetry";
 
+function NavTelemetry(){
+  useNavigationTelemetry();
+  return null;
+}
 function App() {
   const mainContentRef = useRef(null);
+
   return (
     <Router>
+      <NavTelemetry />
       <ProviderContextProvider>
         <AuthContextProvider>
           <Container fluid className="noise h-100">

@@ -29,11 +29,13 @@ import { InlineCard } from "../Modals/InlineCard";
 import ReactMarkdown from "react-markdown";
 import { useHref, useLocation } from "react-router-dom";
 import { HelpCard } from "./HelpCard";
+import { ETelemetryEntryType, Telemetry } from "../utils/Telemetry";
 
 type ToolBarManagerProps = {};
 export default function ToolBarManager(props: ToolBarManagerProps) {
   const { items } = useToolBarContext();
   const [showHelp, setShowHelp] = useState(false);
+  const telemetry = Telemetry.instance;
 
   const renderToolBarItem = (item: ToolBarItem, idx: number) => {
     const calcAnimationDelay = (idx: number) => {
@@ -98,6 +100,10 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
   };
 
   const onHelpButtonClick = () => {
+    telemetry.addEntry({
+      type: ETelemetryEntryType.INTERACTION,
+      title: "Open help",
+    });
     setShowHelp(true);
   };
 
@@ -137,7 +143,12 @@ export default function ToolBarManager(props: ToolBarManagerProps) {
           <HelpButton onClick={onHelpButtonClick} />
         </div>
       </div>
-      <HelpCard open={showHelp} handleClose={()=>setShowHelp(false)}  />
+      <HelpCard open={showHelp} handleClose={()=>{
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Close help",
+        });
+        setShowHelp(false)}}  />
     </div>
   );
 }

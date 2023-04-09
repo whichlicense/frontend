@@ -16,13 +16,7 @@
  */
 
 import { useState } from "react";
-import {
-  Badge,
-  Col,
-  ListGroup,
-  Row,
-  Stack,
-} from "react-bootstrap";
+import { Badge, Col, ListGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { GoogleTreeMapChart } from "../components/Charts/GoogleTreeMapChart";
 import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
@@ -43,6 +37,7 @@ import axios from "axios";
 import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { useSignal } from "../components/Hooks/useSignal";
+import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 
 export default function Dashboard() {
   useForceAuth({
@@ -50,6 +45,7 @@ export default function Dashboard() {
     travelTo: "/login",
   });
   const { getProviderType } = useProviderContext();
+  const telemetry = Telemetry.instance;
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
@@ -58,6 +54,10 @@ export default function Dashboard() {
       hidden: getProviderType() === ProviderType.LOCAL,
       onClick: () => {
         setShowAddProject(true);
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Add project open",
+        });
       },
     },
     {
@@ -70,6 +70,10 @@ export default function Dashboard() {
       icon: "bi bi-cpu",
       onClick: () => {
         console.log("button clicked");
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Scan project open",
+        });
       },
     },
   ]);
@@ -78,34 +82,38 @@ export default function Dashboard() {
   useSignal({
     signal: ESignalType.SCAN_FINISHED,
     callback: () => {
-      getPersonalScans()
-    }
-  })
+      getPersonalScans();
+    },
+  });
 
   const getPersonalScans = () => {
-    axios.get(`${CONFIG.gateway_url}/scan/personal-scans`, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
-      }
-    }).then((res)=>{
-      setDummyData(res.data)
-    })
-  }
+    axios
+      .get(`${CONFIG.gateway_url}/scan/personal-scans`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      .then((res) => {
+        setDummyData(res.data);
+      });
+  };
 
   const [showAddProject, setShowAddProject] = useState(false);
-  const [dummyData, setDummyData] = useState<{
-    name: string,
-    version: string,
-    license: string,
-    ecosystem: string,
-    generated: number,
-    dependencyAmount: number,
-  }[]>()
+  const [dummyData, setDummyData] = useState<
+    {
+      name: string;
+      version: string;
+      license: string;
+      ecosystem: string;
+      generated: number;
+      dependencyAmount: number;
+    }[]
+  >();
 
-  useEffectOnce(()=>{
+  useEffectOnce(() => {
     // TODO: this needs to be attached to the provider as the calls might change depending on the provider being used...
-    getPersonalScans()
-  })
+    getPersonalScans();
+  });
 
   return (
     <>
@@ -212,22 +220,33 @@ export default function Dashboard() {
         <Col xs={12} className="g-3">
           <RegularCard title={"Recent scans"} maxHeight="30vh" fadeIn>
             <ScanList
-              scans={dummyData?.map((scan) => {
-                return {
-                  name: scan.name,
-                  date: new Date(scan.generated * 1000),
-                  license: scan.license,
-                  ecosystem: scan.ecosystem,
-                  status: ComplianceStatus.UNKNOWN,
-                  link: `/scan-result/${scan.name}`
-                }
-              }) || []}
+              scans={
+                dummyData?.map((scan) => {
+                  return {
+                    name: scan.name,
+                    date: new Date(scan.generated * 1000),
+                    license: scan.license,
+                    ecosystem: scan.ecosystem,
+                    status: ComplianceStatus.UNKNOWN,
+                    link: `/scan-result/${scan.name}`,
+                  };
+                }) || []
+              }
             />
           </RegularCard>
         </Col>
       </Row>
 
-      <AddProjectCard show={showAddProject} handleClose={()=>setShowAddProject(false)} />
+      <AddProjectCard
+        show={showAddProject}
+        handleClose={() => {
+          setShowAddProject(false);
+          telemetry.addEntry({
+            type: ETelemetryEntryType.INTERACTION,
+            title: "Add project closed",
+          });
+        }}
+      />
     </>
   );
 }

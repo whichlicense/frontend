@@ -20,33 +20,28 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// import {
-//   Chart as ChartJS,
-//   ArcElement,
-//   Tooltip,
-//   Legend,
-//   CategoryScale,
-//   LinearScale,
-//   BarController,
-//   BarElement,
-// } from "chart.js";
-// import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
+import { ETelemetryEntryType, Telemetry } from "./components/utils/Telemetry";
+
+const telemetry = Telemetry.instance;
+document.addEventListener("visibilitychange", () => {
+  console.log("Visibility changed", window.location);
+  if (document.hidden) {
+    telemetry.addEntry({
+      type: ETelemetryEntryType.PAGE_BLUR,
+      title: "Page blur",
+    })
+  } else {
+    telemetry.addEntry({
+      type: ETelemetryEntryType.PAGE_FOCUS,
+      title: "Page focus",
+    })
+  }
+});
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-// ChartJS.register(
-//   ArcElement,
-//   Tooltip,
-//   Legend,
-//   TreemapElement,
-//   TreemapController,
-//   CategoryScale,
-//   LinearScale,
-//   BarController,
-//   BarElement
-// );
 root.render(
   <React.StrictMode>
     <App />

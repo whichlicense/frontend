@@ -40,6 +40,7 @@ import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { TDummyData } from "../types/dummy";
 import { toast } from "react-toastify";
+import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
@@ -55,6 +56,8 @@ export default function ScanResult() {
     navigate("/dashboard");
   }
 
+  const telemetry = Telemetry.instance;
+
   useToolBar([
     {
       type: ToolBarItemType.BUTTON,
@@ -62,6 +65,10 @@ export default function ScanResult() {
       icon: "bi bi-check-circle",
       onClick: () => {
         setShowResolveLicense(true);
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Open Resolve Package",
+        });
       },
     },
     {
@@ -84,6 +91,10 @@ export default function ScanResult() {
       icon: "bi bi-cloud-plus",
       onClick: () => {
         console.log("button clicked");
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Press Add as project",
+        });
       },
     },
     {
@@ -94,6 +105,10 @@ export default function ScanResult() {
       title: "Export",
       icon: "bi bi-file-earmark-arrow-down",
       onClick: () => {
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Press Export",
+        });
         navigate("/export-view");
       },
     },
@@ -128,7 +143,13 @@ export default function ScanResult() {
       <InlineCard
         title="Resolve"
         show={showResolveLicense}
-        handleClose={() => setShowResolveLicense(false)}
+        handleClose={() => {
+          telemetry.addEntry({
+            type: ETelemetryEntryType.INTERACTION,
+            title: "Close Resolve Package",
+          });
+          setShowResolveLicense(false)
+        }}
       >
         <Row className="g-3">
           <Col xs={12}>

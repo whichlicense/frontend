@@ -34,6 +34,7 @@ import { InlineCard } from "../components/Modals/InlineCard";
 import { downloadPlainText } from "../components/utils/download";
 import { LICENSE_1 } from "../components/utils/TEST_LICENSES";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 
 // TODO: remove me.. only for testing
 function getRandomInt(min: number, max: number) {
@@ -124,6 +125,7 @@ export default function ExportView() {
     addLicenses: false,
   });
   const [customNotes, setCustomNotes] = useState("Nothing provided.");
+  const telemetry = Telemetry.instance;
   // TODO: take in scan ID as url parameter.. go from there.
   // TODO: add chart display with associated options
   // TODO: table of contents generation
@@ -144,6 +146,10 @@ export default function ExportView() {
             text: "ReactJS 1.0.0",
             url: window.location.href,
           });
+          telemetry.addEntry({
+            type: ETelemetryEntryType.INTERACTION,
+            title: "Share pressed",
+          });
         } catch (_) {
           navigator.clipboard.writeText(window.location.href);
         }
@@ -159,6 +165,11 @@ export default function ExportView() {
       icon: "bi bi-sliders",
       onClick: () => {
         setShowExportOptions(true);
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Open Export options",
+          description: `Options: \n${Object.entries(printSettings).map(([k, v]) => `\t${k}: ${v}`).join("\n")}`,
+        });
       },
     },
     {
@@ -170,6 +181,10 @@ export default function ExportView() {
       icon: "bi bi-filetype-pdf",
       onClick: () => {
         print();
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Download PDF pressed",
+        });
       },
     },
     {
@@ -179,6 +194,10 @@ export default function ExportView() {
       onClick: () => {
         // TODO: change file name to something more meaningful
         downloadPlainText("export.html", constructHTML());
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Download HTML pressed",
+        });
       },
     },
     {
@@ -187,6 +206,10 @@ export default function ExportView() {
       icon: "bi bi-filetype-csv",
       onClick: () => {
         // TODO: implement csv export when data structure is available
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Download CSV pressed",
+        });
       },
     },
     {
@@ -195,6 +218,10 @@ export default function ExportView() {
       icon: "bi bi-file-earmark-text",
       onClick: () => {
         // TODO: implement txt export when data structure is available
+        telemetry.addEntry({
+          type: ETelemetryEntryType.INTERACTION,
+          title: "Download Text pressed",
+        });
       },
     },
   ]);
@@ -533,7 +560,14 @@ ${test_nested_dependencies
       <InlineCard
         title="Export options"
         show={showExportOptions}
-        handleClose={() => setShowExportOptions(false)}
+        handleClose={() => {
+          setShowExportOptions(false)
+          telemetry.addEntry({
+            type: ETelemetryEntryType.INTERACTION,
+            title: "Close export options",
+            description: `Options: \n${Object.entries(printSettings).map(([k, v]) => `\t${k}: ${v}`).join("\n")}`,
+          });
+        }}
       >
         {/* TODO: make the items here-in a double decker list and in description tell a little about what
         the option does */}
