@@ -18,6 +18,7 @@
 import { Button, Stack } from "react-bootstrap";
 type NavBarButtonProps = {
   text: string;
+  className?: string;
   iconClass: string;
   onClick?: () => void;
   collapsed?: boolean;
@@ -28,7 +29,12 @@ export default function NavBarButton(props: NavBarButtonProps) {
   return (
     <Button
       onClick={() => props.onClick && props.onClick()}
-      className={"NavBarButton shadow-sm text-start py-2 ps-3" + (props.selected ? " selected" : "") + (props.disabled ? " disabled" : "")}
+      className={
+        "NavBarButton shadow-sm text-start py-2 ps-3" +
+        (props.selected ? " selected" : "") +
+        (props.disabled ? " disabled" : "") +
+        (props.className ? " " + props.className : "")
+      }
     >
       <Stack direction="horizontal">
         <i className={props.iconClass}></i>

@@ -25,25 +25,29 @@ import { useMemo } from "react";
 import PlanUsageBar from "../ProgressBars/PlanUsageBar";
 import { useProviderContext } from "../../context/ProviderContext";
 import { ProviderType } from "../Provider/Provider";
+import { toast } from "react-toastify";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuthContext();
-  const provider = useProviderContext()
+  const provider = useProviderContext();
   const { open, setOpen } = useDrawerContext();
 
   // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
 
   return (
-    <div id="nav-content-section" className={`${open ? "nav-open" : "nav-closed"}`}>
+    <div
+      id="nav-content-section"
+      className={`${open ? "nav-open" : "nav-closed"}`}
+    >
       <div className="position-relative">
         <Button
           onClick={() => setOpen((x) => !x)}
           className={`bg-purple text-dark position-absolute shadow-sm ${
             open ? "nav-collapse-button" : "nav-expand-button"
           }`}
-          style={{zIndex: 1000}}
+          style={{ zIndex: 1000 }}
         >
           <i className={`bi bi-caret-${open ? "left" : "right"}-fill`}></i>
         </Button>
@@ -114,21 +118,44 @@ export default function NavigationBar() {
           />
         </Stack>
 
-        {open && auth.isLoggedInMemo && (
-          <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
-            <small className="text-truncate">
-              Remaining:{" "}
-              {auth.user
-                ?  auth.user?.plan.leftover_minutes
-                : 0}
-            </small>
-            <hr />
-            <PlanUsageBar total_minutes={auth.user?.plan.total_minutes || 0} leftover_minutes={auth.user?.plan.leftover_minutes || 0}  />
-            <div className="d-flex justify-content-between">
-              <small>{auth.user?.plan.leftover_minutes || 0}</small>
-              <small>{auth.user ? auth.user?.plan.total_minutes : 0}</small>
-            </div>
-          </Card>
+        {provider.getProviderType() === ProviderType.LOCAL ? (
+          <>
+            <NavBarButton
+              onClick={() => {
+                toast.warn(
+                  <>
+                    <h6 className="mb-0">Using a locally connected CLI</h6>
+                    <small className="text-muted">
+                      Most features will be disabled in this mode.
+                    </small>
+                  </>
+                );
+              }}
+              text={"Local provider"}
+              collapsed={!open}
+              iconClass={"bi bi-exclamation-triangle"}
+              className="bg-yellow txt-dark-1 mb-2"
+            />
+          </>
+        ) : (
+          <>
+            {open && auth.isLoggedInMemo && (
+              <Card className="w-100 bg-dark-1 rounded p-3 mb-2">
+                <small className="text-truncate">
+                  Remaining: {auth.user ? auth.user?.plan.leftover_minutes : 0}
+                </small>
+                <hr />
+                <PlanUsageBar
+                  total_minutes={auth.user?.plan.total_minutes || 0}
+                  leftover_minutes={auth.user?.plan.leftover_minutes || 0}
+                />
+                <div className="d-flex justify-content-between">
+                  <small>{auth.user?.plan.leftover_minutes || 0}</small>
+                  <small>{auth.user ? auth.user?.plan.total_minutes : 0}</small>
+                </div>
+              </Card>
+            )}
+          </>
         )}
 
         <NavBarButton
