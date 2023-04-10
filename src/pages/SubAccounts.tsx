@@ -29,6 +29,10 @@ import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { AccountPermissionsTable, AccountTable } from "../types/schema";
+import ProviderMismatchHandler, {
+  ProviderMismatchAction,
+} from "../components/Provider/Rendering/ProviderMismatchHandler";
+import { ProviderType } from "../components/Provider/Provider";
 
 type TSubAccountAndPermissions = AccountTable & {
   permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
@@ -66,7 +70,9 @@ export default function SubAccounts() {
   const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
     []
   );
-  const [domains, setDomains] = useState<{id: number, name: string, description: string}[]>([]);
+  const [domains, setDomains] = useState<
+    { id: number; name: string; description: string }[]
+  >([]);
   const [showAddSubAccountCard, setShowAddSubAccountCard] = useState(false);
 
   const getAvailablePermissions = async () => {
@@ -88,10 +94,9 @@ export default function SubAccounts() {
   };
 
   const getDomains = async () => {
-    return (
-      await axios.get(`${CONFIG.gateway_url}/domain/get-domains`)
-    ).data as {id: number, name: string, description: string}[]
-  }
+    return (await axios.get(`${CONFIG.gateway_url}/domain/get-domains`))
+      .data as { id: number; name: string; description: string }[];
+  };
 
   const onAddSubAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -145,140 +150,162 @@ export default function SubAccounts() {
 
     getDomains().then((res) => {
       setDomains(res);
-    })
+    });
   });
   return (
-    <>
-      <Stack gap={2}>
-        <h1 className="display-5">Sub Accounts</h1>
-        <hr />
-        <Row>
-          {subAccounts.map((subAccount, subAccountIdx) => (
-            <Col md={6}>
-              <RegularCard
-                title={`${subAccount.first_name} ${subAccount.last_name}`}
-                minHeight="22vh"
-                maxHeight="22vh"
-              >
-                <Stack gap={1}>
-                  <span>Email: {subAccount.email}</span>
-                  <span>Domain: {domains.find(d=>d.id === subAccount.domain)?.name || "UNKNOWN"}</span>
-                  <h6>Permissions:</h6>
-                  <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
-                    {Object.entries(subAccount.permissions).map(([k, v], i) => (
-                      <Col key={`${subAccountIdx}_${k}_${v}_${i}`}>
-                        <Button className={`w-100 not-clickable bg-${v ? "green" : "red"} txt-dark-1`}>
-                          <small>{mapKey(k)}</small>
-                        </Button>
-                      </Col>
-                    ))}
-                  </Row>
-                </Stack>
-              </RegularCard>
-            </Col>
-          ))}
-        </Row>
-      </Stack>
-
-      <InlineCard
-        show={showAddSubAccountCard}
-        handleClose={() => setShowAddSubAccountCard(false)}
-      >
+    <ProviderMismatchHandler
+      replacingComponent={
         <>
-          <SectionHeading title={"Add sub account"} size={"1"} />
-          <Form onSubmit={onAddSubAccount}>
-            <Row>
-              <Col md={5}>
-                <Form.Group className="mb-3">
-                  <Form.Label>
-                    First name<span className="txt-deep-red">*</span>
-                  </Form.Label>
-                  <Form.Control
-                    name="first_name"
-                    placeholder="Enter first name"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Last name</Form.Label>
-                  <Form.Control
-                    name="last_name"
-                    placeholder="(optional) Enter last name"
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Domain</Form.Label>
-                  <Form.Select
-                    name="domain"
-                    placeholder="(optional) Enter last name"
-                  >
-                    {domains.map((domain) => {
-                      return <option value={domain.id}>{domain.name}</option>;
-                    })}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-              <Form.Group className="mb-3">
-              <Form.Label>
-                Email address<span className="txt-deep-red">*</span>
-              </Form.Label>
-              <Form.Control
-                name="email"
-                type="email"
-                placeholder="Enter email"
-              />
-            </Form.Group>
-              </Col>
-
-              <Col md={6}>
-              <Form.Group className="mb-3">
-              <Form.Label>
-                Password<span className="txt-deep-red">*</span>
-              </Form.Label>
-              <Form.Control
-                name="password"
-                type="password"
-                placeholder="Password"
-              />
-            </Form.Group>
-              </Col>
-            </Row>
-            
-            
-            
-
-           
-
-            <SectionHeading title={"Permissions"} size={"2"} divider />
-            <Row xs={1} md={3} lg={4} xxl={5} className="g-2 pt-2">
-              {permissions.map((permissionKey, i) => {
-                return (
-                  <Col>
-                    <Form.Group>
-                      <Form.Check
-                        name={permissionKey}
-                        type="checkbox"
-                        label={mapKey(permissionKey)}
-                      />
-                    </Form.Group>
-                  </Col>
-                );
-              })}
-            </Row>
-
-            <br />
-            <Button className="bg-blue txt-dark-1" type="submit">
-              Add account
-            </Button>
-          </Form>
+          <SectionHeading
+            divider
+            title={
+              "Sub accounts are only available on our cloud hosted solution"
+            }
+            size={"5"}
+            type="display"
+          />
         </>
-      </InlineCard>
-    </>
+      }
+      requiredProvider={ProviderType.CLOUD}
+      action={ProviderMismatchAction.REPLACE}
+    >
+      <>
+        <Stack gap={2}>
+          <h1 className="display-5">Sub Accounts</h1>
+          <hr />
+          <Row>
+            {subAccounts.map((subAccount, subAccountIdx) => (
+              <Col md={6}>
+                <RegularCard
+                  title={`${subAccount.first_name} ${subAccount.last_name}`}
+                  minHeight="22vh"
+                  maxHeight="22vh"
+                >
+                  <Stack gap={1}>
+                    <span>Email: {subAccount.email}</span>
+                    <span>
+                      Domain:{" "}
+                      {domains.find((d) => d.id === subAccount.domain)?.name ||
+                        "UNKNOWN"}
+                    </span>
+                    <h6>Permissions:</h6>
+                    <Row xs={1} md={2} lg={3} xxl={5} className="g-2">
+                      {Object.entries(subAccount.permissions).map(
+                        ([k, v], i) => (
+                          <Col key={`${subAccountIdx}_${k}_${v}_${i}`}>
+                            <Button
+                              className={`w-100 not-clickable bg-${
+                                v ? "green" : "red"
+                              } txt-dark-1`}
+                            >
+                              <small>{mapKey(k)}</small>
+                            </Button>
+                          </Col>
+                        )
+                      )}
+                    </Row>
+                  </Stack>
+                </RegularCard>
+              </Col>
+            ))}
+          </Row>
+        </Stack>
+
+        <InlineCard
+          show={showAddSubAccountCard}
+          handleClose={() => setShowAddSubAccountCard(false)}
+        >
+          <>
+            <SectionHeading title={"Add sub account"} size={"1"} />
+            <Form onSubmit={onAddSubAccount}>
+              <Row>
+                <Col md={5}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>
+                      First name<span className="txt-deep-red">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      name="first_name"
+                      placeholder="Enter first name"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Last name</Form.Label>
+                    <Form.Control
+                      name="last_name"
+                      placeholder="(optional) Enter last name"
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={3}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Domain</Form.Label>
+                    <Form.Select
+                      name="domain"
+                      placeholder="(optional) Enter last name"
+                    >
+                      {domains.map((domain) => {
+                        return <option value={domain.id}>{domain.name}</option>;
+                      })}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>
+                      Email address<span className="txt-deep-red">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      name="email"
+                      type="email"
+                      placeholder="Enter email"
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>
+                      Password<span className="txt-deep-red">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <SectionHeading title={"Permissions"} size={"2"} divider />
+              <Row xs={1} md={3} lg={4} xxl={5} className="g-2 pt-2">
+                {permissions.map((permissionKey, i) => {
+                  return (
+                    <Col>
+                      <Form.Group>
+                        <Form.Check
+                          name={permissionKey}
+                          type="checkbox"
+                          label={mapKey(permissionKey)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  );
+                })}
+              </Row>
+
+              <br />
+              <Button className="bg-blue txt-dark-1" type="submit">
+                Add account
+              </Button>
+            </Form>
+          </>
+        </InlineCard>
+      </>
+    </ProviderMismatchHandler>
   );
 }

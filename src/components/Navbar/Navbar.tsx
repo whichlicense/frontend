@@ -23,11 +23,14 @@ import { useDrawerContext } from "../../context/DrawerContext";
 import { useAuthContext } from "../../context/AuthContext";
 import { useMemo } from "react";
 import PlanUsageBar from "../ProgressBars/PlanUsageBar";
+import { useProviderContext } from "../../context/ProviderContext";
+import { ProviderType } from "../Provider/Provider";
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuthContext();
+  const provider = useProviderContext()
   const { open, setOpen } = useDrawerContext();
 
   // TODO: experiment: when we hover over the drawer it opens? and when we leave it closes?.. i like closed better
