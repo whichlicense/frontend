@@ -70,7 +70,7 @@
     "@types/uuid": "^9.0.1",
     "concurrently": "^7.6.0",
     "electron": "^23.2.0",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^24.2.0",
     "wait-on": "^7.0.1"
   }
 }
