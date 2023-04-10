@@ -134,7 +134,7 @@ export default function NavigationBar() {
               text={"Local provider"}
               collapsed={!open}
               iconClass={"bi bi-exclamation-triangle"}
-              className="bg-yellow txt-dark-1 mb-2"
+              className="bg-yellow txt-dark-1 mb-3"
             />
           </>
         ) : (
