@@ -44,6 +44,7 @@ import SubAccounts from "./pages/SubAccounts";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer } from "react-toastify";
 import useNavigationTelemetry from "./components/Hooks/useNavigationTelemetry";
+import PipeLine from "./pages/PipeLine";
 
 function NavTelemetry(){
   useNavigationTelemetry();
@@ -85,6 +86,7 @@ function App() {
                             path="/license/:id"
                             element={<LicenseInfo />}
                           />
+                          <Route path="/pipeline" element={<PipeLine />} />
                           <Route
                             path="/notifications"
                             element={<Notifications />}
