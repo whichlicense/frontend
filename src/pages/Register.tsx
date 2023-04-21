@@ -23,6 +23,7 @@ import { useForceAuth, AuthState } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { toast } from "react-toastify";
 
 export function Register() {
     useForceAuth({ ifState: AuthState.LOGGED_IN, travelTo: "/dashboard" });
@@ -51,8 +52,7 @@ export function Register() {
         }).then((res) => {
             navigate("/login");
         }).catch((err) => {
-            console.log(err);
-            // TODO: toast error
+          toast.error("Registration failed. Please try again later.")
         });
     }
   return (
