@@ -37,7 +37,6 @@ export default function Notifications() {
     }
   ])
   // TODO: what to receive emails for? everything? have a list that they can toggle stuff on and off?
-  // TODO: webhooks for what? everything? have a list that they can toggle stuff on and off?
   return (
     <div>
       <Stack gap={2}>
