@@ -195,7 +195,6 @@ export default function Payment() {
       )
       .then((res) => {
         getSavedPaymentMethods();
-        // TODO: this is dirty, refreshing constantly is also dirty, maybe make getSavedPaymentMethods return the updated user or the signal return the new value
         if (auth.user) {
           auth.user.selectedPaymentMethod = paymentMethodId;
         }
