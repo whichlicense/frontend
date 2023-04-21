@@ -23,6 +23,7 @@ import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { toast } from "react-toastify";
 
 
 export function Login() {
@@ -43,8 +44,7 @@ export function Login() {
 
     const onLogin= () => {
         auth.login(email, password).catch((err) => {
-            console.log(err);
-            // TODO: toast error or show in form
+          toast.error("Login failed. Check credentials and try again.")
         });
     }
   return (
