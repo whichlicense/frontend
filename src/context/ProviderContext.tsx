@@ -31,10 +31,16 @@ export const ProviderContext = createContext<{
     const [provider, setProvider] = useState<Provider | null>(null as any);
 
     useEffectOnce(() => {
-      setProvider(new CloudProvider({
-        host: "192.168.1.130", // TODO: point to actual cloud
-        port: 8080, // TODO: point to actual cloud port
-      }))
+      setProvider(
+        new CloudProvider({
+          host: "192.168.1.130", // TODO: point to actual cloud
+          port: 8080, // TODO: point to actual cloud port
+        })
+        // new LocalProvider({
+        //   host: "192.168.1.130", // TODO: point to actual cloud
+        //   port: 8080, // TODO: point to actual cloud port
+        // })
+      )
     })
 
     // TODO: what if we log-out and log-in with a different user? does the provider need to be re-created?
