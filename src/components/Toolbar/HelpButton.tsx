@@ -21,7 +21,6 @@ type HelpButtonProps = {
   onClick?: () => void;
 };
 export default function HelpButton(props: HelpButtonProps) {
-  // TODO: lower opacity a bit when scroll starts
   return (
     <Button onClick={()=> props.onClick && props.onClick()} className={`bg-green text-dark page-help-button shadow-sm`}>
       <i className="bi bi-question-lg txt-dark-1"></i>

@@ -26,7 +26,6 @@ type BackButtonProps = {
   overrideUrl?: string;
 };
 export default function BackButton(props: BackButtonProps) {
-  // TODO: lower opacity a bit when scroll starts
   // TODO: remove 'back' text on mobile
   // TODO: add full name of previous page on back when on larger screens
   const navigate = useNavigate();
