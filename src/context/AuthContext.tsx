@@ -88,7 +88,6 @@ export const AuthContextProvider = (props: any) => {
       }).catch((e) => {
         logout();
         setLoading(false);
-        // TODO: toast error message if required.
       })
   }
 
