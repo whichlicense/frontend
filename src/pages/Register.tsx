@@ -50,9 +50,10 @@ export function Register() {
             email: email,
             password: password,
         }).then((res) => {
-            navigate("/login");
+          toast.success(res.data.message || "Registration successful. Please login.");
+          navigate("/login");
         }).catch((err) => {
-          toast.error("Registration failed. Please try again later.")
+          toast.error(err.response.data.error || "Registration failed. Please try again later.")
         });
     }
   return (
