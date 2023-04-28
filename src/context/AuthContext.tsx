@@ -24,16 +24,19 @@ import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
 
-
-export type TUserState = TUser & {plan: TUserPlan} & {
-  domain: number;
-  selectedPaymentMethod?: string | null;
-} | null
+export type TUserState =
+  | (TUser & { plan: TUserPlan } & {
+      domain: number;
+      selectedPaymentMethod?: string | null;
+    })
+  | null;
 
 export const AuthContext = createContext<{
   user: TUserState;
   isLoggedIn: () => boolean;
   login: (email: string, password: string) => Promise<any>;
+  resendVerificationEmail: (email: string) => Promise<any>;
+  confirmEmail: (token: string) => Promise<any>;
   logout: () => void;
   register: (
     d: Omit<TUser & { password: string }, "token">
@@ -58,7 +61,9 @@ export type TUserPlan = {
 
 export const AuthContextProvider = (props: any) => {
   const [user, setUser] = useState<TUserState>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
   const [loading, setLoading] = useState(true);
 
   useSignal({
@@ -66,15 +71,14 @@ export const AuthContextProvider = (props: any) => {
     callback: () => {
       refresh();
     },
-  })
+  });
   useSignal({
     signal: ESignalType.PLAN_CHANGED,
     callback: () => {
       toast.success("Your plan has been changed");
       refresh();
-    }
-  })
-
+    },
+  });
 
   const fetchUser = async () => {
     setLoading(true);
@@ -85,27 +89,25 @@ export const AuthContextProvider = (props: any) => {
       .then((res) => {
         setUser(res.data);
         setLoading(false);
-      }).catch((e) => {
+      })
+      .catch((e) => {
         logout();
         setLoading(false);
-      })
-  }
+      });
+  };
 
   useEffectOnce(() => {
     if (token) {
-        fetchUser();
+      fetchUser();
     } else {
       setLoading(false);
     }
   });
 
-
-
   useEffect(() => {
-    fetchUser()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
-
+    fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const isLoggedIn = () => {
     return user !== null || token !== null;
@@ -126,6 +128,22 @@ export const AuthContextProvider = (props: any) => {
       });
   };
 
+  const resendVerificationEmail = async (email: string) => {
+    return await axios.post(
+      `${CONFIG.gateway_url}/auth/resend-email-confirmation`,
+      { email },
+      {}
+    );
+  };
+
+  const confirmEmail = async (token: string) => {
+    return await axios.post(
+      `${CONFIG.gateway_url}/auth/confirm-email`,
+      { token },
+      {}
+    );
+  };
+
   const register = async (d: Omit<TUser & { password: string }, "token">) => {
     return await axios.post(`${CONFIG.gateway_url}/register`, d);
   };
@@ -137,13 +155,24 @@ export const AuthContextProvider = (props: any) => {
   };
 
   const refresh = async () => {
-    console.log("refreshing auth")
+    console.log("refreshing auth");
     await fetchUser();
-  }
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, login, register, isLoggedInMemo, logout, token, refresh }}
+      value={{
+        user,
+        isLoggedIn,
+        login,
+        register,
+        isLoggedInMemo,
+        logout,
+        token,
+        refresh,
+        resendVerificationEmail,
+        confirmEmail
+      }}
     >
       {loading ? <FullScreenLoader /> : props.children}
     </AuthContext.Provider>
