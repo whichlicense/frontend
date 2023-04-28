@@ -34,7 +34,7 @@ export const ProviderContext = createContext<{
       setProvider(
         new CloudProvider({
           host: "192.168.1.130", // TODO: point to actual cloud
-          port: 8080, // TODO: point to actual cloud port
+          port: 8081, // TODO: point to actual cloud port
         })
         // new LocalProvider({
         //   host: "192.168.1.130", // TODO: point to actual cloud
