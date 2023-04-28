@@ -16,7 +16,7 @@
  */
 
 import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
@@ -28,6 +28,8 @@ import { toast } from "react-toastify";
 
 export function Login() {
     useForceAuth({ ifState: AuthState.LOGGED_IN, travelTo: "/dashboard" })
+    const [emailNotVerified, setEmailNotVerified] = useState<boolean>(false);
+    
     useToolBar([
         {
             type: ToolBarItemType.BUTTON,
@@ -44,8 +46,21 @@ export function Login() {
 
     const onLogin= () => {
         auth.login(email, password).catch((err) => {
-          toast.error("Login failed. Check credentials and try again.")
+          toast.error(err.response.data.error || "Login failed. Check credentials and try again.")
+          if(err.response.data.type === "EMAIL_NOT_VERIFIED") {
+            setEmailNotVerified(true);
+          }
         });
+    }
+
+    const onResendVerificationEmail = () => {
+      auth.resendVerificationEmail(email)
+      .then((res) => {
+        toast.success(res.data || "Verification email sent. Please check your inbox.")
+      })
+      .catch((err) => {
+        toast.error(err.response?.data.error || "Failed to send verification email. Please try again later.")
+      });
     }
   return (
     <>
@@ -61,9 +76,16 @@ export function Login() {
             <Form.Control onChange={(e)=>setPassword(e.target.value)} type="password" placeholder="Password" />
           </Form.Group>
 
+          <Stack direction="horizontal" gap={2}>
           <Button onClick={onLogin}>
             Login
           </Button>
+          {emailNotVerified && (
+            <Button className="bg-green txt-dark-1" onClick={onResendVerificationEmail}>
+              Resend verification email
+            </Button>
+          )}
+          </Stack>
         </Form>
       </RegularCard>
     </>
