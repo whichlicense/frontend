@@ -67,7 +67,6 @@ export default function Search() {
       toast.error(err.data.error || "Something went wrong")
     })
   })
-// TODO: instead of showing inlinecard on dep click -> go to scan page
   return (
     <div>
       <br />
