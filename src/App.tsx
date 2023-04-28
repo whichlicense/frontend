@@ -45,6 +45,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer } from "react-toastify";
 import useNavigationTelemetry from "./components/Hooks/useNavigationTelemetry";
 import PipeLine from "./pages/PipeLine";
+import ConfirmEmail from "./pages/ConfirmEmail";
 
 function NavTelemetry(){
   useNavigationTelemetry();
@@ -101,6 +102,7 @@ function App() {
                             path="/sub-accounts"
                             element={<SubAccounts />}
                           />
+                          <Route path="/confirm-email/:token" element={<ConfirmEmail />} />
                           <Route path="/" element={<Home />} />
                         </Routes>
                         <ScrollIndicator bodyRef={mainContentRef} />
