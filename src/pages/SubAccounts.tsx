@@ -33,6 +33,7 @@ import ProviderMismatchHandler, {
   ProviderMismatchAction,
 } from "../components/Provider/Rendering/ProviderMismatchHandler";
 import { ProviderType } from "../components/Provider/Provider";
+import { toast } from "react-toastify";
 
 type TSubAccountAndPermissions = AccountTable & {
   permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
@@ -132,9 +133,16 @@ export default function SubAccounts() {
       )
       .then((res) => {
         // TODO: toast success
+        setShowAddSubAccountCard(false);
+        toast.success(res.data.message || "Sub account created successfully");
+
+        getSubAccounts().then((res) => {
+          setSubAccounts(res);
+        });
       })
       .catch((err) => {
-        // TODO: toast error
+        setShowAddSubAccountCard(false);
+        toast.error(err.response.data.error || "An error occurred while attempting to add the sub account");
       });
   };
 
@@ -144,7 +152,6 @@ export default function SubAccounts() {
     });
 
     getSubAccounts().then((res) => {
-      console.log(res);
       setSubAccounts(res);
     });
 
