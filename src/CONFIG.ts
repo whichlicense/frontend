@@ -16,5 +16,5 @@
  */
 
 export const CONFIG = {
-    gateway_url: "http://192.168.1.130:8080",
+    gateway_url: "http://192.168.1.130:8081",
 }
