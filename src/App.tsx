@@ -59,7 +59,20 @@ function App() {
       <NavTelemetry />
       <ProviderContextProvider>
         <AuthContextProvider>
-          <Container fluid className="noise h-100">
+          <Container fluid className="h-100">
+          <span style={{
+            backgroundImage: "url(assets/background.png)",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top 40px left",
+            backgroundAttachment: "fixed",
+            
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            
+            position: "fixed",
+          }}></span>
             <DrawerContextProvider>
               <Stack
                 direction="horizontal"
@@ -76,6 +89,7 @@ function App() {
                         className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
                         id="main-content-section"
                       >
+                        
                         <Routes>
                           <Route path="/search" element={<Search />} />
                           <Route path="/dashboard" element={<Dashboard />} />

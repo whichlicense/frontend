@@ -17,3 +17,9 @@
 
 .regular-card {
 }
+
+.card-style {
+    background-color: transparent;
+    border: 1px solid rgb(62 76 98 / 25%) !important;
+    backdrop-filter: brightness(1.1) contrast(1.14) !important;
+}

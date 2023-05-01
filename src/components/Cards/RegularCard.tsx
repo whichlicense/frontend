@@ -54,8 +54,8 @@ export default function RegularCard(props: RegularCardProps) {
   const bodyRef = useRef(null);
   return (
     <Card
-      className={`regular-card shadow-sm rounded align-self-stretch ${
-        props.bg ? props.bg : "bg-dark-2"
+      className={`card-style shadow-sm rounded align-self-stretch ${
+        props.bg ? props.bg : "bg-transparent"
       } text-bg-dark w-100 ${props.fadeIn ? "fade-in-forward" : ""} ${
         props.className || ""
       }`}
