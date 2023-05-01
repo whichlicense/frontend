@@ -23,6 +23,9 @@ import { Provider } from "./Provider";
  * Represents a connection system towards a locally hosted solution.
  */
 export class LocalProvider extends Provider {
+    getPersonalScans(): Promise<any[]> {
+        throw new Error("Method not implemented.");
+    }
     getScan(id: string): Promise<any> {
         throw new Error("Method not implemented.");
     }

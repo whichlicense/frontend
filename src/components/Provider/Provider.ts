@@ -109,6 +109,8 @@ export abstract class Provider {
 
     // TODO: define type when available
     abstract getScan(id: string): Promise<any>;
+    // TODO: define type when available
+    abstract getPersonalScans(): Promise<any[]>;
     abstract initiateScan(options: TScanInitiationOptions): Promise<void>;
 
     /**

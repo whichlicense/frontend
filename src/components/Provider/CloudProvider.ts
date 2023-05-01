@@ -32,6 +32,21 @@ export class CloudProvider extends Provider {
         throw new Error("Method not implemented.");
     }
 
+    getPersonalScans(): Promise<any[]> {
+        return axios
+            .get(`${Provider.constructUrlBase(this.options)}/scan/personal-scans`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                return res.data;
+            }).catch((e) => {
+                toast.error(e?.data?.error || "Failed to get your personal scans");
+                return [];
+            });
+    }
+
     getLoggedInAccountType(): AccountType {
         // TODO: implement me by checking the account type of the logged in user (the auth system is to be moved here first)
         return AccountType.ALL;
