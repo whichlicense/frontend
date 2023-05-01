@@ -15,23 +15,21 @@
  *   limitations under the License.
  */
 
-import { useEffect, useState } from "react";
-import { InputGroup, Form, Row, Col, Stack, ListGroup } from "react-bootstrap";
+import { useState } from "react";
+import { Form, Row, Col, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { TDummyData } from "../types/dummy";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { CONFIG } from "../CONFIG";
 import { useNavigate } from "react-router-dom";
+import { useProviderContext } from "../context/ProviderContext";
 
 export default function Search() {
-  const [depCardOpen, setDepCardOpen] = useState(false);
   const [filterCardOpen, setFilterCardOpen] = useState(false);
   const navigate = useNavigate();
+  const {provider} = useProviderContext();
   useToolBar([
     {
       type: ToolBarItemType.INPUT,
@@ -60,11 +58,8 @@ export default function Search() {
   const [dummyData, setDummyData] = useState<TDummyData["transitiveDependencies"]>([])
 
   useEffectOnce(()=>{
-    axios.get(`${CONFIG.gateway_url}/scan/get-scans`, {}).then((res)=>{
-      setDummyData(res.data)
-    }).catch((err)=>{
-      console.log(err)
-      toast.error(err.data.error || "Something went wrong")
+    provider.getAllScannedDependencies().then((data)=>{
+      setDummyData(data)
     })
   })
   return (

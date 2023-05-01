@@ -41,6 +41,15 @@ export class CloudProvider extends Provider {
           })
     }
 
+    getAllScannedDependencies(): Promise<any[]> {
+        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res)=>{
+            return res.data;
+          }).catch((err)=>{
+            toast.error(err?.data?.error || "Failed to fetch scanned dependencies. Please try again later.")
+            return [];
+          })
+    }
+
     getPersonalScans(): Promise<any[]> {
         return axios
             .get(`${Provider.constructUrlBase(this.options)}/scan/personal-scans`, {

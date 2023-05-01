@@ -112,6 +112,11 @@ export abstract class Provider {
     // TODO: define type when available
     abstract getPersonalScans(): Promise<any[]>;
     abstract initiateScan(options: TScanInitiationOptions): Promise<void>;
+    // TODO: define type when available
+    /**
+     * Get all dependencies that have been scanned by the underlying provider, ever.
+     */
+    abstract getAllScannedDependencies(): Promise<any[]>;
 
     /**
      * Get the type of the logged in account.
