@@ -21,5 +21,6 @@
 .card-style {
     background-color: transparent;
     border: 1px solid rgb(62 76 98 / 25%) !important;
-    backdrop-filter: brightness(1.1) contrast(1.14) !important;
+    backdrop-filter:brightness(1.1) contrast(1.14) opacity(0.3) !important;
+    -webkit-backdrop-filter: brightness(1.2) contrast(1.1) saturate(0.6) !important;
 }
