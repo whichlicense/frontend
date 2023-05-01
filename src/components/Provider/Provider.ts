@@ -120,6 +120,18 @@ export abstract class Provider {
         return AccountType.ALL;
     }
 
+    getHelp(route: string): Promise<string> {
+        return axios
+            .get(`${Provider.constructUrlBase(this.options)}/help/get/${route}`)
+            .then((res) => {
+                console.log("GOT MD");
+                return res.data;
+            })
+            .catch((err) => {
+                return "# No help available for this page.";
+            });
+    }
+
     // TODO: all possible APIs that are ours go here (e.g., getScan, scanProject, getProjects, etc.)
     static checkForLocalServer() {
         // TODO: check if there is a local server running and check version
