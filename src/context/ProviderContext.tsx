@@ -33,8 +33,8 @@ export const ProviderContext = createContext<{
     useEffectOnce(() => {
       setProvider(
         new CloudProvider({
-          host: "192.168.1.130", // TODO: point to actual cloud
-          port: 8081, // TODO: point to actual cloud port
+          host: CloudProvider.defaultHost, // TODO: point to actual cloud
+          port: CloudProvider.defaultPort, // TODO: point to actual cloud port
         })
         // new LocalProvider({
         //   host: "192.168.1.130", // TODO: point to actual cloud

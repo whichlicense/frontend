@@ -25,6 +25,9 @@ import { Provider } from "./Provider";
  * Represents a connection system towards the cloud hosted solution.
  */
 export class CloudProvider extends Provider {
+    static defaultHost = "192.168.1.130";
+    static defaultPort = 8081;
+
     getScan(id: string): Promise<any> {
         throw new Error("Method not implemented.");
     }
