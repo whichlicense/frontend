@@ -29,7 +29,16 @@ export class CloudProvider extends Provider {
     static defaultPort = 8081;
 
     getScan(id: string): Promise<any> {
-        throw new Error("Method not implemented.");
+        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scan/${id.replaceAll("/", "_")}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+          }).then((res)=>{
+            return res.data;
+          }).catch((err)=>{
+            toast.error(err?.data?.error || "Something went wrong when fetching the scan. Please try again later.")
+            return {};
+          })
     }
 
     getPersonalScans(): Promise<any[]> {
