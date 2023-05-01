@@ -128,11 +128,11 @@ export abstract class Provider {
     }
 
     /**
-     * Construct the base of the url, example: ```http://localhost:8080/``` or ```https://whichlicense.com/```
-     * @NOTE always adds the trailing slash
+     * Construct the base of the url, example: ```http://localhost:8080``` or ```https://whichlicense.com```
+     * @NOTE DOES NOT ADD THE TRAILING SLASH!
      */
     static constructUrlBase(options: ProviderOptions) {
-        return `${options.secure ? 'https' : 'http'}://${options.host}${options.port ? `:${options.port}` : ''}/`;
+        return `${options.secure ? 'https' : 'http'}://${options.host}${options.port ? `:${options.port}` : ''}`;
     }
 
     free() {
