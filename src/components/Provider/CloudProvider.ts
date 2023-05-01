@@ -40,14 +40,14 @@ export class CloudProvider extends Provider {
     initiateScan(params: TScanInitiationOptions): Promise<void> {
         return axios.post(`${Provider.constructUrlBase(this.options)}/scan/initiate`, params, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
             }
-          })
-          .then((_) => {
-            toast.success("Scan initiated. You will be notified when it is complete.");
-          })
-          .catch((e) => {
-            toast.error(e?.data?.error || "Something went wrong");
-          });
+        })
+            .then((_) => {
+                toast.success("Scan initiated. You will be notified when it is complete.");
+            })
+            .catch((e) => {
+                toast.error(e?.data?.error || "Something went wrong");
+            });
     }
 }
