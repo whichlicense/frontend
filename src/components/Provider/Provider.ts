@@ -101,7 +101,6 @@ export abstract class Provider {
                     }
                 }
             }
-            console.log("Received signal in Provder.ts", d);
             for (const cb of this.onSignal) {
                 cb(d.type, d.data);
             }
