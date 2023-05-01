@@ -22,6 +22,7 @@ import { useState } from "react";
 import axios from "axios";
 import { CONFIG } from "../../CONFIG";
 import { toast } from "react-toastify";
+import { useProviderContext } from "../../context/ProviderContext";
 
 type TAddProjectCardProps = {
   show: boolean;
@@ -29,6 +30,7 @@ type TAddProjectCardProps = {
 };
 export default function AddProjectCard(props: TAddProjectCardProps) {
   const [url, setUrl] = useState<string>("");
+  const {provider} = useProviderContext()
 
   const handleUrlChange = (url: string) => {
     setUrl(url);
@@ -36,20 +38,11 @@ export default function AddProjectCard(props: TAddProjectCardProps) {
   };
 
   const handleSubmit = () => {
-    // TODO: move to providers as it is provider specific.
-    axios.post(`${CONFIG.gateway_url}/scan/initiate`, { url }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      }
-    })
-    .then((res) => {
-      toast.success("Scan initiated. You will be notified when it is complete.");
-    })
-    .catch((e) => {
-      toast.error(e?.data?.error || "Something went wrong");
-    });
+    provider?.initiateScan({url})
+      .finally(() => {
+        props.handleClose && props.handleClose();
+      });
 
-    props.handleClose && props.handleClose();
   }
   return (
     <InlineCard show={props.show} handleClose={props.handleClose}>
