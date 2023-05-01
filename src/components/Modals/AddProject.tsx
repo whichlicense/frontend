@@ -41,7 +41,11 @@ export default function AddProjectCard(props: TAddProjectCardProps) {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       }
-    }).catch((e) => {
+    })
+    .then((res) => {
+      toast.success("Scan initiated. You will be notified when it is complete.");
+    })
+    .catch((e) => {
       toast.error(e?.data?.error || "Something went wrong");
     });
 
