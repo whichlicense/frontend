@@ -15,7 +15,9 @@
  *   limitations under the License.
  */
 
-import { AccountType, Provider } from "./Provider";
+import { AccountType } from "../typings/Account";
+import { TScanInitiationOptions } from "../typings/Scan";
+import { Provider } from "./Provider";
 
 /**
  * Represents a connection system towards a locally hosted solution.
@@ -33,4 +35,8 @@ export class LocalProvider extends Provider {
         return AccountType.ALL;
     }
 
+    initiateScan(options: TScanInitiationOptions): Promise<void> {
+        // TODO: implement me when local API wrapper is ready
+        throw new Error("Method not implemented.");
+    }
 }

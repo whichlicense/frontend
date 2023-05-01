@@ -18,37 +18,18 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { TTelemetryEntryCustomEvent, Telemetry } from "../utils/Telemetry";
+import { TScanInitiationOptions } from "../typings/Scan";
+import { AccountType } from "../typings/Account";
 
 export type ProviderOptions = {
     host: string;
-    port: number;
+    port?: number;
     secure?: boolean;
 }
 
 export enum ProviderType {
     LOCAL,
     CLOUD
-}
-
-/**
- * Represents the type of account that is connected to the server.
- * This directly ties in to the concerns a given account has:
- *  for example, a legal account only needs to see license related stuff
- */
-export enum AccountType {
-    /**
-     * Special account type for viewing everything.
-     * > I.e., this account is concerned with everything.
-     */
-    ALL,
-    LEGAL,
-    /**
-     * Special account type for customer access when one wants to give the customer direct
-     * access to the dashboard instead of exporting results.
-     * > Ideally this customer only sees finished top-level scans with no ability to take actions
-     */
-    CUSTOMER,
-
 }
 
 export enum ESignalType {
@@ -126,8 +107,9 @@ export abstract class Provider {
         );
     }
 
-    // TODO: define type
+    // TODO: define type when available
     abstract getScan(id: string): Promise<any>;
+    abstract initiateScan(options: TScanInitiationOptions): Promise<void>;
 
     /**
      * Get the type of the logged in account.
@@ -143,6 +125,14 @@ export abstract class Provider {
         // TODO: check if there is a local server running and check version
         // TODO: toast with error if version mismatch
         return false;
+    }
+
+    /**
+     * Construct the base of the url, example: ```http://localhost:8080/``` or ```https://whichlicense.com/```
+     * @NOTE always adds the trailing slash
+     */
+    static constructUrlBase(options: ProviderOptions) {
+        return `${options.secure ? 'https' : 'http'}://${options.host}${options.port ? `:${options.port}` : ''}/`;
     }
 
     free() {

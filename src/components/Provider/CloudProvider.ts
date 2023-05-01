@@ -15,6 +15,10 @@
  *   limitations under the License.
  */
 
+import axios from "axios";
+import { toast } from "react-toastify";
+import { AccountType } from "../typings/Account";
+import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
 /**
@@ -22,6 +26,26 @@ import { Provider } from "./Provider";
  */
 export class CloudProvider extends Provider {
     getScan(id: string): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+
+    getLoggedInAccountType(): AccountType {
+        // TODO: implement me by checking the account type of the logged in user (the auth system is to be moved here first)
+        return AccountType.ALL;
+    }
+
+    initiateScan(params: TScanInitiationOptions): Promise<void> {
+        axios.post(`${Provider.constructUrlBase(this.options)}`, params, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+          })
+          .then((_) => {
+            toast.success("Scan initiated. You will be notified when it is complete.");
+          })
+          .catch((e) => {
+            toast.error(e?.data?.error || "Something went wrong");
+          });
         throw new Error("Method not implemented.");
     }
 }
