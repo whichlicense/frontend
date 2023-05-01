@@ -108,7 +108,7 @@ export abstract class Provider {
 
         this.onSignal = new Set();
 
-        window.addEventListener("new-telemetry-entry", (e: CustomEventInit<TTelemetryEntryCustomEvent>) => {
+        window.addEventListener(Telemetry.newEntryEventName, (e: CustomEventInit<TTelemetryEntryCustomEvent>) => {
             if (e.detail) {
                 this.onTelemetry(e.detail);
             }
