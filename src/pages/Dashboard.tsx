@@ -31,10 +31,7 @@ import { ComplianceStatus } from "../components/typings/DependencyStatus";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { useProviderContext } from "../context/ProviderContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
-import { TDummyData } from "../types/dummy";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
-import axios from "axios";
-import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
@@ -44,7 +41,7 @@ export default function Dashboard() {
     ifState: AuthState.LOGGED_OUT,
     travelTo: "/login",
   });
-  const { getProviderType } = useProviderContext();
+  const { getProviderType, provider } = useProviderContext();
   const telemetry = Telemetry.instance;
   useToolBar([
     {
@@ -87,15 +84,9 @@ export default function Dashboard() {
   });
 
   const getPersonalScans = () => {
-    axios
-      .get(`${CONFIG.gateway_url}/scan/personal-scans`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        setDummyData(res.data);
-      });
+    provider.getPersonalScans().then((scans) => {
+      setDummyData(scans);
+    })
   };
 
   const [showAddProject, setShowAddProject] = useState(false);
