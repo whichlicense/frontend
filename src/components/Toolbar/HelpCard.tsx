@@ -16,32 +16,30 @@
  */
 
 import ReactMarkdown from "react-markdown";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { InlineCard } from "../Modals/InlineCard";
 import { useEffect, useState } from "react";
-import { CONFIG } from "../../CONFIG";
-import axios from "axios";
+import { useProviderContext } from "../../context/ProviderContext";
 
 const lastLocation = { value: "" };
 export function HelpCard(props: { open: boolean; handleClose: () => void }) {
   // TODO: ability to manually set an md file ID via a hook
   const location = useLocation();
   const [md, setMd] = useState("Loading...");
+  const {provider} = useProviderContext();
 
   useEffect(() => {
     const baseRoute = location.pathname.split("/")[1];
     if (lastLocation.value === baseRoute) return;
     lastLocation.value = baseRoute;
-    axios
-      .get(`${CONFIG.gateway_url}/help/get/${baseRoute}`)
-      .then((res) => {
-        console.log("GOT MD");
-        setMd(res.data);
-      })
-      .catch((err) => {
-        setMd("# No help available for this page.");
-      });
-  }, [location]);
+
+    provider.getHelp(baseRoute).then((res) => {
+      if (res) {
+        setMd(res);
+        return;
+      }
+    })
+  }, [location, provider]);
 
   return (
     <InlineCard show={props.open} handleClose={() => props.handleClose()}>
