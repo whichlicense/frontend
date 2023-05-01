@@ -35,7 +35,7 @@ export class CloudProvider extends Provider {
     }
 
     initiateScan(params: TScanInitiationOptions): Promise<void> {
-        axios.post(`${Provider.constructUrlBase(this.options)}`, params, {
+        return axios.post(`${Provider.constructUrlBase(this.options)}/scan/initiate`, params, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             }
@@ -46,6 +46,5 @@ export class CloudProvider extends Provider {
           .catch((e) => {
             toast.error(e?.data?.error || "Something went wrong");
           });
-        throw new Error("Method not implemented.");
     }
 }
