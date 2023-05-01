@@ -77,6 +77,8 @@ export class Telemetry {
     private entries: TTelemetryEntry[];
     public sessionId: string;
 
+    static newEntryEventName = "new-telemetry-entry";
+
     private constructor() {
         console.info("Telemetry object constructed");
         this.entries = [];
@@ -86,7 +88,7 @@ export class Telemetry {
     public addEntry(entry: Omit<Omit<TTelemetryEntry, 'url'>, 'timestamp'>) {
         // should be faster than spreading the object.
         this.entries.push(Object.assign(entry, { url: window.location.pathname, timestamp: Date.now() }));
-        window.dispatchEvent(new CustomEvent("new-telemetry-entry", { detail: {
+        window.dispatchEvent(new CustomEvent(Telemetry.newEntryEventName, { detail: {
             entry, sessionId: this.sessionId
         } }));
     }
