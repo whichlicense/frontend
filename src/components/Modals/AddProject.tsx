@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Stack } from "react-bootstrap";
 import SectionHeading from "../Typography/SectionHeading";
 import { InlineCard } from "./InlineCard";
 import { useState } from "react";
@@ -73,7 +73,14 @@ export default function AddProjectCard(props: TAddProjectCardProps) {
             </Form.Text>
           </Form.Group>
 
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Stack direction="horizontal" gap={3}>
+            <Button onClick={handleSubmit}>Submit</Button>
+            <Form.Check // prettier-ignore
+            type={"checkbox"}
+            defaultChecked={true}
+            label={"Scan when added"}
+          />
+          </Stack>
         </Form>
       </>
     </InlineCard>
