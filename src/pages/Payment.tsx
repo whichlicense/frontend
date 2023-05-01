@@ -37,8 +37,9 @@ import {
   TopUpOptionsTable,
 } from "../types/schema";
 import { useSignal } from "../components/Hooks/useSignal";
-import { ESignalType } from "../components/Provider/Provider";
+import { ESignalType, Provider } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
+import { CloudProvider } from "../components/Provider/CloudProvider";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -141,7 +142,7 @@ export default function Payment() {
   const REV_PUB_KEY = "pk_eH6pNsC0AwSw1Wf8aj4UlerSiY9HEN2ovV64vv0BI4RlAUNc";
 
   const getAvailablePlans = async () => {
-    const res = await axios.get(`${CONFIG.gateway_url}/plans/get-all`, {
+    const res = await axios.get(`${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/plans/get-all`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
       },
@@ -150,13 +151,13 @@ export default function Payment() {
   };
 
   const getTopUpOptions = async () => {
-    const res = await axios.get(`${CONFIG.gateway_url}/top-up/get-options`);
+    const res = await axios.get(`${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/top-up/get-options`);
     return res.data;
   };
 
   const getPaymentHistory = async () => {
     const res = await axios.get(
-      `${CONFIG.gateway_url}/payment/account-history`,
+      `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/account-history`,
       {
         headers: {
           Authorization: `Bearer ${auth.token}`,
@@ -169,7 +170,7 @@ export default function Payment() {
 
   const getSavedPaymentMethods = async () => {
     axios
-      .get(`${CONFIG.gateway_url}/payment/get-saved-payment-methods`, {
+      .get(`${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/get-saved-payment-methods`, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -183,7 +184,7 @@ export default function Payment() {
   const changePaymentMethod = async (paymentMethodId: string) => {
     await axios
       .patch(
-        `${CONFIG.gateway_url}/payment/change-payment-method/${paymentMethodId}`,
+        `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/change-payment-method/${paymentMethodId}`,
         {
           paymentMethodId,
         },
@@ -209,7 +210,7 @@ export default function Payment() {
   const deletePaymentMethod = async (paymentMethodId: string) => {
     await axios
       .delete(
-        `${CONFIG.gateway_url}/payment/remove-payment-method/${paymentMethodId}`,
+        `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/remove-payment-method/${paymentMethodId}`,
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -246,7 +247,7 @@ export default function Payment() {
     // TODO: conditionally use public url or localhost based on NPM environment
     return (await axios
       .post(
-        `${CONFIG.gateway_url}/payment/top-up/${topUpId}`,
+        `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/top-up/${topUpId}`,
         {},
         {
           headers: {
@@ -286,7 +287,7 @@ export default function Payment() {
     // TODO: conditionally use public url or localhost based on NPM environment
     return (await axios
       .post(
-        `${CONFIG.gateway_url}/payment/subscribe/${planId}`,
+        `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/subscribe/${planId}`,
         {},
         {
           headers: {
@@ -302,7 +303,7 @@ export default function Payment() {
   const addPaymentMethod = async () => {
     axios
       .post(
-        `${CONFIG.gateway_url}/payment/add-payment-method`,
+        `${Provider.constructUrlBase({host: CloudProvider.defaultHost, port: CloudProvider.defaultPort})}/payment/add-payment-method`,
         {},
         {
           headers: {
