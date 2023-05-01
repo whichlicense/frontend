@@ -61,6 +61,7 @@ export type TUserPlan = {
 
 export const AuthContextProvider = (props: any) => {
   const [user, setUser] = useState<TUserState>(null);
+  // TODO: do we need state changes on token? or can we just use localStorage.getItem("token")? and indicate login status with a boolean state?
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token")
   );
