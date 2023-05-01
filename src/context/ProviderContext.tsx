@@ -22,26 +22,31 @@ import { Provider, ProviderType } from "../components/Provider/Provider"
 import { useEffectOnce } from "../components/utils/useEffectOnce"
 
 export const ProviderContext = createContext<{
-    provider: Provider | null,
-    setProvider: React.Dispatch<React.SetStateAction<Provider | null>>,
+    provider: Provider,
+    setProvider: React.Dispatch<React.SetStateAction<Provider>>,
     getProviderType: () => ProviderType
 }>({} as any)
   
   export const ProviderContextProvider = (props: any) => {
-    const [provider, setProvider] = useState<Provider | null>(null as any);
+    const [provider, setProvider] = useState<Provider>(
+      new CloudProvider({
+        host: CloudProvider.defaultHost, // TODO: point to actual cloud
+        port: CloudProvider.defaultPort, // TODO: point to actual cloud port
+      })
+    );
 
-    useEffectOnce(() => {
-      setProvider(
-        new CloudProvider({
-          host: CloudProvider.defaultHost, // TODO: point to actual cloud
-          port: CloudProvider.defaultPort, // TODO: point to actual cloud port
-        })
-        // new LocalProvider({
-        //   host: "192.168.1.130", // TODO: point to actual cloud
-        //   port: 8080, // TODO: point to actual cloud port
-        // })
-      )
-    })
+    // useEffectOnce(() => {
+    //   setProvider(
+    //     new CloudProvider({
+    //       host: CloudProvider.defaultHost, // TODO: point to actual cloud
+    //       port: CloudProvider.defaultPort, // TODO: point to actual cloud port
+    //     })
+    //     // new LocalProvider({
+    //     //   host: "192.168.1.130", // TODO: point to actual cloud
+    //     //   port: 8080, // TODO: point to actual cloud port
+    //     // })
+    //   )
+    // })
 
     // TODO: what if we log-out and log-in with a different user? does the provider need to be re-created?
 
