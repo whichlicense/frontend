@@ -21,7 +21,6 @@ import {
   ButtonGroup,
   Col,
   Form,
-  ListGroup,
   Row,
   Stack,
 } from "react-bootstrap";
@@ -34,13 +33,11 @@ import { ToolBarItemType } from "../context/ToolBarContext";
 import ReactDiffViewer from "react-diff-viewer";
 import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
 import { useToolBar } from "../components/Hooks/useToolBar";
-import { useEffectOnce } from "../components/utils/useEffectOnce";
-import axios from "axios";
-import { CONFIG } from "../CONFIG";
 import { useAuthContext } from "../context/AuthContext";
 import { TDummyData } from "../types/dummy";
 import { toast } from "react-toastify";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
+import { useProviderContext } from "../context/ProviderContext";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
@@ -50,6 +47,7 @@ export default function ScanResult() {
   const { id } = useParams();
   const [showResolveLicense, setShowResolveLicense] = useState(false);
   const navigate = useNavigate();
+  const {provider} = useProviderContext();
 
   if(id === undefined){
     toast.error("No scan id provided");
@@ -125,18 +123,11 @@ export default function ScanResult() {
   }>()
 
   useEffect(()=>{
-    axios.get(`${CONFIG.gateway_url}/scan/get-scan/${id?.replaceAll("/", "_")}`, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
-      }
-    }).then((res)=>{
-      setDummyData(res.data)
-      console.log(res.data)
-    }).catch((err)=>{
-      console.log(err)
-      toast.error(err.data.error || "Something went wrong")
+    if(!id) return;
+    provider.getScan(id).then((res)=>{
+      setDummyData(res)
     })
-  }, [auth.token, id])
+  }, [auth.token, id, provider])
 
   return (
     <div>
