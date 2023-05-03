@@ -15,6 +15,8 @@
  *   limitations under the License.
  */
 
+import { TUser, TUserPlan } from "../../context/AuthContext";
+
 /**
  * Represents the type of account that is connected to the server.
  * This directly ties in to the concerns a given account has:
@@ -35,3 +37,8 @@ export enum AccountType {
     CUSTOMER,
 
 }
+
+export type TMeReply = | (TUser & { plan: TUserPlan } & {
+    domain: number;
+    selectedPaymentMethod?: string | null;
+  });
