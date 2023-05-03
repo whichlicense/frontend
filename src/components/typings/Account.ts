@@ -42,3 +42,7 @@ export type TMeReply = | (TUser & { plan: TUserPlan } & {
     domain: number;
     selectedPaymentMethod?: string | null;
   });
+
+export type TLoginReply = {
+    token: string;
+}
