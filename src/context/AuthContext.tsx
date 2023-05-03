@@ -23,12 +23,11 @@ import { CONFIG } from "../CONFIG";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
+import { TMeReply } from "../components/typings/Account";
+import { useProviderContext } from "./ProviderContext";
 
 export type TUserState =
-  | (TUser & { plan: TUserPlan } & {
-      domain: number;
-      selectedPaymentMethod?: string | null;
-    })
+  | TMeReply
   | null;
 
 export const AuthContext = createContext<{
@@ -66,6 +65,7 @@ export const AuthContextProvider = (props: any) => {
     localStorage.getItem("token")
   );
   const [loading, setLoading] = useState(true);
+  const { provider } = useProviderContext();
 
   useSignal({
     signal: ESignalType.MINUTED_CHANGED,
@@ -83,12 +83,9 @@ export const AuthContextProvider = (props: any) => {
 
   const fetchUser = async () => {
     setLoading(true);
-    axios
-      .get(`${CONFIG.gateway_url}/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    provider.me()
       .then((res) => {
-        setUser(res.data);
+        setUser(res);
         setLoading(false);
       })
       .catch((e) => {
