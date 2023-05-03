@@ -125,11 +125,7 @@ export const AuthContextProvider = (props: any) => {
   };
 
   const resendVerificationEmail = async (email: string) => {
-    return await axios.post(
-      `${CONFIG.gateway_url}/auth/resend-email-confirmation`,
-      { email },
-      {}
-    );
+    return await provider.resendEmailConfirmation(email);
   };
 
   const confirmEmail = async (token: string) => {

@@ -63,6 +63,14 @@ export class CloudProvider extends Provider {
             });
     }
 
+    resendEmailConfirmation(email: string): Promise<void> {
+        return axios.post(
+            `${Provider.constructUrlBase(this.options)}/auth/resend-email-confirmation`,
+            { email },
+            {}
+        );
+    }
+
     getAllScannedDependencies(): Promise<any[]> {
         return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res) => {
             return res.data;
