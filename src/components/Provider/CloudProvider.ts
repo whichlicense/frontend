@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AccountType, TMeReply } from "../typings/Account";
+import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -51,6 +51,15 @@ export class CloudProvider extends Provider {
             })
             .catch((e) => {
                 return null;
+            });
+    }
+
+    login(email: string, password: string): Promise<TLoginReply> {
+        return axios
+            .post(`${Provider.constructUrlBase(this.options)}/login`, { email, password })
+            .then((res) => {
+                if (!res.data.token) return Promise.reject("No token received");
+                return res.data;
             });
     }
 

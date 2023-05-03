@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { AccountType, TMeReply } from "../typings/Account";
+import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -46,6 +46,10 @@ export class LocalProvider extends Provider {
                 total_minutes: Infinity,
             }
         });
+    }
+
+    login(email: string, password: string): Promise<TLoginReply> {
+            return Promise.resolve({token: "LOCAL"})
     }
 
     /**
