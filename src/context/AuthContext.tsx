@@ -129,11 +129,7 @@ export const AuthContextProvider = (props: any) => {
   };
 
   const confirmEmail = async (token: string) => {
-    return await axios.post(
-      `${CONFIG.gateway_url}/auth/confirm-email`,
-      { token },
-      {}
-    );
+    return await provider.confirmEmail(token);
   };
 
   const register = async (d: TUser & { password: string }) => {

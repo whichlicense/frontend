@@ -61,6 +61,10 @@ export class LocalProvider extends Provider {
         return Promise.reject("Local provider does not support email confirmation");
     }
 
+    confirmEmail(token: string): Promise<void> {
+        return Promise.reject("Local provider does not support email confirmation");
+    }
+
     /**
      * Always returns AccountType.ALL in the LocalProvider as it does not have an account system.
      * @returns AccountType.AL

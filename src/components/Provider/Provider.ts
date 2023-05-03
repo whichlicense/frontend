@@ -132,6 +132,7 @@ export abstract class Provider {
     abstract login(email: string, password: string): Promise<TLoginReply>;
     abstract register(d: TUser & { password: string }): Promise<{message: string}>;
     abstract resendEmailConfirmation(email: string): Promise<void>;
+    abstract confirmEmail(token: string): Promise<void>
 
     getHelp(route: string): Promise<string> {
         return axios

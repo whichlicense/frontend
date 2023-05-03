@@ -68,6 +68,14 @@ export class CloudProvider extends Provider {
         return axios.post(`${Provider.constructUrlBase(this.options)}/register`, d);
     }
 
+    confirmEmail(token: string): Promise<void> {
+        return axios.post(
+            `${Provider.constructUrlBase(this.options)}/auth/confirm-email`,
+            { token },
+            {}
+          );
+    }
+
     resendEmailConfirmation(email: string): Promise<void> {
         return axios.post(
             `${Provider.constructUrlBase(this.options)}/auth/resend-email-confirmation`,
