@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { createContext, useState, useContext, useMemo, useEffect } from "react";
 import FullScreenLoader from "../components/Loaders/FullScreenLoader";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
@@ -39,7 +39,7 @@ export const AuthContext = createContext<{
   logout: () => void;
   register: (
     d: Omit<TUser & { password: string }, "token">
-  ) => Promise<AxiosResponse<any, any>>;
+  ) => Promise<{message: string}>;
   refresh: () => Promise<void>;
   isLoggedInMemo: boolean;
   token: string | null;
@@ -136,8 +136,8 @@ export const AuthContextProvider = (props: any) => {
     );
   };
 
-  const register = async (d: Omit<TUser & { password: string }, "token">) => {
-    return await axios.post(`${CONFIG.gateway_url}/register`, d);
+  const register = async (d: TUser & { password: string }) => {
+    return await provider.register(d);
   };
 
   const logout = () => {

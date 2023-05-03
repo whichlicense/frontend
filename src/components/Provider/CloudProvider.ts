@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
+import { TUser } from "../../context/AuthContext";
 
 /**
  * Represents a connection system towards the cloud hosted solution.
@@ -61,6 +62,10 @@ export class CloudProvider extends Provider {
                 if (!res.data.token) return Promise.reject("No token received");
                 return res.data;
             });
+    }
+
+    register(d: TUser & { password: string }): Promise<{message: string}> {
+        return axios.post(`${Provider.constructUrlBase(this.options)}/register`, d);
     }
 
     resendEmailConfirmation(email: string): Promise<void> {

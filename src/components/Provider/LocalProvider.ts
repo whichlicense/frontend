@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+import { TUser } from "../../context/AuthContext";
 import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
@@ -50,6 +51,10 @@ export class LocalProvider extends Provider {
 
     login(email: string, password: string): Promise<TLoginReply> {
             return Promise.resolve({token: "LOCAL"})
+    }
+
+    register(d: TUser & { password: string }): Promise<{message: string}> {
+        return Promise.reject("Local provider does not support registration");
     }
 
     resendEmailConfirmation(email: string): Promise<void> {
