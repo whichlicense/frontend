@@ -33,7 +33,7 @@ export type TUserState =
 export const AuthContext = createContext<{
   user: TUserState;
   isLoggedIn: () => boolean;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<void>;
   resendVerificationEmail: (email: string) => Promise<any>;
   confirmEmail: (token: string) => Promise<any>;
   logout: () => void;
@@ -115,15 +115,13 @@ export const AuthContextProvider = (props: any) => {
   const isLoggedInMemo = useMemo(() => isLoggedIn(), [user]);
 
   const login = async (email: string, password: string) => {
-    return await axios
-      .post(`${CONFIG.gateway_url}/login`, { email, password })
-      .then((res) => {
-        if (res.data.token) {
-          setToken(res.data.token);
-          localStorage.setItem("token", res.data.token);
+    provider.login(email, password)
+      .then((res)=>{
+        if (res.token) {
+          setToken(res.token);
+          localStorage.setItem("token", res.token);
         }
-        return res.data;
-      });
+      })
   };
 
   const resendVerificationEmail = async (email: string) => {
