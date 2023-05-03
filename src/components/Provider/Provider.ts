@@ -19,7 +19,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { TTelemetryEntryCustomEvent, Telemetry } from "../utils/Telemetry";
 import { TScanInitiationOptions } from "../typings/Scan";
-import { AccountType } from "../typings/Account";
+import { AccountType, TMeReply } from "../typings/Account";
 
 export type ProviderOptions = {
     host: string;
@@ -126,6 +126,8 @@ export abstract class Provider {
         // TODO: implement me.
         return AccountType.ALL;
     }
+
+    abstract me(): Promise<TMeReply | null>;
 
     getHelp(route: string): Promise<string> {
         return axios

@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AccountType } from "../typings/Account";
+import { AccountType, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -31,23 +31,36 @@ export class CloudProvider extends Provider {
     getScan(id: string): Promise<any> {
         return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scan/${id.replaceAll("/", "_")}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`
+                Authorization: `Bearer ${localStorage.getItem("token")}`
             }
-          }).then((res)=>{
+        }).then((res) => {
             return res.data;
-          }).catch((err)=>{
+        }).catch((err) => {
             toast.error(err?.data?.error || "Something went wrong when fetching the scan. Please try again later.")
             return {};
-          })
+        })
+    }
+
+    me(): Promise<TMeReply | null> {
+        return axios
+            .get(`${Provider.constructUrlBase(this.options)}/me`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            })
+            .then((res) => {
+                return res.data;
+            })
+            .catch((e) => {
+                return null;
+            });
     }
 
     getAllScannedDependencies(): Promise<any[]> {
-        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res)=>{
+        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res) => {
             return res.data;
-          }).catch((err)=>{
+        }).catch((err) => {
             toast.error(err?.data?.error || "Failed to fetch scanned dependencies. Please try again later.")
             return [];
-          })
+        })
     }
 
     getPersonalScans(): Promise<any[]> {

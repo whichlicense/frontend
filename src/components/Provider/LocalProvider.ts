@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { AccountType } from "../typings/Account";
+import { AccountType, TMeReply } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -31,6 +31,21 @@ export class LocalProvider extends Provider {
     }
     getScan(id: string): Promise<any> {
         throw new Error("Method not implemented.");
+    }
+
+    me(): Promise<TMeReply | null> {
+        return Promise.resolve({
+            firstName: "Local",
+            email: "",
+            domain: 0,
+            selectedPaymentMethod:  null,
+            plan: {
+                account_id: -1,
+                leftover_minutes: Infinity,
+                plan: -1,
+                total_minutes: Infinity,
+            }
+        });
     }
 
     /**
