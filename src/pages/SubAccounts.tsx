@@ -91,8 +91,9 @@ export default function SubAccounts() {
   };
 
   const getDomains = async () => {
-    return (await axios.get(`${CONFIG.gateway_url}/domain/get-domains`))
-      .data as { id: number; name: string; description: string }[];
+    await provider.getAccountDomains().then((res) => {
+      setDomains(res);
+    });
   };
 
   const onAddSubAccount = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -145,9 +146,7 @@ export default function SubAccounts() {
 
     getSubAccounts();
 
-    getDomains().then((res) => {
-      setDomains(res);
-    });
+    getDomains();
   });
   return (
     <ProviderMismatchHandler

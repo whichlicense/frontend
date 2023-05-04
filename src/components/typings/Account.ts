@@ -51,3 +51,5 @@ export type TLoginReply = {
 export type TSubAccountAndPermissions = AccountTable & {
     permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
   };
+
+  export type TAccountDomain = { id: number; name: string; description: string };

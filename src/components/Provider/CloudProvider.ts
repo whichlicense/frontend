@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AccountType, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
+import { AccountType, TAccountDomain, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
@@ -67,6 +67,10 @@ export class CloudProvider extends Provider {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         }).then((res) => res.data)
+    }
+
+    getAccountDomains(): Promise<TAccountDomain[]> {
+        return axios.get(`${Provider.constructUrlBase(this.options)}/domain/get-domains`).then((res) => res.data);
     }
 
     login(email: string, password: string): Promise<TLoginReply> {
