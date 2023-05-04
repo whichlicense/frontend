@@ -24,6 +24,7 @@ import { useToolBar } from "../components/Hooks/useToolBar";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { toast } from "react-toastify";
+import { toastError, toastResult } from "../components/utils/toasting";
 
 
 export function Login() {
@@ -46,7 +47,7 @@ export function Login() {
 
     const onLogin= () => {
         auth.login(email, password).catch((err) => {
-          toast.error(err.response.data.error || "Login failed. Check credentials and try again.")
+          toastError(err, "Login failed. Check credentials and try again.")
           if(err.response.data.type === "EMAIL_NOT_VERIFIED") {
             setEmailNotVerified(true);
           }
@@ -54,13 +55,10 @@ export function Login() {
     }
 
     const onResendVerificationEmail = () => {
-      auth.resendVerificationEmail(email)
-      .then((res) => {
-        toast.success(res.data || "Verification email sent. Please check your inbox.")
+      toastResult(auth.resendVerificationEmail(email), {
+        defaultErrorMessage: "Failed to send verification email. Please try again later.",
+        defaultSuccessMessage: "Verification email sent. Please check your inbox."
       })
-      .catch((err) => {
-        toast.error(err.response?.data.error || "Failed to send verification email. Please try again later.")
-      });
     }
   return (
     <>

@@ -21,6 +21,7 @@ import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply,
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
+import { toastError } from "../utils/toasting";
 
 /**
  * Represents a connection system towards the cloud hosted solution.
@@ -37,7 +38,7 @@ export class CloudProvider extends Provider {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            toast.error(err?.data?.error || "Something went wrong when fetching the scan. Please try again later.")
+            toastError(err, "Something went wrong when fetching the scan. Please try again later.");
             return {};
         })
     }
@@ -119,7 +120,7 @@ export class CloudProvider extends Provider {
         return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res) => {
             return res.data;
         }).catch((err) => {
-            toast.error(err?.data?.error || "Failed to fetch scanned dependencies. Please try again later.")
+            toastError(err, "Failed to fetch scanned dependencies. Please try again later.");
             return [];
         })
     }
@@ -134,7 +135,7 @@ export class CloudProvider extends Provider {
             .then((res) => {
                 return res.data;
             }).catch((e) => {
-                toast.error(e?.data?.error || "Failed to get your personal scans");
+                toastError(e, "Failed to get your personal scans");
                 return [];
             });
     }
@@ -154,7 +155,7 @@ export class CloudProvider extends Provider {
                 toast.success("Scan initiated. You will be notified when it is complete.");
             })
             .catch((e) => {
-                toast.error(e?.data?.error || "Something went wrong");
+                toastError(e, "Failed to initiate scan");
             });
     }
 }

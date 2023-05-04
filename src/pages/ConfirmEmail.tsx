@@ -22,6 +22,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { toastError } from "../components/utils/toasting";
 
 export default function ConfirmEmail() {
   const { token } = useParams();
@@ -37,7 +38,7 @@ export default function ConfirmEmail() {
         setEmailVerified(true);
       })
       .catch((err) => {
-        toast.error(err.response?.data.error || "Failed to confirm email.");
+        toastError(err, "Failed to confirm email.")
         setError(true);
       });
   });

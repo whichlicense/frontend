@@ -40,6 +40,7 @@ import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType, Provider } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
 import { CloudProvider } from "../components/Provider/CloudProvider";
+import { toastError } from "../components/utils/toasting";
 
 /*
 Change the address of the endpoints that you want to test from https://merchant.revolut.com/ 
@@ -202,8 +203,7 @@ export default function Payment() {
         toast.success("Payment method changed successfully");
       })
       .catch((e) => {
-        console.log("failed to change payment method", e);
-        toast.error(e?.data?.error || "Error changing payment method");
+        toastError(e, "Error changing payment method")
       });
   };
 
@@ -222,8 +222,7 @@ export default function Payment() {
         toast.success("Payment method deleted successfully");
       })
       .catch((e) => {
-        console.log("failed to delete payment method", e);
-        toast.error(e?.data?.error || "Error deleting payment method");
+        toastError(e, "Error deleting payment method")
       });
   };
 
@@ -278,8 +277,7 @@ export default function Payment() {
         });
       })
       .catch((e) => {
-        console.log("failed to create top up order", e);
-        toast.error(e?.data?.error || "Error creating top up order");
+        toastError(e, "Error creating top up order")
       });
   };
 

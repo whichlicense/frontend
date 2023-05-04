@@ -32,6 +32,7 @@ import ProviderMismatchHandler, {
 import { ProviderType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
 import { useProviderContext } from "../context/ProviderContext";
+import { toastError } from "../components/utils/toasting";
 
 type TSubAccountAndPermissions = AccountTable & {
   permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
@@ -123,7 +124,7 @@ export default function SubAccounts() {
       })
       .catch((err) => {
         setShowAddSubAccountCard(false);
-        toast.error(err.response.data.error || "An error occurred while attempting to add the sub account");
+        toastError(err, "An error occurred while attempting to add the sub account")
       });
   };
 
