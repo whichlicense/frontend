@@ -15,66 +15,101 @@
  *   limitations under the License.
  */
 
-import { Accordion } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Form,
+  Row,
+  Col,
+} from "react-bootstrap";
+import SectionHeading from "../components/Typography/SectionHeading";
+import { InlineCard } from "../components/Modals/InlineCard";
+import { toast } from "react-toastify";
+import { useState } from "react";
+import { useProviderContext } from "../context/ProviderContext";
+import { toastError } from "../components/utils/toasting";
 
 export default function Settings() {
   // TODO: delete account button in "account" section
 
+  const {provider} = useProviderContext();
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
+  const onChangePasswordSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+
+    const current = data.get("current_password") as string;
+    const newPass = data.get("new_password") as string;
+    const confirm = data.get("confirm_password") as string;
+
+    if (newPass !== confirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    provider.changePassword(current, newPass).then((res) => {
+      toast.success("Password changed");
+      setChangePasswordOpen(false);
+    }).catch((err) => {
+      toastError(err, "Failed to change password");
+    });
+  };
+
   return (
     <div>
-        <h6 className="display-6">Settings</h6>
-      <Accordion flush>
-        <Accordion.Item eventKey="0">
-          <Accordion.Header className="txt-white">
-            Account
-          </Accordion.Header>
-          <Accordion.Body>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="1">
-          <Accordion.Header>Payment</Accordion.Header>
-          <Accordion.Body>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="2">
-          <Accordion.Header>Detection</Accordion.Header>
-          <Accordion.Body>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="3">
-          <Accordion.Header>Compliancy</Accordion.Header>
-          <Accordion.Body>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+      <SectionHeading title={"Account settings"} type="display" size={"4"} />
+      <ButtonGroup>
+        <Button onClick={()=>setChangePasswordOpen(true)}>Change Password</Button>
+        <Button>Change Email</Button>
+      </ButtonGroup>
+      <br />
+      <hr className="text-muted" />
+      <p>More coming soon</p>
+
+      <InlineCard show={changePasswordOpen} handleClose={()=>setChangePasswordOpen(false)}>
+        <Form onSubmit={onChangePasswordSubmit}>
+          <Row>
+            <Col xs={12}>
+              <Form.Label htmlFor="current_password">
+                Current password
+              </Form.Label>
+              <Form.Control
+                type="password"
+                id="current_password"
+                name="current_password"
+                aria-describedby="current_password"
+              />
+            </Col>
+
+            <Col md={6}>
+              <Form.Label htmlFor="new_password">New password</Form.Label>
+              <Form.Control
+                type="password"
+                id="new_password"
+                name="new_password"
+                aria-describedby="new_password"
+              />
+            </Col>
+
+            <Col md={6}>
+              <Form.Label htmlFor="confirm_password">
+                Confirm password
+              </Form.Label>
+              <Form.Control
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                aria-describedby="confirm_password"
+              />
+            </Col>
+          </Row>
+          <br />
+          <Button type="submit" className="bg-red">Change password</Button>
+        </Form>
+      </InlineCard>
     </div>
   );
 }

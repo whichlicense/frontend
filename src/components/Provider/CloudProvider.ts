@@ -116,6 +116,18 @@ export class CloudProvider extends Provider {
         );
     }
 
+    changePassword(oldPassword: string, newPassword: string): Promise<{ message?: string | undefined; }> {
+        return axios.post(
+            `${Provider.constructUrlBase(this.options)}/auth/change-password`,
+            { current: oldPassword, new: newPassword },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            }
+        );
+    }
+
     getAllScannedDependencies(): Promise<any[]> {
         return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scans`, {}).then((res) => {
             return res.data;
