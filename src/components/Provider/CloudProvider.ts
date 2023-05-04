@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
+import { AccountType, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
@@ -57,8 +57,16 @@ export class CloudProvider extends Provider {
 
     getAvailableAccountPermissions(): Promise<string[]> {
         return axios.get(
-              `${Provider.constructUrlBase(this.options)}/settings/get-available-permissions`
+            `${Provider.constructUrlBase(this.options)}/settings/get-available-permissions`
         ).then((res) => res.data)
+    }
+
+    getSubAccounts(): Promise<TSubAccountAndPermissions[]> {
+        return axios.get(`${Provider.constructUrlBase(this.options)}/sub-account/get-all`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        }).then((res) => res.data)
     }
 
     login(email: string, password: string): Promise<TLoginReply> {
@@ -70,7 +78,7 @@ export class CloudProvider extends Provider {
             });
     }
 
-    register(d: TUser & { password: string }): Promise<{message: string}> {
+    register(d: TUser & { password: string }): Promise<{ message: string }> {
         return axios.post(`${Provider.constructUrlBase(this.options)}/register`, d);
     }
 
@@ -79,7 +87,7 @@ export class CloudProvider extends Provider {
             `${Provider.constructUrlBase(this.options)}/auth/confirm-email`,
             { token },
             {}
-          );
+        );
     }
 
     resendEmailConfirmation(email: string): Promise<void> {

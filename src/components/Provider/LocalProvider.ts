@@ -16,7 +16,7 @@
  */
 
 import { TUser } from "../../context/AuthContext";
-import { AccountType, TLoginReply, TMeReply } from "../typings/Account";
+import { AccountType, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -50,6 +50,10 @@ export class LocalProvider extends Provider {
     }
 
     getAvailableAccountPermissions(): Promise<string[]> {
+        return Promise.resolve([]);
+    }
+
+    getSubAccounts(): Promise<TSubAccountAndPermissions[]> {
         return Promise.resolve([]);
     }
 

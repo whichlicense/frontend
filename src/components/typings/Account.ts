@@ -16,6 +16,7 @@
  */
 
 import { TUser, TUserPlan } from "../../context/AuthContext";
+import { AccountTable, AccountPermissionsTable } from "../../types/schema";
 
 /**
  * Represents the type of account that is connected to the server.
@@ -46,3 +47,7 @@ export type TMeReply = | (TUser & { plan: TUserPlan } & {
 export type TLoginReply = {
     token: string;
 }
+
+export type TSubAccountAndPermissions = AccountTable & {
+    permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
+  };
