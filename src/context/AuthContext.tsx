@@ -23,7 +23,7 @@ import { CONFIG } from "../CONFIG";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
-import { TMeReply } from "../components/typings/Account";
+import { TLoginReply, TMeReply } from "../components/typings/Account";
 import { useProviderContext } from "./ProviderContext";
 
 export type TUserState =
@@ -33,7 +33,7 @@ export type TUserState =
 export const AuthContext = createContext<{
   user: TUserState;
   isLoggedIn: () => boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<TLoginReply>;
   resendVerificationEmail: (email: string) => Promise<any>;
   confirmEmail: (token: string) => Promise<any>;
   logout: () => void;
@@ -115,12 +115,13 @@ export const AuthContextProvider = (props: any) => {
   const isLoggedInMemo = useMemo(() => isLoggedIn(), [user]);
 
   const login = async (email: string, password: string) => {
-    provider.login(email, password)
+    return provider.login(email, password)
       .then((res)=>{
         if (res.token) {
           setToken(res.token);
           localStorage.setItem("token", res.token);
         }
+        return res
       })
   };
 

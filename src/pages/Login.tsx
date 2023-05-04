@@ -23,7 +23,6 @@ import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
-import { toast } from "react-toastify";
 import { toastError, toastResult } from "../components/utils/toasting";
 
 
