@@ -85,13 +85,9 @@ export default function SubAccounts() {
   };
 
   const getSubAccounts = async () => {
-    return (
-      await axios.get(`${CONFIG.gateway_url}/sub-account/get-all`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-    ).data as TSubAccountAndPermissions[];
+    await provider.getSubAccounts().then((res) => {
+      setSubAccounts(res);
+    })
   };
 
   const getDomains = async () => {
@@ -136,9 +132,7 @@ export default function SubAccounts() {
         setShowAddSubAccountCard(false);
         toast.success(res.data.message || "Sub account created successfully");
 
-        getSubAccounts().then((res) => {
-          setSubAccounts(res);
-        });
+        getSubAccounts()
       })
       .catch((err) => {
         setShowAddSubAccountCard(false);
@@ -147,11 +141,9 @@ export default function SubAccounts() {
   };
 
   useEffectOnce(() => {
-    getAvailablePermissions()
+    getAvailablePermissions();
 
-    getSubAccounts().then((res) => {
-      setSubAccounts(res);
-    });
+    getSubAccounts();
 
     getDomains().then((res) => {
       setDomains(res);
