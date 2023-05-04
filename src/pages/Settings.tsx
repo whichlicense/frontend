@@ -149,6 +149,15 @@ export default function Settings() {
       </InlineCard>
 
       <InlineCard show={changeEmailOpen} handleClose={()=>setChangeEmailOpen(false)}>
+
+        <>
+        <small className="txt-yellow">
+                <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
+                Please be aware that this action will log you out of your account. In addition to this, you will be forced to confirm the newly added email and will not be able to login until you do so.
+                If you're locked out of your account by this action, please contact us via email.
+        </small>
+        <hr />
+        <br />
         <Form onSubmit={onChangeEmailSubmit}>
           <Row>
             <Col xs={12}>
@@ -186,8 +195,9 @@ export default function Settings() {
             </Col>
           </Row>
           <br />
-          <Button type="submit" className="bg-red">Change email</Button>
+          <Button type="submit" className="bg-blue txt-dark-1">Change email</Button>
         </Form>
+        </>
       </InlineCard>
     </div>
   );
