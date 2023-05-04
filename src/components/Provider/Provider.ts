@@ -133,6 +133,7 @@ export abstract class Provider {
     abstract register(d: TUser & { password: string }): Promise<{message: string}>;
     abstract resendEmailConfirmation(email: string): Promise<void>;
     abstract confirmEmail(token: string): Promise<void>
+    abstract changeEmail(newEmail: string): Promise<{message?: string}>;
     abstract changePassword(oldPassword: string, newPassword: string): Promise<{message?: string}>;
     abstract getAvailableAccountPermissions(): Promise<string[]>;
     abstract getSubAccounts(): Promise<TSubAccountAndPermissions[]>;

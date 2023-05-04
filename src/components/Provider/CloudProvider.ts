@@ -72,15 +72,15 @@ export class CloudProvider extends Provider {
 
     addSubAccount(d: TAddSubAccountBody): Promise<{ message?: string | undefined; }> {
         return axios
-      .post(
-        `${Provider.constructUrlBase(this.options)}/sub-account/add`,
-        d,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      ).then((res) => res.data)
+            .post(
+                `${Provider.constructUrlBase(this.options)}/sub-account/add`,
+                d,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            ).then((res) => res.data)
     }
 
     getAccountDomains(): Promise<TAccountDomain[]> {
@@ -120,6 +120,18 @@ export class CloudProvider extends Provider {
         return axios.post(
             `${Provider.constructUrlBase(this.options)}/auth/change-password`,
             { current: oldPassword, new: newPassword },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            }
+        );
+    }
+
+    changeEmail(newEmail: string): Promise<{ message?: string | undefined; }> {
+        return axios.post(
+            `${Provider.constructUrlBase(this.options)}/auth/change-email`,
+            { newEmail },
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,

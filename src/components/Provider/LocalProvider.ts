@@ -72,9 +72,12 @@ export class LocalProvider extends Provider {
     register(d: TUser & { password: string }): Promise<{message: string}> {
         return Promise.reject("Local provider does not support registration");
     }
-    
+
     changePassword(oldPassword: string, newPassword: string): Promise<{ message?: string | undefined; }> {
         return Promise.reject("Local provider does not support changing password");
+    }
+    changeEmail(newEmail: string): Promise<{ message?: string | undefined; }> {
+        return Promise.reject("Local provider does not support changing email");
     }
 
     resendEmailConfirmation(email: string): Promise<void> {

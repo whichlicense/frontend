@@ -28,12 +28,22 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { useProviderContext } from "../context/ProviderContext";
 import { toastError } from "../components/utils/toasting";
+import { useAuthContext } from "../context/AuthContext";
+import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 
 export default function Settings() {
   // TODO: delete account button in "account" section
 
+  useForceAuth({
+    ifState: AuthState.LOGGED_OUT,
+    travelTo: "/login",
+  })
+
   const {provider} = useProviderContext();
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [changeEmailOpen, setChangeEmailOpen] = useState(false);
+
+  const auth = useAuthContext();
 
   const onChangePasswordSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -58,12 +68,39 @@ export default function Settings() {
     });
   };
 
+  const onChangeEmailSubmit = async ( e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+
+    const current = data.get("current_email") as string;
+    const newEmail = data.get("new_email") as string;
+    const confirm = data.get("confirm_email") as string;
+
+    if(current !== auth.user?.email){
+      toast.error("Current email is incorrect");
+      return;
+    }
+
+    if (newEmail !== confirm) {
+      toast.error("Emails do not match");
+      return;
+    }
+
+    provider.changeEmail(newEmail).then((res) => {
+      toast.success("Email changed. Please verify your new email address and then login again.");
+      setChangeEmailOpen(false);
+      auth.logout();
+    }).catch((err) => {
+      toastError(err, "Failed to change email");
+    });
+  }
+
   return (
     <div>
       <SectionHeading title={"Account settings"} type="display" size={"4"} />
       <ButtonGroup>
         <Button onClick={()=>setChangePasswordOpen(true)}>Change Password</Button>
-        <Button>Change Email</Button>
+        <Button onClick={()=>setChangeEmailOpen(true)}>Change Email</Button>
       </ButtonGroup>
       <br />
       <hr className="text-muted" />
@@ -108,6 +145,48 @@ export default function Settings() {
           </Row>
           <br />
           <Button type="submit" className="bg-red">Change password</Button>
+        </Form>
+      </InlineCard>
+
+      <InlineCard show={changeEmailOpen} handleClose={()=>setChangeEmailOpen(false)}>
+        <Form onSubmit={onChangeEmailSubmit}>
+          <Row>
+            <Col xs={12}>
+              <Form.Label htmlFor="current_email">
+                Current email
+              </Form.Label>
+              <Form.Control
+                type="email"
+                id="current_email"
+                name="current_email"
+                aria-describedby="current_email"
+              />
+            </Col>
+
+            <Col md={6}>
+              <Form.Label htmlFor="new_email">New email</Form.Label>
+              <Form.Control
+                type="email"
+                id="new_email"
+                name="new_email"
+                aria-describedby="new_email"
+              />
+            </Col>
+
+            <Col md={6}>
+              <Form.Label htmlFor="confirm_email">
+                Confirm email
+              </Form.Label>
+              <Form.Control
+                type="email"
+                id="confirm_email"
+                name="confirm_email"
+                aria-describedby="confirm_email"
+              />
+            </Col>
+          </Row>
+          <br />
+          <Button type="submit" className="bg-red">Change email</Button>
         </Form>
       </InlineCard>
     </div>
