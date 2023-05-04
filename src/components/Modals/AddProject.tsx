@@ -19,9 +19,6 @@ import { Button, Form, Stack } from "react-bootstrap";
 import SectionHeading from "../Typography/SectionHeading";
 import { InlineCard } from "./InlineCard";
 import { useState } from "react";
-import axios from "axios";
-import { CONFIG } from "../../CONFIG";
-import { toast } from "react-toastify";
 import { useProviderContext } from "../../context/ProviderContext";
 
 type TAddProjectCardProps = {
