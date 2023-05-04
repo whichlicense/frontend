@@ -55,6 +55,12 @@ export class CloudProvider extends Provider {
             });
     }
 
+    getAvailableAccountPermissions(): Promise<string[]> {
+        return axios.get(
+              `${Provider.constructUrlBase(this.options)}/settings/get-available-permissions`
+        ).then((res) => res.data)
+    }
+
     login(email: string, password: string): Promise<TLoginReply> {
         return axios
             .post(`${Provider.constructUrlBase(this.options)}/login`, { email, password })

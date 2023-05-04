@@ -49,6 +49,10 @@ export class LocalProvider extends Provider {
         });
     }
 
+    getAvailableAccountPermissions(): Promise<string[]> {
+        return Promise.resolve([]);
+    }
+
     login(email: string, password: string): Promise<TLoginReply> {
             return Promise.resolve({token: "LOCAL"})
     }

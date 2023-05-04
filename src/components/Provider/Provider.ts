@@ -133,6 +133,7 @@ export abstract class Provider {
     abstract register(d: TUser & { password: string }): Promise<{message: string}>;
     abstract resendEmailConfirmation(email: string): Promise<void>;
     abstract confirmEmail(token: string): Promise<void>
+    abstract getAvailableAccountPermissions(): Promise<string[]>;
 
     getHelp(route: string): Promise<string> {
         return axios

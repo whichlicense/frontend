@@ -16,7 +16,7 @@
  */
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
@@ -34,6 +34,7 @@ import ProviderMismatchHandler, {
 } from "../components/Provider/Rendering/ProviderMismatchHandler";
 import { ProviderType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
+import { useProviderContext } from "../context/ProviderContext";
 
 type TSubAccountAndPermissions = AccountTable & {
   permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
@@ -67,6 +68,7 @@ export default function SubAccounts() {
   ]);
 
   const auth = useAuthContext();
+  const {provider} = useProviderContext();
   const [permissions, setPermissions] = useState<string[]>([]);
   const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
     []
@@ -77,11 +79,9 @@ export default function SubAccounts() {
   const [showAddSubAccountCard, setShowAddSubAccountCard] = useState(false);
 
   const getAvailablePermissions = async () => {
-    return (
-      await axios.get(
-        `${CONFIG.gateway_url}/settings/get-available-permissions`
-      )
-    ).data as string[];
+    await provider.getAvailableAccountPermissions().then((res) => {
+      setPermissions(res);
+    });
   };
 
   const getSubAccounts = async () => {
@@ -147,9 +147,7 @@ export default function SubAccounts() {
   };
 
   useEffectOnce(() => {
-    getAvailablePermissions().then((res) => {
-      setPermissions(res);
-    });
+    getAvailablePermissions()
 
     getSubAccounts().then((res) => {
       setSubAccounts(res);
