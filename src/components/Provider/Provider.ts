@@ -19,7 +19,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { TTelemetryEntryCustomEvent, Telemetry } from "../utils/Telemetry";
 import { TScanInitiationOptions } from "../typings/Scan";
-import { AccountType, TAccountDomain, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
+import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TUser } from "../../context/AuthContext";
 
 export type ProviderOptions = {
@@ -136,6 +136,7 @@ export abstract class Provider {
     abstract getAvailableAccountPermissions(): Promise<string[]>;
     abstract getSubAccounts(): Promise<TSubAccountAndPermissions[]>;
     abstract getAccountDomains(): Promise<TAccountDomain[]>;
+    abstract addSubAccount(d: TAddSubAccountBody): Promise<{message?: string}>;
 
     getHelp(route: string): Promise<string> {
         return axios

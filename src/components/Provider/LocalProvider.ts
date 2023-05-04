@@ -16,7 +16,7 @@
  */
 
 import { TUser } from "../../context/AuthContext";
-import { AccountType, TAccountDomain, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
+import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -59,6 +59,10 @@ export class LocalProvider extends Provider {
 
     getAccountDomains(): Promise<TAccountDomain[]> {
         return Promise.resolve([]);
+    }
+
+    addSubAccount(d: TAddSubAccountBody): Promise<{ message?: string | undefined; }> {
+        return Promise.reject("Local provider does not support sub accounts");
     }
 
     login(email: string, password: string): Promise<TLoginReply> {

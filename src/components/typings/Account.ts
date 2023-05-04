@@ -24,32 +24,43 @@ import { AccountTable, AccountPermissionsTable } from "../../types/schema";
  *  for example, a legal account only needs to see license related stuff
  */
 export enum AccountType {
-    /**
-     * Special account type for viewing everything.
-     * > I.e., this account is concerned with everything.
-     */
-    ALL,
-    LEGAL,
-    /**
-     * Special account type for customer access when one wants to give the customer direct
-     * access to the dashboard instead of exporting results.
-     * > Ideally this customer only sees finished top-level scans with no ability to take actions
-     */
-    CUSTOMER,
+  /**
+   * Special account type for viewing everything.
+   * > I.e., this account is concerned with everything.
+   */
+  ALL,
+  LEGAL,
+  /**
+   * Special account type for customer access when one wants to give the customer direct
+   * access to the dashboard instead of exporting results.
+   * > Ideally this customer only sees finished top-level scans with no ability to take actions
+   */
+  CUSTOMER,
 
 }
 
 export type TMeReply = | (TUser & { plan: TUserPlan } & {
-    domain: number;
-    selectedPaymentMethod?: string | null;
-  });
+  domain: number;
+  selectedPaymentMethod?: string | null;
+});
 
 export type TLoginReply = {
-    token: string;
+  token: string;
 }
 
 export type TSubAccountAndPermissions = AccountTable & {
-    permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
-  };
+  permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
+};
 
-  export type TAccountDomain = { id: number; name: string; description: string };
+export type TAccountDomain = { id: number; name: string; description: string };
+
+export type TAddSubAccountBody = {
+  first_name: string,
+  last_name: string,
+  email: string,
+  password: string,
+  domain: number,
+  permissions: {
+    [key: string]: boolean
+  },
+}

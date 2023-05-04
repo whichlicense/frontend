@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-import axios from "axios";
 import { useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
@@ -25,8 +24,6 @@ import { InlineCard } from "../components/Modals/InlineCard";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { mapKey } from "../components/utils/mapKey";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
-import { CONFIG } from "../CONFIG";
-import { useAuthContext } from "../context/AuthContext";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { AccountPermissionsTable, AccountTable } from "../types/schema";
 import ProviderMismatchHandler, {
@@ -67,7 +64,6 @@ export default function SubAccounts() {
     },
   ]);
 
-  const auth = useAuthContext();
   const {provider} = useProviderContext();
   const [permissions, setPermissions] = useState<string[]>([]);
   const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
@@ -111,27 +107,17 @@ export default function SubAccounts() {
         return [permissionKey, (e.target as any)[permissionKey].checked];
       })
     );
-    axios
-      .post(
-        `${CONFIG.gateway_url}/sub-account/add`,
-        {
-          first_name,
-          last_name,
-          email,
-          password,
-          domain: parseInt(domain),
-          permissions: perms,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }
-      )
+    provider.addSubAccount({
+      first_name,
+      last_name,
+      email,
+      password,
+      domain: parseInt(domain),
+      permissions: perms
+    })
       .then((res) => {
-        // TODO: toast success
         setShowAddSubAccountCard(false);
-        toast.success(res.data.message || "Sub account created successfully");
+        toast.success(res.message || "Sub account created successfully");
 
         getSubAccounts()
       })

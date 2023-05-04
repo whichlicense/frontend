@@ -17,7 +17,7 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AccountType, TAccountDomain, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
+import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
@@ -67,6 +67,19 @@ export class CloudProvider extends Provider {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         }).then((res) => res.data)
+    }
+
+    addSubAccount(d: TAddSubAccountBody): Promise<{ message?: string | undefined; }> {
+        return axios
+      .post(
+        `${Provider.constructUrlBase(this.options)}/sub-account/add`,
+        d,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      ).then((res) => res.data)
     }
 
     getAccountDomains(): Promise<TAccountDomain[]> {
