@@ -22,6 +22,7 @@ import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
 import { toastError } from "../utils/toasting";
+import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 
 /**
  * Represents a connection system towards the cloud hosted solution.
@@ -59,6 +60,29 @@ export class CloudProvider extends Provider {
     getAvailableAccountPermissions(): Promise<string[]> {
         return axios.get(
             `${Provider.constructUrlBase(this.options)}/settings/get-available-permissions`
+        ).then((res) => res.data)
+    }
+
+    getEmailNotificationSettings(): Promise<TEmailNotificationSettings> {
+        return axios.get(
+            `${Provider.constructUrlBase(this.options)}/notification/get-email-trigger-conditions`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            }
+        ).then((res) => res.data)
+    }
+
+    saveEmailNotificationSettings(settings: TEmailNotificationSettings): Promise<{ message?: string | undefined; }> {
+        return axios.post(
+            `${Provider.constructUrlBase(this.options)}/notification/save-email-notification-settings`,
+            settings,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            }
         ).then((res) => res.data)
     }
 

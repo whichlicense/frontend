@@ -17,6 +17,7 @@
 
 import { TUser } from "../../context/AuthContext";
 import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
+import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { Provider } from "./Provider";
 
@@ -51,6 +52,14 @@ export class LocalProvider extends Provider {
 
     getAvailableAccountPermissions(): Promise<string[]> {
         return Promise.resolve([]);
+    }
+
+    getEmailNotificationSettings(): Promise<TEmailNotificationSettings> {
+        return Promise.reject("Local provider does not support email notifications");
+    }
+
+    saveEmailNotificationSettings(settings: TEmailNotificationSettings): Promise<{ message?: string | undefined; }> {
+        return Promise.reject("Local provider does not support email notifications");
     }
 
     getSubAccounts(): Promise<TSubAccountAndPermissions[]> {

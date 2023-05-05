@@ -21,6 +21,7 @@ import { TTelemetryEntryCustomEvent, Telemetry } from "../utils/Telemetry";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TUser } from "../../context/AuthContext";
+import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 
 export type ProviderOptions = {
     host: string;
@@ -136,6 +137,8 @@ export abstract class Provider {
     abstract changeEmail(newEmail: string): Promise<{message?: string}>;
     abstract changePassword(oldPassword: string, newPassword: string): Promise<{message?: string}>;
     abstract getAvailableAccountPermissions(): Promise<string[]>;
+    abstract getEmailNotificationSettings(): Promise<TEmailNotificationSettings>;
+    abstract saveEmailNotificationSettings(settings: TEmailNotificationSettings): Promise<{message?: string}>;
     abstract getSubAccounts(): Promise<TSubAccountAndPermissions[]>;
     abstract getAccountDomains(): Promise<TAccountDomain[]>;
     abstract addSubAccount(d: TAddSubAccountBody): Promise<{message?: string}>;
