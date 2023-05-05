@@ -25,6 +25,7 @@ import { useProviderContext } from "../context/ProviderContext";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { TEmailNotificationSettings } from "../components/typings/EmailNotificationSettings";
 import { toastResult } from "../components/utils/toasting";
+import { useLocaleContext } from "../context/LocaleContext";
 
 export default function Notifications() {
   useForceAuth({
@@ -46,6 +47,7 @@ export default function Notifications() {
   ]);
 
   const { provider } = useProviderContext();
+  const { resolve } = useLocaleContext();
 
   const [emailConditions, setEmailConditions] =
     useState<TEmailNotificationSettings>({} as any);
@@ -117,7 +119,7 @@ export default function Notifications() {
                     <Form.Check
                       name={key}
                       type="checkbox"
-                      label={key}
+                      label={resolve(key).text}
                       checked={!!condition}
                       onChange={(e) => {
                         setEmailConditions((prev) => ({
