@@ -46,8 +46,9 @@ import { ToastContainer } from "react-toastify";
 import useNavigationTelemetry from "./components/Hooks/useNavigationTelemetry";
 import PipeLine from "./pages/PipeLine";
 import ConfirmEmail from "./pages/ConfirmEmail";
+import { LocaleContextProvider } from "./context/LocaleContext";
 
-function NavTelemetry(){
+function NavTelemetry() {
   useNavigationTelemetry();
   return null;
 }
@@ -58,88 +59,97 @@ function App() {
     <Router>
       <NavTelemetry />
       <ProviderContextProvider>
-        <AuthContextProvider>
-          <Container fluid className="h-100">
-          <span style={{
-            backgroundImage: "url(assets/background.png)",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top 40px left",
-            backgroundAttachment: "fixed",
-            
-            top: "0",
-            left: "0",
-            right: "0",
-            bottom: "0",
-            
-            position: "fixed",
-          }}></span>
-            <DrawerContextProvider>
-              <Stack
-                direction="horizontal"
-                className="d-flex align-items-center w-100 h-100"
-              >
-                <NavigationBar />
-                <div className="flex-grow-1 flex-fill d-flex">
-                  <Container fluid>
-                    <ToolBarContextProvider>
-                      <ToolBarManager />
+        <LocaleContextProvider>
+          <AuthContextProvider>
+            <Container fluid className="h-100">
+              <span
+                style={{
+                  backgroundImage: "url(assets/background.png)",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "top 40px left",
+                  backgroundAttachment: "fixed",
 
-                      <section
-                        ref={mainContentRef}
-                        className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
-                        id="main-content-section"
-                      >
-                        
-                        <Routes>
-                          <Route path="/search" element={<Search />} />
-                          <Route path="/dashboard" element={<Dashboard />} />
-                          <Route
-                            path="/scan-result/:id"
-                            element={<ScanResult />}
-                          />
-                          <Route
-                            path="/license/:id"
-                            element={<LicenseInfo />}
-                          />
-                          <Route path="/pipeline" element={<PipeLine />} />
-                          <Route
-                            path="/notifications"
-                            element={<Notifications />}
-                          />
-                          <Route path="/settings" element={<Settings />} />
-                          <Route path="/payment" element={<Payment />} />
-                          <Route path="/export-view" element={<ExportView />} />
-                          <Route path="/test" element={<Test />} />
-                          <Route path="/register" element={<Register />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route
-                            path="/sub-accounts"
-                            element={<SubAccounts />}
-                          />
-                          <Route path="/confirm-email/:token" element={<ConfirmEmail />} />
-                          <Route path="/" element={<Home />} />
-                        </Routes>
-                        <ScrollIndicator bodyRef={mainContentRef} />
-                      </section>
-                    </ToolBarContextProvider>
-                  </Container>
-                </div>
-              </Stack>
-            </DrawerContextProvider>
-          </Container>
-        </AuthContextProvider>
-        <ToastContainer
-          position="bottom-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
+                  top: "0",
+                  left: "0",
+                  right: "0",
+                  bottom: "0",
+
+                  position: "fixed",
+                }}
+              ></span>
+              <DrawerContextProvider>
+                <Stack
+                  direction="horizontal"
+                  className="d-flex align-items-center w-100 h-100"
+                >
+                  <NavigationBar />
+                  <div className="flex-grow-1 flex-fill d-flex">
+                    <Container fluid>
+                      <ToolBarContextProvider>
+                        <ToolBarManager />
+
+                        <section
+                          ref={mainContentRef}
+                          className="clamp rounded px-4 pb-4 pt-5 overflow-auto shadow-fade-in"
+                          id="main-content-section"
+                        >
+                          <Routes>
+                            <Route path="/search" element={<Search />} />
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route
+                              path="/scan-result/:id"
+                              element={<ScanResult />}
+                            />
+                            <Route
+                              path="/license/:id"
+                              element={<LicenseInfo />}
+                            />
+                            <Route path="/pipeline" element={<PipeLine />} />
+                            <Route
+                              path="/notifications"
+                              element={<Notifications />}
+                            />
+                            <Route path="/settings" element={<Settings />} />
+                            <Route path="/payment" element={<Payment />} />
+                            <Route
+                              path="/export-view"
+                              element={<ExportView />}
+                            />
+                            <Route path="/test" element={<Test />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                              path="/sub-accounts"
+                              element={<SubAccounts />}
+                            />
+                            <Route
+                              path="/confirm-email/:token"
+                              element={<ConfirmEmail />}
+                            />
+                            <Route path="/" element={<Home />} />
+                          </Routes>
+                          <ScrollIndicator bodyRef={mainContentRef} />
+                        </section>
+                      </ToolBarContextProvider>
+                    </Container>
+                  </div>
+                </Stack>
+              </DrawerContextProvider>
+            </Container>
+          </AuthContextProvider>
+          <ToastContainer
+            position="bottom-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </LocaleContextProvider>
       </ProviderContextProvider>
     </Router>
   );

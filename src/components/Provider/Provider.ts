@@ -22,6 +22,7 @@ import { TScanInitiationOptions } from "../typings/Scan";
 import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TUser } from "../../context/AuthContext";
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
+import { TLocaleMapping } from "../typings/locale";
 
 export type ProviderOptions = {
     host: string;
@@ -152,6 +153,18 @@ export abstract class Provider {
             })
             .catch((err) => {
                 return "# No help available for this page.";
+            });
+    }
+
+    getLocaleMappings(): Promise<TLocaleMapping>{
+        return axios
+            .get(`${Provider.constructUrlBase(this.options)}/locale/mapping`)
+            .then((res) => {
+                return res.data;
+            })
+            .catch((_) => {
+                toast.error("Failed to get locale mappings. You might see weird/unfinished translations.");
+                return {};
             });
     }
 
