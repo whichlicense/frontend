@@ -33,6 +33,7 @@ import { ProviderType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
 import { useProviderContext } from "../context/ProviderContext";
 import { toastError } from "../components/utils/toasting";
+import { useLocaleContext } from "../context/LocaleContext";
 
 type TSubAccountAndPermissions = AccountTable & {
   permissions: Omit<Omit<AccountPermissionsTable, "id">, "account_id">;
@@ -66,6 +67,7 @@ export default function SubAccounts() {
   ]);
 
   const {provider} = useProviderContext();
+  const {resolve} = useLocaleContext();
   const [permissions, setPermissions] = useState<string[]>([]);
   const [subAccounts, setSubAccounts] = useState<TSubAccountAndPermissions[]>(
     []
@@ -273,7 +275,7 @@ export default function SubAccounts() {
                         <Form.Check
                           name={permissionKey}
                           type="checkbox"
-                          label={mapKey(permissionKey)}
+                          label={resolve(permissionKey).text}
                         />
                       </Form.Group>
                     </Col>
