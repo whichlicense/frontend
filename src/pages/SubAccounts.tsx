@@ -22,7 +22,6 @@ import { AuthState, useForceAuth } from "../components/Hooks/useForceAuth";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { InlineCard } from "../components/Modals/InlineCard";
 import SectionHeading from "../components/Typography/SectionHeading";
-import { mapKey } from "../components/utils/mapKey";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { AccountPermissionsTable, AccountTable } from "../types/schema";
@@ -183,7 +182,7 @@ export default function SubAccounts() {
                                 v ? "green" : "red"
                               } txt-dark-1`}
                             >
-                              <small>{mapKey(k)}</small>
+                              <small>{resolve(k).text}</small>
                             </Button>
                           </Col>
                         )
