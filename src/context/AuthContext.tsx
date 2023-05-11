@@ -15,15 +15,13 @@
  *   limitations under the License.
  */
 
-import axios from "axios";
 import { createContext, useState, useContext, useMemo, useEffect } from "react";
 import FullScreenLoader from "../components/Loaders/FullScreenLoader";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
-import { CONFIG } from "../CONFIG";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
 import { toast } from "react-toastify";
-import { TLoginReply, TMeReply } from "../components/typings/Account";
+import { EAccountDomain, TLoginReply, TMeReply } from "../components/typings/Account";
 import { useProviderContext } from "./ProviderContext";
 
 export type TUserState =
@@ -43,6 +41,7 @@ export const AuthContext = createContext<{
   refresh: () => Promise<void>;
   isLoggedInMemo: boolean;
   token: string | null;
+  getDomain: () => EAccountDomain;
 }>({} as any);
 
 export type TUser = {
@@ -148,6 +147,10 @@ export const AuthContextProvider = (props: any) => {
     await fetchUser();
   };
 
+  const getDomain = () => {
+    return user?.domain || EAccountDomain.ALL;
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -160,7 +163,8 @@ export const AuthContextProvider = (props: any) => {
         token,
         refresh,
         resendVerificationEmail,
-        confirmEmail
+        confirmEmail,
+        getDomain
       }}
     >
       {loading ? <FullScreenLoader /> : props.children}
