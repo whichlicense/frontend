@@ -54,6 +54,10 @@ export type TSubAccountAndPermissions = AccountTable & {
 
 export type TAccountDomain = { id: number; name: string; description: string };
 
+export enum EAccountDomain {
+  ALL, LEGAL, FINANCE, TECH, OTHER
+}
+
 export type TAddSubAccountBody = {
   first_name: string,
   last_name: string,
