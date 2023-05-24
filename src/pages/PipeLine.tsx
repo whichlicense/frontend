@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Col, Form, InputGroup, Row, Stack } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { ArcherContainer, ArcherElement } from "react-archer";
@@ -78,11 +78,9 @@ export default function PipeLine() {
       type: ToolBarItemType.BUTTON,
       title: "Test",
       icon: "bi bi-file-play",
-      onClick() {
-        
-      },
-    }
-  ])
+      onClick() {},
+    },
+  ]);
   const pipeline = new DoublyLinkedList<TPipeLine>([
     {
       id: "1",
@@ -157,9 +155,11 @@ export default function PipeLine() {
             sourceAnchor, // from this element's X
             targetAnchor, // to the other element's X
             style: {
-              strokeColor: current_item.value.ran ? "color(--color-green)" : "var(--color-red)",
+              strokeColor: current_item.value.ran
+                ? "color(--color-green)"
+                : "var(--color-red)",
               strokeDasharray: current_item.value.ran ? "0" : "5,5",
-            }
+            },
           },
         ];
   };
@@ -174,9 +174,27 @@ export default function PipeLine() {
     },
     override_arrow_relations?: RelationType[]
   ) => {
+    const wrapAddButtons = (children: JSX.Element) => {
+      return (
+        <>
+          <Col xs={12}>
+            <div className="position-relative">
+              <div className="position-absolute start-50 translate-middle">
+                <Button className="rounded-5">
+                  <i className="bi bi-plus-circle-fill txt-blue"></i>
+                </Button>
+              </div>
+            </div>
+          </Col>
+
+          {children}
+        </>
+      );
+    };
+
     switch (pipeline_entry.value.type) {
       case EPipelineType.REMOVE: {
-        return (
+        return wrapAddButtons(
           <Col xs={opts.xs} md={opts.md} lg={opts.lg}>
             <ArcherElement
               id={pipeline_entry.value.id}
@@ -215,7 +233,7 @@ export default function PipeLine() {
         );
       }
       case EPipelineType.REPLACE: {
-        return (
+        return wrapAddButtons(
           <Col xs={opts.xs} md={opts.md} lg={opts.lg}>
             <ArcherElement
               id={pipeline_entry.value.id}
@@ -258,7 +276,7 @@ export default function PipeLine() {
         );
       }
       case EPipelineType.BATCH: {
-        return (
+        return wrapAddButtons(
           <Col xs={12}>
             <ArcherElement
               id={pipeline_entry.value.id}
