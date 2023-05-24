@@ -15,45 +15,166 @@
  *   limitations under the License.
  */
 
-import { Form } from "react-bootstrap";
+import { Col, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import SectionHeading from "../components/Typography/SectionHeading";
 
+enum EPipelineType {
+  REMOVE,
+  REPLACE,
+  BATCH,
+}
+
+type TPipeLine =
+  | {
+      type: EPipelineType.REMOVE;
+    }
+  | {
+      type: EPipelineType.REPLACE;
+    }
+  | {
+      type: EPipelineType.BATCH;
+      value: TPipeLine[];
+    };
+
 export default function PipeLine() {
-  // TODO: regex constructor in a very nice UI package..
+  const pipeline: TPipeLine[] = [
+    {
+      type: EPipelineType.REMOVE,
+    },
+    {
+      type: EPipelineType.REMOVE,
+    },
+    {
+      type: EPipelineType.REPLACE,
+    },
+    {
+      type: EPipelineType.REMOVE,
+    },
+    {
+      type: EPipelineType.BATCH,
+      value: [
+        {
+          type: EPipelineType.REMOVE,
+        },
+        {
+          type: EPipelineType.REMOVE,
+        },
+        {
+          type: EPipelineType.REPLACE,
+        },
+        {
+          type: EPipelineType.REMOVE,
+        },
+      ],
+    },
+  ];
 
-  // TODO: this regex allows for the skipping to N line (\A(?:.*\n){1}\K(.)+)
+  const renderPipeLine = (
+    pipeline_entry: TPipeLine,
+    opts = {
+      xs: 12,
+      md: 6,
+      lg: 3,
+    }
+  ) => {
+    switch (pipeline_entry.type) {
+      case EPipelineType.REMOVE: {
+        return (
+          <Col xs={opts.xs} md={opts.md} lg={opts.lg}>
+            <RegularCard
+              title="Remove instruction"
+              minHeight="100%"
+              maxHeight="100%"
+              icon="bi bi-x-circle-fill"
+              iconClass="txt-red float-end"
+            >
+              <Stack gap={3}>
+                  <Form.Select>
+                    <option value="1">Using Regex</option>
+                    <option value="2">Using Text</option>
+                  </Form.Select>
+                  <Form.Control placeholder="Your regex here" />
+              </Stack>
+            </RegularCard>
+          </Col>
+        );
+      }
+      case EPipelineType.REPLACE: {
+        return (
+          <Col xs={opts.xs} md={opts.md} lg={opts.lg}>
+            <RegularCard
+              title="Replace instruction"
+              minHeight="100%"
+              maxHeight="100%"
+              icon="bi bi-x-circle-fill"
+              iconClass="txt-red float-end"
+            >
+              <Stack gap={3}>
+                <Form.Select>
+                  <option value="1">Using Regex</option>
+                  <option value="2">Using Text</option>
+                </Form.Select>
+                <Form.Control placeholder="Your regex here" />
+                <Form.Control placeholder="Your replacement here" />
+              </Stack>
+            </RegularCard>
+          </Col>
+        );
+      }
+      case EPipelineType.BATCH: {
+        return (
+          <Col xs={12}>
+            <RegularCard
+              title="Batch instruction"
+              minHeight="100%"
+              maxHeight="100%"
+              icon="bi bi-x-circle-fill"
+              iconClass="txt-red float-end"
+            >
+              <Row>
+                {pipeline_entry.value.map((nested_entry, idx) => (
+                  <Col key={`nested-${idx}`}>
+                    {renderPipeLine(nested_entry, {
+                      xs: 12,
+                      md: 12,
+                      lg: 12,
+                    })}
+                  </Col>
+                ))}
+              </Row>
+            </RegularCard>
+          </Col>
+        );
+      }
+    }
+  };
 
-  const selectionClass = "btn w-auto py-0 bg-yellow txt-dark-1 fs-6";
   return (
     <div>
-      <SectionHeading title={"Pipeline construction"} type="display" size={"4"} />
-      <RegularCard title="pipeline 1" minHeight="100%" maxHeight="100%" icon="bi bi-x-circle-fill" iconClass="txt-red float-end">
-        <div className="fs-5">
-          When an{" "}
-          <Form.Select className={selectionClass}>
-            <option>Apache 2.0</option>
-            <option>MIT</option>
-            <option>GPL 3.0</option>
-            <option>CC-BY-4.0</option>
-          </Form.Select> {" "}
-          License is detected with a confidence {" "}
-          <Form.Select className={selectionClass}>
-            <option>below</option>
-            <option>above</option>
-            <option>at</option>
-          </Form.Select> {" "}
-          <Form.Control type="number" placeholder="50" min={0} max={100} className={selectionClass} />%; {" "}
-          <br />
-          If the change {" "}
-          <Form.Select className={selectionClass}>
-            <option>is only an email</option>
-            <option>is only a phone </option>
-          </Form.Select> {" "}
-          adjust the confidence to {" "}
-          <Form.Control type="number" placeholder="50" min={0} max={100} className={selectionClass} />%; {" "}
-        </div>
-      </RegularCard>
+      <SectionHeading
+        title={"Pipeline construction"}
+        type="display"
+        size={"4"}
+      />
+      <Stack gap={3} className="mb-3">
+        <RegularCard minHeight="100%" maxHeight="100%">
+          <>
+            <Row>
+              <Col md={"auto"}>
+                <Form.Label>Confidence threshold</Form.Label>
+              </Col>
+              <Col>
+                <Form.Range min={0} max={100} step={0.5} />
+              </Col>
+            </Row>
+          </>
+        </RegularCard>
+
+        <Row className="g-5">
+          {pipeline.map((entry) => renderPipeLine(entry))}
+        </Row>
+      </Stack>
     </div>
   );
 }
