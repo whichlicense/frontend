@@ -266,7 +266,10 @@ export default function PipeLine() {
                     </Col>
 
                     <Col>
-                      <Form.Control placeholder="Your replacement here" />
+                      <Form.Control
+                        className="bg-dark-1 txt-white"
+                        placeholder="Your replacement here"
+                      />
                     </Col>
                   </Row>
                 </RegularCard>
@@ -294,11 +297,19 @@ export default function PipeLine() {
                   iconClass="txt-red float-end"
                   bg={opts.bg}
                 >
-                  <Row className="g-5">
-                    {pipeline_entry.value.nested_pipeline.map((nested_entry) =>
-                      renderPipeLine(nested_entry, { ...opts, bg: "bg-dark-2" })
-                    )}
-                  </Row>
+                  <ArcherContainer>
+                    <div>
+                      <Row className="g-5">
+                        {pipeline_entry.value.nested_pipeline.map(
+                          (nested_entry) =>
+                            renderPipeLine(nested_entry, {
+                              ...opts,
+                              bg: "bg-dark-2",
+                            })
+                        )}
+                      </Row>
+                    </div>
+                  </ArcherContainer>
                 </RegularCard>
               </div>
             </ArcherElement>
@@ -316,7 +327,7 @@ export default function PipeLine() {
         size={"4"}
       />
       {/* TODO: change these based on if the thing ran or not */}
-      <ArcherContainer strokeColor="var(--color-red)" strokeDasharray="5,5">
+      <ArcherContainer>
         <Stack gap={5} className="mb-3">
           <ArcherElement
             id="root"
@@ -325,6 +336,10 @@ export default function PipeLine() {
                 targetId: pipeline.getHead()?.value.id || "root",
                 targetAnchor: "top",
                 sourceAnchor: "bottom",
+                style: {
+                  strokeColor: "var(--color-red)",
+                  strokeDasharray: pipeline.getHead()?.value.ran ? "0" : "5,5",
+                },
               },
             ]}
           >
