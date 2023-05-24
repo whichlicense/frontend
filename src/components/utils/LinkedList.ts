@@ -71,6 +71,26 @@ export class DoublyLinkedList<T> {
         }
     }
 
+    public insertAfter(node: DoublyLinkedListNode<T>, value: T): DoublyLinkedListNode<T> {
+        const newNode = new DoublyLinkedListNode<T>(value);
+
+        if (node === this.tail) {
+            this.tail!.next = newNode;
+            newNode.prev = this.tail;
+            this.tail = newNode;
+            this.size++;
+            return newNode;
+        }
+
+        newNode.next = node.next;
+        newNode.prev = node;
+        node.next!.prev = newNode;
+        node.next = newNode;
+        this.size++;
+        return newNode;
+    }
+    
+
     public remove(node: DoublyLinkedListNode<T>): void {
         if (node === this.head) {
             this.head = this.head.next;
