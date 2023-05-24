@@ -51,7 +51,7 @@ export type TSignalCallBack = (type: ESignalType, data: any) => void;
 export abstract class Provider {
     protected options: ProviderOptions;
     protected signalSocket: WebSocket;
-    private onSignal: Set<TSignalCallBack>;
+    protected onSignal: Set<TSignalCallBack>;
     constructor(options: ProviderOptions) {
         this.options = options;
 

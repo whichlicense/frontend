@@ -39,7 +39,6 @@ export default function AddProjectCard(props: TAddProjectCardProps) {
       .finally(() => {
         props.handleClose && props.handleClose();
       });
-
   }
   return (
     <InlineCard show={props.show} handleClose={props.handleClose}>

@@ -15,24 +15,31 @@
  *   limitations under the License.
  */
 
+import axios from "axios";
 import { TUser } from "../../context/AuthContext";
 import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 import { TScanInitiationOptions } from "../typings/Scan";
-import { Provider } from "./Provider";
+import { ESignalType, Provider, ProviderOptions } from "./Provider";
 
 /**
  * Represents a connection system towards a locally hosted solution.
  */
 export class LocalProvider extends Provider {
+    // TODO: when wrapper is available, we can assume that all scans are from the local provider
+    private scans: any[] = [];
+
     getAllScannedDependencies(): Promise<any[]> {
-        throw new Error("Method not implemented.");
+        // TODO: Implement
+        return Promise.resolve([]);
     }
     getPersonalScans(): Promise<any[]> {
-        throw new Error("Method not implemented.");
+        // TODO: Implement
+        return Promise.resolve(this.scans);
     }
     getScan(id: string): Promise<any> {
-        throw new Error("Method not implemented.");
+        // TODO: Implement
+        return Promise.resolve({});
     }
 
     me(): Promise<TMeReply | null> {
@@ -107,6 +114,22 @@ export class LocalProvider extends Provider {
 
     initiateScan(options: TScanInitiationOptions): Promise<void> {
         // TODO: implement me when local API wrapper is ready
-        throw new Error("Method not implemented.");
+        // throw new Error("Method not implemented.");
+        return axios.post(`${Provider.constructUrlBase(this.options)}/discover`, options).then((res) => {
+            this.scans.push(res.data);
+            this.signalSocket.dispatchEvent(new MessageEvent("message", {
+                data: JSON.stringify({
+                    type: ESignalType.SCAN_FINISHED,
+                })
+            }));
+            this.signalSocket.dispatchEvent(new MessageEvent("message", {
+                data: JSON.stringify({
+                    type: ESignalType.NOTIFICATION,
+                    data: {
+                        message: "Scan finished",
+                    }
+                })
+            }));
+        })
     }
 }

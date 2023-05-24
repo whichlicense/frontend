@@ -67,6 +67,7 @@ export default function Dashboard() {
       icon: "bi bi-cpu",
       onClick: () => {
         console.log("button clicked");
+        setShowAddProject(true);
         telemetry.addEntry({
           type: ETelemetryEntryType.INTERACTION,
           title: "Scan project open",
@@ -79,6 +80,7 @@ export default function Dashboard() {
   useSignal({
     signal: ESignalType.SCAN_FINISHED,
     callback: () => {
+      console.info("A scan has finished");
       getPersonalScans();
     },
   });
