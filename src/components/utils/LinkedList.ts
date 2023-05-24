@@ -30,6 +30,8 @@ export class DoublyLinkedList<T> {
     private tail: DoublyLinkedListNode<T> | null = null;
     private size = 0;
 
+    public updateCallback: () => void = () => {};
+
     constructor(values?: T[]) {
         if (values) {
             this.addAll(values);
@@ -48,13 +50,15 @@ export class DoublyLinkedList<T> {
         return this.tail;
     }
 
-    public add(value: T): DoublyLinkedListNode<T> {
+    public add(value: T, shouldNotify = true): DoublyLinkedListNode<T> {
         const node = new DoublyLinkedListNode<T>(value);
 
         if (!this.head) {
             this.head = node;
             this.tail = node;
             this.size++;
+
+            shouldNotify && this.updateCallback();
             return node;
         }
 
@@ -62,13 +66,16 @@ export class DoublyLinkedList<T> {
         node.prev = this.tail;
         this.tail = node;
         this.size++;
+
+        shouldNotify && this.updateCallback();
         return node;
     }
 
     public addAll(values: T[]): void {
         for (const value of values) {
-            this.add(value);
+            this.add(value, false);
         }
+        this.updateCallback();
     }
 
     public insertAfter(node: DoublyLinkedListNode<T>, value: T): DoublyLinkedListNode<T> {
@@ -79,6 +86,8 @@ export class DoublyLinkedList<T> {
             newNode.prev = this.tail;
             this.tail = newNode;
             this.size++;
+
+            this.updateCallback();
             return newNode;
         }
 
@@ -87,6 +96,8 @@ export class DoublyLinkedList<T> {
         node.next!.prev = newNode;
         node.next = newNode;
         this.size++;
+
+        this.updateCallback();
         return newNode;
     }
     
@@ -96,6 +107,8 @@ export class DoublyLinkedList<T> {
             this.head = this.head.next;
             this.head!.prev = null;
             this.size--;
+
+            this.updateCallback();
             return;
         }
 
@@ -103,6 +116,8 @@ export class DoublyLinkedList<T> {
             this.tail = this.tail.prev;
             this.tail!.next = null;
             this.size--;
+
+            this.updateCallback();
             return;
         }
 
@@ -127,5 +142,9 @@ export class DoublyLinkedList<T> {
             current = current.next;
         }
         return result;
+    }
+
+    public toArray(): T[] {
+        return this.map(node => node.value);
     }
 }

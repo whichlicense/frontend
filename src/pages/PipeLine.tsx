@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Button, Col, Form, InputGroup, Row, Stack } from "react-bootstrap";
+import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { ArcherContainer, ArcherElement } from "react-archer";
@@ -30,7 +30,7 @@ import { ToolBarItemType } from "../context/ToolBarContext";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-
+import { useStatefulLinkedList } from "../components/Hooks/useStateFulLinkedList";
 
 enum EPipelineType {
   REMOVE,
@@ -90,72 +90,75 @@ export default function PipeLine() {
   const [showAddPipeSegment, setShowAddPipeSegment] = useState(false);
   const [selectedPipeSegment, setSelectedPipeSegment] =
     useState<DoublyLinkedListNode<TPipeLine> | null>(null);
-  const pipeline = new DoublyLinkedList<TPipeLine>([
-    {
-      id: "1",
-      type: EPipelineType.REMOVE,
-      ran: false,
-      v: "/test/g"
-    },
-    {
-      id: "2",
-      type: EPipelineType.REMOVE,
-      ran: false,
-      v: "/test/g"
-    },
-    {
-      id: "3",
-      type: EPipelineType.REPLACE,
-      ran: false,
-    },
-    {
-      id: "4",
-      type: EPipelineType.REMOVE,
-      ran: false,
-      v: "/test/g"
-    },
-    {
-      id: "5",
-      type: EPipelineType.BATCH,
-      ran: false,
-      nested_pipeline: new DoublyLinkedList<TPipeLine>([
-        {
-          id: "5.1",
-          type: EPipelineType.REMOVE,
-          ran: false,
-          v: "/test/g"
-        },
-        {
-          id: "5.2",
-          type: EPipelineType.REMOVE,
-          ran: false,
-          v: "/test/g"
-        },
-        {
-          id: "5.3",
-          type: EPipelineType.REPLACE,
-          ran: false,
-        },
-        {
-          id: "5.4",
-          type: EPipelineType.REMOVE,
-          ran: false,
-          v: "/test/g"
-        },
-      ]),
-    },
-    {
-      id: "6",
-      type: EPipelineType.REPLACE,
-      ran: false,
-    },
-    {
-      id: "7",
-      type: EPipelineType.REMOVE,
-      ran: false,
-      v: "/test/g"
-    },
-  ]);
+
+  const pipeline = useStatefulLinkedList<TPipeLine>(
+    new DoublyLinkedList<TPipeLine>([
+      {
+        id: "1",
+        type: EPipelineType.REMOVE,
+        ran: false,
+        v: "/test/g"
+      },
+      {
+        id: "2",
+        type: EPipelineType.REMOVE,
+        ran: false,
+        v: "/test/g"
+      },
+      {
+        id: "3",
+        type: EPipelineType.REPLACE,
+        ran: false,
+      },
+      {
+        id: "4",
+        type: EPipelineType.REMOVE,
+        ran: false,
+        v: "/test/g"
+      },
+      {
+        id: "5",
+        type: EPipelineType.BATCH,
+        ran: false,
+        nested_pipeline: new DoublyLinkedList<TPipeLine>([
+          {
+            id: "5.1",
+            type: EPipelineType.REMOVE,
+            ran: false,
+            v: "/test/g"
+          },
+          {
+            id: "5.2",
+            type: EPipelineType.REMOVE,
+            ran: false,
+            v: "/test/g"
+          },
+          {
+            id: "5.3",
+            type: EPipelineType.REPLACE,
+            ran: false,
+          },
+          {
+            id: "5.4",
+            type: EPipelineType.REMOVE,
+            ran: false,
+            v: "/test/g"
+          },
+        ]),
+      },
+      {
+        id: "6",
+        type: EPipelineType.REPLACE,
+        ran: false,
+      },
+      {
+        id: "7",
+        type: EPipelineType.REMOVE,
+        ran: false,
+        v: "/test/g"
+      },
+    ])
+  );
 
   const arrowRelationship = (
     current_item: DoublyLinkedListNode<TPipeLine>,
@@ -245,6 +248,7 @@ export default function PipeLine() {
                       <Form.Control
                         className="bg-dark-1 txt-white"
                         placeholder="Your regex here"
+                        value={pipeline_entry.value.v}
                       />
                     </Col>
                   </Row>
