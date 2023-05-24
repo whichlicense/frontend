@@ -27,6 +27,10 @@ import { RelationType } from "react-archer/lib/types";
 import { BgColors } from "../components/typings/Colors";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { ToolBarItemType } from "../context/ToolBarContext";
+import { InlineCard } from "../components/Modals/InlineCard";
+import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+
 
 enum EPipelineType {
   REMOVE,
@@ -43,6 +47,7 @@ type TPipeLine = TPipeLineShared &
   (
     | {
         type: EPipelineType.REMOVE;
+        v: string;
       }
     | {
         type: EPipelineType.REPLACE;
@@ -81,16 +86,22 @@ export default function PipeLine() {
       onClick() {},
     },
   ]);
+
+  const [showAddPipeSegment, setShowAddPipeSegment] = useState(false);
+  const [selectedPipeSegment, setSelectedPipeSegment] =
+    useState<DoublyLinkedListNode<TPipeLine> | null>(null);
   const pipeline = new DoublyLinkedList<TPipeLine>([
     {
       id: "1",
       type: EPipelineType.REMOVE,
       ran: false,
+      v: "/test/g"
     },
     {
       id: "2",
       type: EPipelineType.REMOVE,
       ran: false,
+      v: "/test/g"
     },
     {
       id: "3",
@@ -101,6 +112,7 @@ export default function PipeLine() {
       id: "4",
       type: EPipelineType.REMOVE,
       ran: false,
+      v: "/test/g"
     },
     {
       id: "5",
@@ -111,11 +123,13 @@ export default function PipeLine() {
           id: "5.1",
           type: EPipelineType.REMOVE,
           ran: false,
+          v: "/test/g"
         },
         {
           id: "5.2",
           type: EPipelineType.REMOVE,
           ran: false,
+          v: "/test/g"
         },
         {
           id: "5.3",
@@ -126,6 +140,7 @@ export default function PipeLine() {
           id: "5.4",
           type: EPipelineType.REMOVE,
           ran: false,
+          v: "/test/g"
         },
       ]),
     },
@@ -138,6 +153,7 @@ export default function PipeLine() {
       id: "7",
       type: EPipelineType.REMOVE,
       ran: false,
+      v: "/test/g"
     },
   ]);
 
@@ -180,7 +196,13 @@ export default function PipeLine() {
           <Col xs={12}>
             <div className="position-relative">
               <div className="position-absolute start-50 translate-middle">
-                <Button className="rounded-5">
+                <Button
+                  className="rounded-5"
+                  onClick={() => {
+                    setSelectedPipeSegment(pipeline_entry);
+                    setShowAddPipeSegment(true);
+                  }}
+                >
                   <i className="bi bi-plus-circle-fill txt-blue"></i>
                 </Button>
               </div>
@@ -364,6 +386,102 @@ export default function PipeLine() {
           </Row>
         </Stack>
       </ArcherContainer>
+
+      <InlineCard
+        show={showAddPipeSegment}
+        handleClose={() => setShowAddPipeSegment(false)}
+      >
+        <>
+          <SectionHeading title={"Presets"} type="display" size={"5"} />
+          <br />
+          <Row xs={1} md={3} lg={4}>
+            <Col>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {
+                  const toAdd: TPipeLine = {
+                    type: EPipelineType.REMOVE,
+                    id: uuidv4(),
+                    ran: false,
+                    v: new RegExp(/([\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6})/).toString()
+                  };
+                  if (pipeline.getHead() === null) {
+                    pipeline.add(toAdd);
+                  } else {
+                    pipeline.insertAfter(
+                      selectedPipeSegment?.prev || pipeline.getHead()!,
+                      toAdd
+                    );
+                  }
+
+                  setShowAddPipeSegment(false);
+                }}
+              >
+                Remove phone numbers
+              </RegularCard>
+            </Col>
+
+            <Col>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {}}
+              >
+                Remove Copyright heading
+              </RegularCard>
+            </Col>
+
+            <Col>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {}}
+              >
+                Replace all tabs with spaces
+              </RegularCard>
+            </Col>
+
+            <Col>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {}}
+              >
+                Lowercase all characters
+              </RegularCard>
+            </Col>
+          </Row>
+
+          <SectionHeading title={"Manual"} type="display" size={"5"} divider />
+          <br />
+          <Row xs={1} md={2} lg={3}>
+            <Col>
+              <Form.Select className="bg-dark-2 txt-white">
+                <option value="1">Regex remove</option>
+                <option value="2">Regex replace</option>
+                <option value="3">Text remove</option>
+                <option value="3">Text replace</option>
+              </Form.Select>
+            </Col>
+
+            <Col>
+              <Form.Control
+                className="bg-dark-2 txt-white"
+                placeholder="Your regex here"
+              />
+            </Col>
+          </Row>
+        </>
+      </InlineCard>
     </div>
   );
 }
