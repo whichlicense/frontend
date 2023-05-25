@@ -20,7 +20,40 @@ import { TUser } from "../../context/AuthContext";
 import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply, TSubAccountAndPermissions } from "../typings/Account";
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 import { TScanInitiationOptions } from "../typings/Scan";
-import { ESignalType, Provider, ProviderOptions } from "./Provider";
+import { ESignalType, Provider } from "./Provider";
+
+// TODO: remove me when real endpoints/data are available
+export type orNull<T> = T | null;
+// TODO: remove me when real endpoints/data are available
+export type TDummyData = {
+    name: string,
+    version: string,
+    license: orNull<string>,
+    ecosystems: string[],
+    source: string,
+    generated: number,
+    directDependencies: {
+        name: string,
+        version: string,
+        license: orNull<string>,
+        scope: string,
+        ecosystem: string,
+        directDependencies: {
+            [dependencyName: string]: string,
+        }
+    }[],
+    transitiveDependencies: {
+        name: string,
+        version: string,
+        license: orNull<string>,
+        scope: string,
+        ecosystem: string,
+        directDependencies: {
+            [dependencyName: string]: string,
+        }
+    }[]
+}
+
 
 /**
  * Represents a connection system towards a locally hosted solution.
@@ -31,15 +64,80 @@ export class LocalProvider extends Provider {
 
     getAllScannedDependencies(): Promise<any[]> {
         // TODO: Implement
-        return Promise.resolve([]);
+        const dummyData = this.scans as TDummyData[];
+        const dependenciesFlattened: (TDummyData["transitiveDependencies"]) = [];
+        for (const scan of dummyData) {
+            dependenciesFlattened.push(...scan.directDependencies);
+            dependenciesFlattened.push(...scan.transitiveDependencies);
+            dependenciesFlattened.push(
+                {
+                    name: scan.name,
+                    version: scan.version,
+                    license: scan.license,
+                    scope: "",
+                    ecosystem: scan.ecosystems[0],
+                    directDependencies: scan.directDependencies.reduce((acc, dependency) => {
+                        acc[dependency.name] = dependency.version;
+                        return acc;
+                    }, {} as { [dependencyName: string]: string })
+                }
+            )
+        }
+        return Promise.resolve(dependenciesFlattened);
     }
     getPersonalScans(): Promise<any[]> {
         // TODO: Implement
         return Promise.resolve(this.scans);
     }
     getScan(id: string): Promise<any> {
-        // TODO: Implement
-        return Promise.resolve({});
+        // TODO: Implement with real endpoint instead of this "patch"
+
+        const dummyData = this.scans as TDummyData[];
+        const dependenciesFlattened: (TDummyData["transitiveDependencies"]) = [];
+        for (const scan of dummyData) {
+            dependenciesFlattened.push(...scan.directDependencies);
+            dependenciesFlattened.push(...scan.transitiveDependencies);
+            dependenciesFlattened.push(
+                {
+                    name: scan.name,
+                    version: scan.version,
+                    license: scan.license,
+                    scope: "",
+                    ecosystem: scan.ecosystems[0],
+                    directDependencies: scan.directDependencies.reduce((acc, dependency) => {
+                        acc[dependency.name] = dependency.version;
+                        return acc;
+                    }, {} as { [dependencyName: string]: string })
+                }
+            )
+        }
+
+        const findDependency = (id: string) => {
+            return dependenciesFlattened.find((dependency) => dependency.name === id)
+        }
+
+        const requestedScan = findDependency(id.replaceAll("_", "/"));
+        if (!requestedScan) {
+            return Promise.reject("Scan not found");
+        }
+
+
+        (requestedScan!.directDependencies as unknown as TDummyData["transitiveDependencies"]) =
+            (Object.keys(requestedScan!.directDependencies)
+                .map((depName) => {
+                    const dep = findDependency(depName);
+                    if (dep) {
+                        return {
+                            name: depName,
+                            version: dep.version,
+                            license: dep.license,
+                        };
+                    }
+                    return undefined
+                }) as unknown as TDummyData["transitiveDependencies"])
+                .filter((dep) => dep !== undefined);
+
+        return Promise.resolve(requestedScan);
     }
 
     me(): Promise<TMeReply | null> {
@@ -47,7 +145,7 @@ export class LocalProvider extends Provider {
             firstName: "Local",
             email: "",
             domain: 0,
-            selectedPaymentMethod:  null,
+            selectedPaymentMethod: null,
             plan: {
                 account_id: -1,
                 leftover_minutes: Infinity,
@@ -82,10 +180,10 @@ export class LocalProvider extends Provider {
     }
 
     login(email: string, password: string): Promise<TLoginReply> {
-            return Promise.resolve({token: "LOCAL"})
+        return Promise.resolve({ token: "LOCAL" })
     }
 
-    register(d: TUser & { password: string }): Promise<{message: string}> {
+    register(d: TUser & { password: string }): Promise<{ message: string }> {
         return Promise.reject("Local provider does not support registration");
     }
 
