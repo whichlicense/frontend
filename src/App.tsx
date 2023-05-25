@@ -47,6 +47,7 @@ import useNavigationTelemetry from "./components/Hooks/useNavigationTelemetry";
 import PipeLine from "./pages/PipeLine";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import { LocaleContextProvider } from "./context/LocaleContext";
+import Scans from "./pages/Scans";
 
 function NavTelemetry() {
   useNavigationTelemetry();
@@ -95,6 +96,7 @@ function App() {
                         >
                           <Routes>
                             <Route path="/search" element={<Search />} />
+                            <Route path="/scans" element={<Scans />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route
                               path="/scan-result/:id"
