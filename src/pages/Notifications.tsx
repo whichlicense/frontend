@@ -26,6 +26,9 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { TEmailNotificationSettings } from "../components/typings/EmailNotificationSettings";
 import { toastResult } from "../components/utils/toasting";
 import { useLocaleContext } from "../context/LocaleContext";
+import SectionHeading from "../components/Typography/SectionHeading";
+import ProviderMismatchHandler, { ProviderMismatchAction } from "../components/Provider/Rendering/ProviderMismatchHandler";
+import { ProviderType } from "../components/Provider/Provider";
 
 export default function Notifications() {
   useForceAuth({
@@ -71,13 +74,16 @@ export default function Notifications() {
 
   return (
     <div>
-      <Stack gap={2}>
-        <h6 className="display-6">Email notifications</h6>
-        <small className="text-muted">
+      <SectionHeading title="Notification settings" size="4" type="display" />
+      <small className="text-muted">
           Press the buttons after each input to enable or disable their
           functionality.
-        </small>
-        <RegularCard minHeight="100%" maxHeight="100%">
+      </small>
+      <br />
+      <br />
+      <Stack gap={3}>
+        <ProviderMismatchHandler action={ProviderMismatchAction.HIDE} requiredProvider={ProviderType.CLOUD}>
+        <RegularCard title={"Email notifications"} minHeight="100%" maxHeight="100%">
           <Form ref={emailFormRef} onSubmit={onEmailConditionsChangeSubmit}>
             <Button className="visually-hidden" type="submit" id="submit_email_settings"></Button>
             <InputGroup className="mb-3">
@@ -134,6 +140,8 @@ export default function Notifications() {
             </Row>
           </Form>
         </RegularCard>
+        </ProviderMismatchHandler>
+        
         <RegularCard title="WebHook notifications">
           <div>Coming soon</div>
           {/* <InputGroup className="mb-3">

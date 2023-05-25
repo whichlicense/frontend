@@ -23,6 +23,10 @@ import { useState } from "react";
 import { useProviderContext } from "../context/ProviderContext";
 import { toastError } from "../components/utils/toasting";
 import { useAuthContext } from "../context/AuthContext";
+import { ProviderType } from "../components/Provider/Provider";
+import ProviderMismatchHandler, {
+  ProviderMismatchAction,
+} from "../components/Provider/Rendering/ProviderMismatchHandler";
 
 export default function Settings() {
   // TODO: delete account button in "account" section
@@ -93,132 +97,144 @@ export default function Settings() {
 
   return (
     <div>
-      {auth.isLoggedIn() && (
+      <ProviderMismatchHandler
+        action={ProviderMismatchAction.HIDE}
+        requiredProvider={ProviderType.CLOUD}
+      >
         <>
-          <SectionHeading
-            title={"Account settings"}
-            type="display"
-            size={"4"}
-          />
-          <ButtonGroup>
-            <Button onClick={() => setChangePasswordOpen(true)}>
-              Change Password
-            </Button>
-            <Button onClick={() => setChangeEmailOpen(true)}>
-              Change Email
-            </Button>
-          </ButtonGroup>
-          <br />
-          <hr className="text-muted" />
-          <p>More coming soon</p>
-
-          <InlineCard
-            show={changePasswordOpen}
-            handleClose={() => setChangePasswordOpen(false)}
-          >
-            <Form onSubmit={onChangePasswordSubmit}>
-              <Row>
-                <Col xs={12}>
-                  <Form.Label htmlFor="current_password">
-                    Current password
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    id="current_password"
-                    name="current_password"
-                    aria-describedby="current_password"
-                  />
-                </Col>
-
-                <Col md={6}>
-                  <Form.Label htmlFor="new_password">New password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    id="new_password"
-                    name="new_password"
-                    aria-describedby="new_password"
-                  />
-                </Col>
-
-                <Col md={6}>
-                  <Form.Label htmlFor="confirm_password">
-                    Confirm password
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    id="confirm_password"
-                    name="confirm_password"
-                    aria-describedby="confirm_password"
-                  />
-                </Col>
-              </Row>
-              <br />
-              <Button type="submit" className="bg-red">
-                Change password
-              </Button>
-            </Form>
-          </InlineCard>
-
-          <InlineCard
-            show={changeEmailOpen}
-            handleClose={() => setChangeEmailOpen(false)}
-          >
+          {auth.isLoggedIn() && (
             <>
-              <small className="txt-yellow">
-                <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
-                Please be aware that this action will log you out of your
-                account. In addition to this, you will be forced to confirm the
-                newly added email and will not be able to login until you do so.
-                If you're locked out of your account by this action, please
-                contact us via email.
-              </small>
-              <hr />
-              <br />
-              <Form onSubmit={onChangeEmailSubmit}>
-                <Row>
-                  <Col xs={12}>
-                    <Form.Label htmlFor="current_email">
-                      Current email
-                    </Form.Label>
-                    <Form.Control
-                      type="email"
-                      id="current_email"
-                      name="current_email"
-                      aria-describedby="current_email"
-                    />
-                  </Col>
-
-                  <Col md={6}>
-                    <Form.Label htmlFor="new_email">New email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      id="new_email"
-                      name="new_email"
-                      aria-describedby="new_email"
-                    />
-                  </Col>
-
-                  <Col md={6}>
-                    <Form.Label htmlFor="confirm_email">
-                      Confirm email
-                    </Form.Label>
-                    <Form.Control
-                      type="email"
-                      id="confirm_email"
-                      name="confirm_email"
-                      aria-describedby="confirm_email"
-                    />
-                  </Col>
-                </Row>
-                <br />
-                <Button type="submit" className="bg-blue txt-dark-1">
-                  Change email
+              <SectionHeading
+                title={"Account settings"}
+                type="display"
+                size={"4"}
+              />
+              <ButtonGroup>
+                <Button onClick={() => setChangePasswordOpen(true)}>
+                  Change Password
                 </Button>
-              </Form>
+                <Button onClick={() => setChangeEmailOpen(true)}>
+                  Change Email
+                </Button>
+              </ButtonGroup>
+              <br />
+              <hr className="text-muted" />
+              <p>More coming soon</p>
+
+              <InlineCard
+                show={changePasswordOpen}
+                handleClose={() => setChangePasswordOpen(false)}
+              >
+                <Form onSubmit={onChangePasswordSubmit}>
+                  <Row>
+                    <Col xs={12}>
+                      <Form.Label htmlFor="current_password">
+                        Current password
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        id="current_password"
+                        name="current_password"
+                        aria-describedby="current_password"
+                      />
+                    </Col>
+
+                    <Col md={6}>
+                      <Form.Label htmlFor="new_password">
+                        New password
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        id="new_password"
+                        name="new_password"
+                        aria-describedby="new_password"
+                      />
+                    </Col>
+
+                    <Col md={6}>
+                      <Form.Label htmlFor="confirm_password">
+                        Confirm password
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        aria-describedby="confirm_password"
+                      />
+                    </Col>
+                  </Row>
+                  <br />
+                  <Button type="submit" className="bg-red">
+                    Change password
+                  </Button>
+                </Form>
+              </InlineCard>
+
+              <InlineCard
+                show={changeEmailOpen}
+                handleClose={() => setChangeEmailOpen(false)}
+              >
+                <>
+                  <small className="txt-yellow">
+                    <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill"></i>
+                    Please be aware that this action will log you out of your
+                    account. In addition to this, you will be forced to confirm
+                    the newly added email and will not be able to login until
+                    you do so. If you're locked out of your account by this
+                    action, please contact us via email.
+                  </small>
+                  <hr />
+                  <br />
+                  <Form onSubmit={onChangeEmailSubmit}>
+                    <Row>
+                      <Col xs={12}>
+                        <Form.Label htmlFor="current_email">
+                          Current email
+                        </Form.Label>
+                        <Form.Control
+                          type="email"
+                          id="current_email"
+                          name="current_email"
+                          aria-describedby="current_email"
+                        />
+                      </Col>
+
+                      <Col md={6}>
+                        <Form.Label htmlFor="new_email">New email</Form.Label>
+                        <Form.Control
+                          type="email"
+                          id="new_email"
+                          name="new_email"
+                          aria-describedby="new_email"
+                        />
+                      </Col>
+
+                      <Col md={6}>
+                        <Form.Label htmlFor="confirm_email">
+                          Confirm email
+                        </Form.Label>
+                        <Form.Control
+                          type="email"
+                          id="confirm_email"
+                          name="confirm_email"
+                          aria-describedby="confirm_email"
+                        />
+                      </Col>
+                    </Row>
+                    <br />
+                    <Button type="submit" className="bg-blue txt-dark-1">
+                      Change email
+                    </Button>
+                  </Form>
+                </>
+              </InlineCard>
             </>
-          </InlineCard>
+          )}
         </>
-      )}
+      </ProviderMismatchHandler>
+
+      <SectionHeading title={"App settings"} type="display" size={"4"} />
+      <p>Coming soon</p>
     </div>
   );
 }

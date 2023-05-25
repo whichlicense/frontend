@@ -15,10 +15,9 @@
  *   limitations under the License.
  */
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useProviderContext } from "../../../context/ProviderContext";
 import { CloudProvider } from "../CloudProvider";
-import { LocalProvider } from "../LocalProvider";
 import { ProviderType } from "../Provider";
 
 export enum ProviderMismatchAction {

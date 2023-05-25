@@ -86,10 +86,27 @@ export default function NavigationBar() {
           />
 
           <NavBarButton
-            onClick={() =>
-              auth.isLoggedIn() ? navigate("/sub-accounts") : navigate("/login")
+            onClick={() => {
+              if (
+                !auth.isLoggedIn() &&
+                provider.getProviderType() !== ProviderType.LOCAL
+              ) {
+                navigate("/login");
+              } else if (
+                auth.isLoggedIn() &&
+                provider.getProviderType() !== ProviderType.LOCAL
+              ) {
+                navigate("/sub-accounts");
+              } else {
+                toast.warn(
+                  "This feature is not available when using a locally connected CLI."
+                );
+              }
+            }}
+            disabled={
+              !auth.isLoggedIn() ||
+              provider.getProviderType() === ProviderType.LOCAL
             }
-            disabled={!auth.isLoggedIn()}
             text={"Accounts"}
             iconClass={"bi bi-person-rolodex"}
             collapsed={!open}
@@ -158,35 +175,38 @@ export default function NavigationBar() {
           </>
         )}
 
-        <NavBarButton
-          disabled={!auth.isLoggedIn()}
-          onClick={() =>
-            auth.isLoggedIn() ? navigate("/payment") : navigate("/login")
-          }
-          text={"Payment"}
-          collapsed={!open}
-          iconClass={"bi bi-credit-card"}
-        />
+        {provider.getProviderType() === ProviderType.CLOUD && (
+          <>
+            <NavBarButton
+              disabled={!auth.isLoggedIn()}
+              onClick={() =>
+                auth.isLoggedIn() ? navigate("/payment") : navigate("/login")
+              }
+              text={"Payment"}
+              collapsed={!open}
+              iconClass={"bi bi-credit-card"}
+            />
 
-        <hr className="text-muted mx-1" />
+            <hr className="text-muted mx-1" />
 
-        {auth.isLoggedInMemo ? (
-          <NavBarButton
-            text={"Logout"}
-            collapsed={!open}
-            onClick={() => auth.logout()}
-            iconClass={"bi bi-arrow-left-circle"}
-          />
-        ) : (
-          <NavBarButton
-            text={"Login"}
-            collapsed={!open}
-            onClick={() => navigate("/login")}
-            iconClass={"bi bi-person-circle"}
-          />
+            {auth.isLoggedInMemo ? (
+              <NavBarButton
+                text={"Logout"}
+                collapsed={!open}
+                onClick={() => auth.logout()}
+                iconClass={"bi bi-arrow-left-circle"}
+              />
+            ) : (
+              <NavBarButton
+                text={"Login"}
+                collapsed={!open}
+                onClick={() => navigate("/login")}
+                iconClass={"bi bi-person-circle"}
+              />
+            )}
+            <br />
+          </>
         )}
-
-        <br />
       </section>
     </div>
   );
