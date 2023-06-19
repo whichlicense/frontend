@@ -15,7 +15,15 @@
  *   limitations under the License.
  */
 
-import { Button, ButtonGroup, Form, Row, Col } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Form,
+  Row,
+  Col,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { toast } from "react-toastify";
@@ -27,11 +35,40 @@ import { ProviderType } from "../components/Provider/Provider";
 import ProviderMismatchHandler, {
   ProviderMismatchAction,
 } from "../components/Provider/Rendering/ProviderMismatchHandler";
+import { useToolBar } from "../components/Hooks/useToolBar";
+import { ToolBarItemType } from "../context/ToolBarContext";
+import { LocalProvider } from "../components/Provider/LocalProvider";
 
 export default function Settings() {
   // TODO: delete account button in "account" section
 
-  const { provider } = useProviderContext();
+  const { provider, setProvider } = useProviderContext();
+  const [requestServerSettings, setRequestServerSettings] = useState({
+    host: "localhost",
+    port: 8080,
+    secure: false,
+    changed: false,
+  });
+
+  useToolBar([
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Save connection settings",
+      icon: "bi bi-save",
+      onClick: () => {
+        setProvider(
+          new LocalProvider({
+            host: requestServerSettings.host,
+            port: requestServerSettings.port,
+            secure: requestServerSettings.secure,
+          })
+        );
+      },
+      bgColor: "bg-blue",
+      txtColor: "txt-dark-1",
+    },
+  ]);
+
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [changeEmailOpen, setChangeEmailOpen] = useState(false);
 
@@ -234,7 +271,75 @@ export default function Settings() {
       </ProviderMismatchHandler>
 
       <SectionHeading title={"App settings"} type="display" size={"4"} />
-      <p>Coming soon</p>
+      <SectionHeading
+        title={"Connection settings"}
+        type="h"
+        size={"4"}
+        divider
+        breakBottom
+      />
+      <Row className="bg-button-light txt-white simple-border rounded p-2 mx-2">
+        <Col xs={12} lg={2}>
+          <Button className="not-clickable">Server connection</Button>
+        </Col>
+        <Col xs={12} lg={1}>
+          <DropdownButton
+            title={requestServerSettings.secure ? "https://" : "http://"}
+          >
+            <Dropdown.Item
+              onClick={() => {
+                setRequestServerSettings({
+                  ...requestServerSettings,
+                  secure: false,
+                  changed: true,
+                });
+              }}
+            >
+              http://
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => {
+                setRequestServerSettings({
+                  ...requestServerSettings,
+                  secure: true,
+                  changed: true,
+                });
+              }}
+            >
+              https://
+            </Dropdown.Item>
+          </DropdownButton>
+        </Col>
+        <Col xs={12} lg={6}>
+          <Form.Control
+            className="txt-white bg-transparent border-0"
+            defaultValue={requestServerSettings.host}
+            onChange={(e) => {
+              setRequestServerSettings({
+                ...requestServerSettings,
+                host: e.target.value,
+                changed: true,
+              });
+            }}
+          />
+        </Col>
+        <Col xs={12} lg={1}>
+          <Button className="not-clickable">Port</Button>
+        </Col>
+        <Col xs={12} lg={2}>
+          <Form.Control
+            className="txt-white bg-transparent border-0"
+            defaultValue={requestServerSettings.port}
+            onChange={(e) => {
+              setRequestServerSettings({
+                ...requestServerSettings,
+                host: e.target.value,
+                changed: true,
+              });
+            }}
+          />
+        </Col>
+      </Row>
     </div>
   );
 }
