@@ -20,6 +20,7 @@ type TSectionHeadingProps = {
   size: "1" | "2" | "3" | "4" | "5" | "6";
   subtitle?: string;
   divider?: boolean;
+  breakBottom?: boolean;
   type?: "h" | "display";
 };
 export default function SectionHeading(props: TSectionHeadingProps) {
@@ -28,6 +29,7 @@ export default function SectionHeading(props: TSectionHeadingProps) {
         {props.divider && <hr className="text-muted" />}
       <h2 className={`${props.type+"-" || "h"}${props.size} mb-0`}>{props.title}</h2>
       {props.subtitle && <small className="text-muted">{props.subtitle}</small>}
+      {props.breakBottom && <br />}
     </div>
   );
 }
