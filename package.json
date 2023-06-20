@@ -21,6 +21,7 @@
     "chartjs-chart-treemap": "^2.3.0",
     "electron-is": "^3.0.0",
     "electron-is-dev": "^2.0.0",
+    "fuse.js": "^6.6.2",
     "html2pdf.js": "^0.10.1",
     "mermaid": "^10.0.2",
     "react": "^18.2.0",

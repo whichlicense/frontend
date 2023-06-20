@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Form, Row, Col, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import { useToolBar } from "../components/Hooks/useToolBar";
@@ -30,6 +30,7 @@ import AddProjectCard from "../components/Modals/AddProject";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
+import Fuse from "fuse.js";
 
 export default function Search() {
   const [filterCardOpen, setFilterCardOpen] = useState(false);
@@ -39,7 +40,9 @@ export default function Search() {
     {
       type: ToolBarItemType.INPUT,
       placeholder: "Search...",
-      onChange: (value) => {},
+      onChange: (value) => {
+        setSearchInput(value);
+      },
     },
     {
       type: ToolBarItemType.BUTTON,
@@ -64,15 +67,38 @@ export default function Search() {
 
   const [showAddProject, setShowAddProject] = useState(false);
 
-  const [dummyData, setDummyData] = useState<
+  // all the data
+  const [originalData, setOriginalData] = useState<
     TDummyData["transitiveDependencies"]
   >([]);
+  // data, but filtered by user request
+  // const [filteredData, setFilteredData] = useState<
+  // TDummyData["transitiveDependencies"]
+  // >([]);
+  // data slicing for infinite scroll
   const [slicedData, setSlicedData] = useState<
     TDummyData["transitiveDependencies"]
   >([]);
 
+
+  const [searchInput, setSearchInput] = useState("");
+
+  // fuzzy searching
+  const fuseKeys = ['name', 'license', 'manager'];
+  const [fuse, setFuse] = useState(new Fuse(originalData, {
+    keys: fuseKeys
+  }));
+
+  // data, but filtered by user request
+  const filteredData = useMemo(()=>{
+    return searchInput.length > 0 ? fuse.search(searchInput).map(r => r.item) : originalData;
+  }, [fuse, originalData, searchInput]);
+
   const telemetry = Telemetry.instance;
 
+  useEffectOnce(() => {
+    updatePageData();
+  });
   useSignal({
     signal: ESignalType.SCAN_FINISHED,
     callback: () => {
@@ -80,26 +106,31 @@ export default function Search() {
     },
   });
 
-  useEffectOnce(() => {
-    updatePageData();
-  });
+
+  useEffect(() => {
+    setSlicedData(filteredData.slice(0, 20));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredData])
 
   const updatePageData = () => {
     provider.getAllScannedDependencies().then((data) => {
-      setDummyData(data);
-      setSlicedData(data.slice(0, 20));
+      setOriginalData(data);
+      setFuse(new Fuse(data, {
+        keys: fuseKeys
+      }));
+      setSlicedData(filteredData.slice(0, 20));
     });
   };
 
   const fetchNextData = () => {
-    setSlicedData([...dummyData.slice(0, slicedData.length + 20)]);
+    setSlicedData([...filteredData.slice(0, slicedData.length + 20)]);
   };
 
   return (
     <div>
       <br />
       <div>
-        <h6 className="display-6">{dummyData.length} Dependencies scanned</h6>
+        <h6 className="display-6">{originalData.length} Dependencies scanned</h6>
         <small className="text-muted">
           Enter some information about the dependency you want to search for.
           Use the toolbar above to fine tune your search parameters.
@@ -109,7 +140,7 @@ export default function Search() {
       <InfiniteScroll
         dataLength={slicedData.length}
         next={fetchNextData}
-        hasMore={slicedData.length < dummyData.length}
+        hasMore={slicedData.length < filteredData.length}
         loader={<></>} // TODO: Add a custom loader
         scrollableTarget="main-content-section"
         className="overflow-hidden"
