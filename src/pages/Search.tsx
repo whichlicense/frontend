@@ -25,11 +25,16 @@ import { TDummyData } from "../types/dummy";
 import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { useNavigate } from "react-router-dom";
 import { useProviderContext } from "../context/ProviderContext";
+import InfiniteScroll from "react-infinite-scroll-component";
+import AddProjectCard from "../components/Modals/AddProject";
+import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
+import { useSignal } from "../components/Hooks/useSignal";
+import { ESignalType } from "../components/Provider/Provider";
 
 export default function Search() {
   const [filterCardOpen, setFilterCardOpen] = useState(false);
   const navigate = useNavigate();
-  const {provider} = useProviderContext();
+  const { provider } = useProviderContext();
   useToolBar([
     {
       type: ToolBarItemType.INPUT,
@@ -51,17 +56,45 @@ export default function Search() {
       type: ToolBarItemType.BUTTON,
       title: "New scan",
       icon: "bi bi-plus",
-      onClick: () => {},
+      onClick: () => {
+        setShowAddProject(true);
+      },
     },
   ]);
 
-  const [dummyData, setDummyData] = useState<TDummyData["transitiveDependencies"]>([])
+  const [showAddProject, setShowAddProject] = useState(false);
 
-  useEffectOnce(()=>{
-    provider.getAllScannedDependencies().then((data)=>{
-      setDummyData(data)
-    })
-  })
+  const [dummyData, setDummyData] = useState<
+    TDummyData["transitiveDependencies"]
+  >([]);
+  const [slicedData, setSlicedData] = useState<
+    TDummyData["transitiveDependencies"]
+  >([]);
+
+  const telemetry = Telemetry.instance;
+
+  useSignal({
+    signal: ESignalType.SCAN_FINISHED,
+    callback: () => {
+      updatePageData();
+    },
+  });
+
+  useEffectOnce(() => {
+    updatePageData();
+  });
+
+  const updatePageData = () => {
+    provider.getAllScannedDependencies().then((data) => {
+      setDummyData(data);
+      setSlicedData(data.slice(0, 20));
+    });
+  };
+
+  const fetchNextData = () => {
+    setSlicedData([...dummyData.slice(0, slicedData.length + 20)]);
+  };
+
   return (
     <div>
       <br />
@@ -73,31 +106,42 @@ export default function Search() {
         </small>
       </div>
       <br />
-      <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-3">
-        {dummyData.map((data, idx) => (
-          <Col>
-            <RegularCard
-              height="250px"
-              title={data.name}
-              overflowY="scroll"
-              icon="bi bi-arrow-up-right-circle"
-              iconColor="txt-purple"
-              onCardClick={()=>{
-                navigate(`/scan-result/${data.name.replaceAll("/", "_")}`)
-              }}
-            >
-              <Stack gap={1}>
-                <h6>Manager: {data.ecosystem}</h6>
-                <h6>License: {data.license || "Unknown"}
-                  <i className="bi bi-question-circle txt-red ms-2"></i>
-                </h6>
-                <h6>Latest: {data.version}</h6>
-                <small className="text-muted">Last scan: UNKNOWN</small>
-              </Stack>
-            </RegularCard>
-          </Col>
-        ))}
-      </Row>
+      <InfiniteScroll
+        dataLength={slicedData.length}
+        next={fetchNextData}
+        hasMore={slicedData.length < dummyData.length}
+        loader={<></>} // TODO: Add a custom loader
+        scrollableTarget="main-content-section"
+        className="overflow-hidden"
+        scrollThreshold={0.8}
+      >
+        <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-3">
+          {slicedData.map((data, idx) => (
+            <Col>
+              <RegularCard
+                height="250px"
+                title={data.name}
+                overflowY="scroll"
+                icon="bi bi-arrow-up-right-circle"
+                iconColor="txt-purple"
+                onCardClick={() => {
+                  navigate(`/scan-result/${data.name.replaceAll("/", "_")}`);
+                }}
+              >
+                <Stack gap={1}>
+                  <h6>Manager: {data.ecosystem}</h6>
+                  <h6>
+                    License: {data.license || "Unknown"}
+                    <i className="bi bi-question-circle txt-red ms-2"></i>
+                  </h6>
+                  <h6>Latest: {data.version}</h6>
+                  <small className="text-muted">Last scan: UNKNOWN</small>
+                </Stack>
+              </RegularCard>
+            </Col>
+          ))}
+        </Row>
+      </InfiniteScroll>
 
       <InlineCard
         title="Filter"
@@ -109,7 +153,10 @@ export default function Search() {
             <Form.Label htmlFor="package-manager-selection">
               Package manager
             </Form.Label>
-            <Form.Select className="bg-grey border-0 txt-white" id="package-manager-selection">
+            <Form.Select
+              className="bg-grey border-0 txt-white"
+              id="package-manager-selection"
+            >
               <option value="1">All</option>
               <option value="2">NPM</option>
               <option value="3">Maven</option>
@@ -117,15 +164,28 @@ export default function Search() {
           </Col>
           <Col>
             <Form.Label htmlFor="license-selection">License</Form.Label>
-            <Form.Select className="bg-grey border-0 txt-white" id="license-selection">
+            <Form.Select
+              className="bg-grey border-0 txt-white"
+              id="license-selection"
+            >
               <option value="1">All</option>
               <option value="2">MIT</option>
               <option value="3">Apache 2.0</option>
             </Form.Select>
           </Col>
-          
         </Row>
       </InlineCard>
+
+      <AddProjectCard
+        show={showAddProject}
+        handleClose={() => {
+          setShowAddProject(false);
+          telemetry.addEntry({
+            type: ETelemetryEntryType.INTERACTION,
+            title: "Add project closed",
+          });
+        }}
+      />
     </div>
   );
 }
