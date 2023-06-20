@@ -71,17 +71,16 @@ export default function Search() {
   const [originalData, setOriginalData] = useState<
     TDummyData["transitiveDependencies"]
   >([]);
-  // data, but filtered by user request
-  // const [filteredData, setFilteredData] = useState<
-  // TDummyData["transitiveDependencies"]
-  // >([]);
-  // data slicing for infinite scroll
   const [slicedData, setSlicedData] = useState<
     TDummyData["transitiveDependencies"]
   >([]);
 
 
   const [searchInput, setSearchInput] = useState("");
+  const [filterOptions, setFilterOptions] = useState({
+    license: "",
+    manager: "",
+  });
 
   // fuzzy searching
   const fuseKeys = ['name', 'license', 'manager'];
@@ -89,10 +88,30 @@ export default function Search() {
     keys: fuseKeys
   }));
 
+  // unique sets for filter (options) pre-population
+    const uniqueLicenses = useMemo(() => {
+      return Array.from(new Set(originalData.map((d) => d.license)));
+    }, [originalData]);
+  const uniqueManagers = useMemo(() => {
+    return Array.from(new Set(originalData.map((d) => d.ecosystem)));
+  }, [originalData]);
+
   // data, but filtered by user request
   const filteredData = useMemo(()=>{
-    return searchInput.length > 0 ? fuse.search(searchInput).map(r => r.item) : originalData;
-  }, [fuse, originalData, searchInput]);
+    let fuzzied = searchInput.length > 0 ? fuse.search(searchInput).map(r => r.item) : originalData;
+    return fuzzied.filter((d) => {
+      return (
+        (filterOptions.license.length > 0
+          ? d.license === filterOptions.license
+          : true) &&
+        (filterOptions.manager.length > 0
+          ? d.ecosystem === filterOptions.manager
+          : true)
+      );
+    })
+  }, [fuse, originalData, searchInput, filterOptions]);
+
+
 
   const telemetry = Telemetry.instance;
 
@@ -187,10 +206,15 @@ export default function Search() {
             <Form.Select
               className="bg-grey border-0 txt-white"
               id="package-manager-selection"
+              onChange={(e) => {
+                setFilterOptions({
+                  ...filterOptions,
+                  manager: e.target.value,
+                });
+              }}
             >
-              <option value="1">All</option>
-              <option value="2">NPM</option>
-              <option value="3">Maven</option>
+              <option value="">No select</option>
+             {uniqueManagers.map((m) => <option value={m}>{m}</option>)}
             </Form.Select>
           </Col>
           <Col>
@@ -198,10 +222,15 @@ export default function Search() {
             <Form.Select
               className="bg-grey border-0 txt-white"
               id="license-selection"
+              onChange={(e) => {
+                setFilterOptions({
+                  ...filterOptions,
+                  license: e.target.value,
+                });
+              }}
             >
-              <option value="1">All</option>
-              <option value="2">MIT</option>
-              <option value="3">Apache 2.0</option>
+              <option value="">No select</option>
+              {uniqueLicenses.map((l) => <option value={l || ""}>{l || "No/Unknown license"}</option>)}
             </Form.Select>
           </Col>
         </Row>
