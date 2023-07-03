@@ -34,7 +34,7 @@ type ScanListProps = {
     date: Date;
     status: ComplianceStatus;
     license: string;
-    ecosystem: string;
+    ecosystem: string[];
     link?: string;
   }[];
 };
@@ -73,7 +73,7 @@ export default function ScanList(props: ScanListProps) {
             <tr onClick={()=>{scan.link && navigate(scan.link)}}>
               <td className="align-middle">{scan.name}</td>
               <td className="align-middle">{scan.license}</td>
-              <td className="align-middle">{scan.ecosystem}</td>
+              <td className="align-middle">{scan.ecosystem.length > 1 ? "MULTIPLE" : scan.ecosystem[0]}</td>
               <td className="align-middle">{scan.date.toISOString()}</td>
               <td className="text-end">{getBadge(scan.status)}</td>
             </tr>

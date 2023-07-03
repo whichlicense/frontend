@@ -31,6 +31,7 @@ import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ESignalType } from "../components/Provider/Provider";
 import Fuse from "fuse.js";
+import { TScannedDependenciesOut } from "../types/discover";
 
 export default function Search() {
   const [filterCardOpen, setFilterCardOpen] = useState(false);
@@ -68,13 +69,10 @@ export default function Search() {
   const [showAddProject, setShowAddProject] = useState(false);
 
   // all the data
-  const [originalData, setOriginalData] = useState<
-    TDummyData["transitiveDependencies"]
-  >([]);
-  const [slicedData, setSlicedData] = useState<
-    TDummyData["transitiveDependencies"]
-  >([]);
-
+  const [originalData, setOriginalData] = useState<TScannedDependenciesOut[]>(
+    []
+  );
+  const [slicedData, setSlicedData] = useState<TScannedDependenciesOut[]>([]);
 
   const [searchInput, setSearchInput] = useState("");
   const [filterOptions, setFilterOptions] = useState({
@@ -83,35 +81,47 @@ export default function Search() {
   });
 
   // fuzzy searching
-  const fuseKeys = ['name', 'license', 'manager'];
-  const [fuse, setFuse] = useState(new Fuse(originalData, {
-    keys: fuseKeys
-  }));
+  const fuseKeys = ["name", "license", "manager"];
+  const [fuse, setFuse] = useState(
+    new Fuse(originalData, {
+      keys: fuseKeys,
+    })
+  );
 
   // unique sets for filter (options) pre-population
-    const uniqueLicenses = useMemo(() => {
-      return Array.from(new Set(originalData.map((d) => d.license)));
-    }, [originalData]);
+  const uniqueLicenses = useMemo(() => {
+    return Array.from(
+      new Set(
+        originalData.map((d) => {
+          return [
+            Object.keys(d.declaredLicenses),
+            Object.keys(d.discoveredLicenses),
+          ].flat();
+        }).flat()
+      )
+    );
+  }, [originalData]);
   const uniqueManagers = useMemo(() => {
-    return Array.from(new Set(originalData.map((d) => d.ecosystem)));
+    return Array.from(new Set(originalData.map((d) => d.ecosystems).flat()));
   }, [originalData]);
 
   // data, but filtered by user request
-  const filteredData = useMemo(()=>{
-    let fuzzied = searchInput.length > 0 ? fuse.search(searchInput).map(r => r.item) : originalData;
+  const filteredData = useMemo(() => {
+    let fuzzied =
+      searchInput.length > 0
+        ? fuse.search(searchInput).map((r) => r.item)
+        : originalData;
     return fuzzied.filter((d) => {
       return (
         (filterOptions.license.length > 0
-          ? d.license === filterOptions.license
+          ? d.declaredLicenses[filterOptions.license] || d.discoveredLicenses[filterOptions.license]
           : true) &&
         (filterOptions.manager.length > 0
-          ? d.ecosystem === filterOptions.manager
+          ? d.ecosystems.includes(filterOptions.manager)
           : true)
       );
-    })
+    });
   }, [fuse, originalData, searchInput, filterOptions]);
-
-
 
   const telemetry = Telemetry.instance;
 
@@ -125,18 +135,19 @@ export default function Search() {
     },
   });
 
-
   useEffect(() => {
     setSlicedData(filteredData.slice(0, 20));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredData]);
 
   const updatePageData = () => {
     provider.getAllScannedDependencies().then((data) => {
       setOriginalData(data);
-      setFuse(new Fuse(data, {
-        keys: fuseKeys
-      }));
+      setFuse(
+        new Fuse(data, {
+          keys: fuseKeys,
+        })
+      );
       setSlicedData(filteredData.slice(0, 20));
     });
   };
@@ -145,11 +156,22 @@ export default function Search() {
     setSlicedData([...filteredData.slice(0, slicedData.length + 20)]);
   };
 
+
+  const getLicense = (d: TScannedDependenciesOut): string | null => {
+    const temp = new Set([Object.keys(d.discoveredLicenses), Object.keys(d.declaredLicenses)].flat());
+    if(temp.size === 0) {
+      return null;
+    }
+    return Array.from(temp).join(", ");
+  }
+
   return (
     <div>
       <br />
       <div>
-        <h6 className="display-6">{originalData.length} Dependencies scanned</h6>
+        <h6 className="display-6">
+          {originalData.length} Dependencies scanned
+        </h6>
         <small className="text-muted">
           Enter some information about the dependency you want to search for.
           Use the toolbar above to fine tune your search parameters.
@@ -175,13 +197,13 @@ export default function Search() {
                 icon="bi bi-arrow-up-right-circle"
                 iconColor="txt-purple"
                 onCardClick={() => {
-                  navigate(`/scan-result/${data.name.replaceAll("/", "_")}`);
+                  navigate(`/scan-result/${data.scans[0]}`);
                 }}
               >
                 <Stack gap={1}>
-                  <h6>Manager: {data.ecosystem}</h6>
+                  <h6>Ecosystem(s): {data.ecosystems.join(", ")}</h6>
                   <h6>
-                    License: {data.license || "Unknown"}
+                    License: {getLicense(data) || "Unknown"}
                     <i className="bi bi-question-circle txt-red ms-2"></i>
                   </h6>
                   <h6>Latest: {data.version}</h6>
@@ -214,7 +236,9 @@ export default function Search() {
               }}
             >
               <option value="">No select</option>
-             {uniqueManagers.map((m) => <option value={m}>{m}</option>)}
+              {uniqueManagers.map((m) => (
+                <option value={m}>{m}</option>
+              ))}
             </Form.Select>
           </Col>
           <Col>
@@ -230,7 +254,9 @@ export default function Search() {
               }}
             >
               <option value="">No select</option>
-              {uniqueLicenses.map((l) => <option value={l || ""}>{l || "No/Unknown license"}</option>)}
+              {uniqueLicenses.map((l) => (
+                <option value={l || ""}>{l || "No/Unknown license"}</option>
+              ))}
             </Form.Select>
           </Col>
         </Row>

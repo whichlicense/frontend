@@ -15,8 +15,9 @@
  *   limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Badge,
   Button,
   ButtonGroup,
   Col,
@@ -34,10 +35,11 @@ import ReactDiffViewer from "react-diff-viewer";
 import { LICENSE_1, LICENSE_2 } from "../components/utils/TEST_LICENSES";
 import { useToolBar } from "../components/Hooks/useToolBar";
 import { useAuthContext } from "../context/AuthContext";
-import { TDummyData } from "../types/dummy";
 import { toast } from "react-toastify";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
 import { useProviderContext } from "../context/ProviderContext";
+import { TDiscoverOut } from "../types/discover";
+import { TGitHubLicenseInfo, getInfo } from "../components/utils/LicenseInfo";
 
 // TODO: scan again toolbar button
 // TODO: scan latest version toolbar button
@@ -47,9 +49,9 @@ export default function ScanResult() {
   const { id } = useParams();
   const [showResolveLicense, setShowResolveLicense] = useState(false);
   const navigate = useNavigate();
-  const {provider} = useProviderContext();
+  const { provider } = useProviderContext();
 
-  if(id === undefined){
+  if (id === undefined) {
     toast.error("No scan id provided");
     navigate("/dashboard");
   }
@@ -77,7 +79,7 @@ export default function ScanResult() {
       title: "License info",
       icon: "bi bi-info-circle",
       onClick: () => {
-        console.log("button clicked");
+        document.getElementById("license_info_link")?.click();
       },
     },
     {
@@ -107,7 +109,7 @@ export default function ScanResult() {
           type: ETelemetryEntryType.INTERACTION,
           title: "Press Export",
         });
-        navigate("/export-view");
+        navigate("/export-view/" + id);
       },
     },
   ]);
@@ -118,16 +120,28 @@ export default function ScanResult() {
   // TODO: here's a long list of all the files that have not been licensed. please review and accept, decline or resolve
   // TODO: show ability to change version of the "view"
 
-  const [dummyData, setDummyData] = useState<TDummyData["directDependencies"][0] & {
-    directDependencies: TDummyData["transitiveDependencies"]
-  }>()
+  const [dummyData, setDummyData] = useState<TDiscoverOut>();
 
-  useEffect(()=>{
-    if(!id) return;
-    provider.getScan(id).then((res)=>{
-      setDummyData(res)
-    })
-  }, [auth.token, id, provider])
+  useEffect(() => {
+    if (!id) return;
+    provider.getScan(id).then((res) => {
+      setDummyData(res);
+    });
+  }, [auth.token, id, provider]);
+
+  const [licenseInfo, setLicenseInfo] = useState<
+    TGitHubLicenseInfo | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (!dummyData) return;
+    getInfo(
+      dummyData?.discoveredLicense || dummyData?.declaredLicense || "NONE"
+    ).then((res) => {
+      setLicenseInfo(res);
+    });
+  }, [dummyData]);
+
 
   return (
     <div>
@@ -139,7 +153,7 @@ export default function ScanResult() {
             type: ETelemetryEntryType.INTERACTION,
             title: "Close Resolve Package",
           });
-          setShowResolveLicense(false)
+          setShowResolveLicense(false);
         }}
       >
         <Row className="g-3">
@@ -171,35 +185,45 @@ export default function ScanResult() {
             </Stack>
           </Col>
           <Col xs={6}>
-            <RegularCard title={"License details"} minHeight="20vh" maxHeight="20vh">
+            <RegularCard
+              title={"License details"}
+              minHeight="20vh"
+              maxHeight="20vh"
+            >
               <h5>
                 <Stack direction="horizontal">
                   <div>License: </div>
                   <Form.Select className="py-0 bg-yellow w-25 border-0">
-                    <option>MIT - 100% confidence</option>
-                    <option value="1">MIT Modified - 98% confidence</option>
-                    <option value="2">MIT with styling - 79% confidence</option>
+                    {Object.entries(
+                      dummyData?.discoveredLicenseTrace?.traces[
+                        dummyData?.discoveredLicenseTrace.traces.length - 1
+                      ]?.matches || {}
+                    )
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([name, conf]) => {
+                        return (
+                          <option value={name}>
+                            {name} - {conf}% confidence
+                          </option>
+                        );
+                      })}
                   </Form.Select>
                 </Stack>
               </h5>
-              <h5>Confidence: 100</h5>
+              {/* <h5>Confidence: 100</h5>
               <h5>
                 Source:{" "}
                 <a
                   className="txt-blue"
                   href="https://github.com/whichlicense/license-detection/blob/main/LICENSE"
                 >
-                  github.com/whichlicense/
+                  {}
                 </a>
-              </h5>
+              </h5> */}
             </RegularCard>
           </Col>
           <Col xs={6}>
-            <RegularCard
-              title="Custom notes"
-              minHeight="20vh"
-              maxHeight="20vh"
-            >
+            <RegularCard title="Custom notes" minHeight="20vh" maxHeight="20vh">
               <textarea
                 // defaultValue={customNotes}
                 className="w-100 bg-transparent border-0 rounded txt-white"
@@ -209,25 +233,62 @@ export default function ScanResult() {
           </Col>
 
           <Col xs={4}>
-            <RegularCard title={"Permissions"} minHeight="20vh" maxHeight="20vh">
+            <RegularCard
+              title={"Permissions"}
+              minHeight="20vh"
+              maxHeight="20vh"
+            >
+              <>
+                {licenseInfo?.permissions.map((perm) => {
+                  return (
+                    <Badge bg="green" className="m-1 txt-dark-1">
+                      {perm}
+                    </Badge>
+                  );
+                })}
+              </>
             </RegularCard>
           </Col>
 
           <Col xs={4}>
-            <RegularCard title={"Limitations"} minHeight="20vh" maxHeight="20vh">
+            <RegularCard
+              title={"Limitations"}
+              minHeight="20vh"
+              maxHeight="20vh"
+            >
+              <>
+                {licenseInfo?.limitations.map((perm) => {
+                  return (
+                    <Badge bg="red" className="m-1 txt-dark-1">
+                      {perm}
+                    </Badge>
+                  );
+                })}
+              </>
             </RegularCard>
           </Col>
 
           <Col xs={4}>
             <RegularCard title={"Conditions"} minHeight="20vh" maxHeight="20vh">
+              <>
+                {licenseInfo?.conditions.map((perm) => {
+                  return (
+                    <Badge bg="yellow" className="m-1 txt-dark-1">
+                      {perm}
+                    </Badge>
+                  );
+                })}
+              </>
             </RegularCard>
           </Col>
 
           <Col xs={12}>
             <RegularCard title={"License difference view"} minHeight="50vh">
               <ReactDiffViewer
-                oldValue={LICENSE_1}
-                newValue={LICENSE_2}
+                oldValue={
+                  dummyData?.discoveredLicenseTrace?.input || "NOT FOUND"
+                }
+                newValue={licenseInfo?.body || "NOT FOUND"}
                 splitView={true}
                 useDarkTheme
               />
@@ -235,21 +296,35 @@ export default function ScanResult() {
           </Col>
         </Row>
       </InlineCard>
-{/* TODO: where did we get this license? whats our source? */}
-              {/* TODO: what about multiple licenses? Some projects allow you to choose..
+      {/* TODO: where did we get this license? whats our source? */}
+      {/* TODO: what about multiple licenses? Some projects allow you to choose..
                 we will need to allow someone to resolve (or choose) one or all? */}
       <Row>
         <Col md={8}>
           <h1 className="display-5 text-truncate">{dummyData?.name}</h1>
         </Col>
         <Col md={4}>
-        <Stack direction="vertical">
+          <Stack direction="vertical">
             <h3 className="display-6 text-end mb-0 text-truncate">
-              {dummyData?.license || "No license found"}
-              <i className="ps-2 align-middle h6 bi bi-info-circle opacity-75"></i>
+              {dummyData?.discoveredLicenseTrace.license ||
+                dummyData?.declaredLicense ||
+                "No license found"}
+              {licenseInfo && (
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href={licenseInfo?.html_url}
+                  id="license_info_link"
+                >
+                  <i className="ps-2 align-middle h6 bi bi-info-circle opacity-75"></i>
+                </a>
+              )}
             </h3>
             <span className="opacity-75 text-end">
-              Confidence: <span className="txt-green">100%</span>
+              Confidence:{" "}
+              <span className="txt-green">
+                {dummyData?.discoveredLicenseTrace.confidence}
+              </span>
             </span>
           </Stack>
         </Col>
@@ -276,15 +351,20 @@ export default function ScanResult() {
         <Col xs={12}>
           <RegularCard minHeight="50vh" title={"Dependencies"} fadeIn>
             <DependencyList
-              dependencies={(dummyData?.directDependencies || []).map((dep)=>{
-                return {
-                  name: dep.name,
-                  version: dep.version,
-                  license: dep.license,
-                  compliance: ComplianceStatus.UNKNOWN,
-                  link: `/scan-result/${dep.name.replaceAll("/", "_")}`
-                }
-              })}
+              dependencies={(
+                Object.entries(dummyData?.dependencies || {}) || []
+              )
+                .filter((e) => e[1].kind === "DIRECT")
+                .map(([depName, depInfo]) => {
+                  return {
+                    name: depName,
+                    version: depInfo.version,
+                    // TODO: change me to actual license
+                    license: null,
+                    compliance: ComplianceStatus.UNKNOWN,
+                    link: `/scan-result/${depInfo.scans[depInfo.version]}`,
+                  };
+                })}
             />
           </RegularCard>
         </Col>

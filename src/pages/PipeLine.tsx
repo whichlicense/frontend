@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { Button, Col, Form, Row, Stack } from "react-bootstrap";
+import { Button, ButtonGroup, Col, Form, Row, Stack } from "react-bootstrap";
 import RegularCard from "../components/Cards/RegularCard";
 import SectionHeading from "../components/Typography/SectionHeading";
 import { ArcherContainer, ArcherElement } from "react-archer";
@@ -29,18 +29,31 @@ import { useToolBar } from "../components/Hooks/useToolBar";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { InlineCard } from "../components/Modals/InlineCard";
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useStatefulLinkedList } from "../components/Hooks/useStateFulLinkedList";
+import { useProviderContext } from "../context/ProviderContext";
+import {
+  TPipelineStep,
+  TPipelineTestOptions,
+  TPipelineTestResultsOut,
+  TPipelineTrace,
+} from "../types/pipeline";
+import { toastError } from "../components/utils/toasting";
 
 enum EPipelineType {
-  REMOVE,
-  REPLACE,
-  BATCH,
+  REMOVE = "remove",
+  REPLACE = "replace",
+  BATCH = "batch",
+}
+enum EPipelineUsing {
+  TEXT = "text",
+  REGEX = "pattern",
 }
 
 type TPipeLineShared = {
   id: string;
   ran: boolean;
+  results?: TPipelineTrace;
 };
 
 type TPipeLine = TPipeLineShared &
@@ -48,9 +61,13 @@ type TPipeLine = TPipeLineShared &
     | {
         type: EPipelineType.REMOVE;
         v: string;
+        using: EPipelineUsing;
       }
     | {
         type: EPipelineType.REPLACE;
+        using: EPipelineUsing;
+        v: string;
+        replaceWith: string;
       }
     | {
         type: EPipelineType.BATCH;
@@ -83,82 +100,33 @@ export default function PipeLine() {
       type: ToolBarItemType.BUTTON,
       title: "Test",
       icon: "bi bi-file-play",
-      onClick() {},
+      onClick() {
+        setShowTestPipelineCard(true);
+      },
     },
   ]);
+
+  const { provider } = useProviderContext();
+
+  const [showTestPipelineCard, setShowTestPipelineCard] = useState(false);
+  const [testLicense, setTestLicense] = useState("");
+  const [testAlgorithm, setTestAlgorithm] = useState("fuzzy");
+
+  const [desiredConfidence, setDesiredConfidence] = useState(100);
 
   const [showAddPipeSegment, setShowAddPipeSegment] = useState(false);
   const [selectedPipeSegment, setSelectedPipeSegment] =
     useState<DoublyLinkedListNode<TPipeLine> | null>(null);
+  const [addBefore, setAddBefore] = useState(true);
 
   const pipeline = useStatefulLinkedList<TPipeLine>(
-    new DoublyLinkedList<TPipeLine>([
-      {
-        id: "1",
-        type: EPipelineType.REMOVE,
-        ran: false,
-        v: "/test/g"
-      },
-      {
-        id: "2",
-        type: EPipelineType.REMOVE,
-        ran: false,
-        v: "/test/g"
-      },
-      {
-        id: "3",
-        type: EPipelineType.REPLACE,
-        ran: false,
-      },
-      {
-        id: "4",
-        type: EPipelineType.REMOVE,
-        ran: false,
-        v: "/test/g"
-      },
-      {
-        id: "5",
-        type: EPipelineType.BATCH,
-        ran: false,
-        nested_pipeline: new DoublyLinkedList<TPipeLine>([
-          {
-            id: "5.1",
-            type: EPipelineType.REMOVE,
-            ran: false,
-            v: "/test/g"
-          },
-          {
-            id: "5.2",
-            type: EPipelineType.REMOVE,
-            ran: false,
-            v: "/test/g"
-          },
-          {
-            id: "5.3",
-            type: EPipelineType.REPLACE,
-            ran: false,
-          },
-          {
-            id: "5.4",
-            type: EPipelineType.REMOVE,
-            ran: false,
-            v: "/test/g"
-          },
-        ]),
-      },
-      {
-        id: "6",
-        type: EPipelineType.REPLACE,
-        ran: false,
-      },
-      {
-        id: "7",
-        type: EPipelineType.REMOVE,
-        ran: false,
-        v: "/test/g"
-      },
-    ])
+    new DoublyLinkedList<TPipeLine>([])
   );
+  const [selectedPipeline, setSelectedPipeline] =
+    useState<DoublyLinkedList<TPipeLine>>(pipeline);
+
+  const [pipelineTestResults, setPipelineTestResults] =
+    useState<TPipelineTestResultsOut | null>(null);
 
   const arrowRelationship = (
     current_item: DoublyLinkedListNode<TPipeLine>,
@@ -203,7 +171,9 @@ export default function PipeLine() {
                   className="rounded-5"
                   onClick={() => {
                     setSelectedPipeSegment(pipeline_entry);
+                    setSelectedPipeline(pipeline);
                     setShowAddPipeSegment(true);
+                    setAddBefore(true);
                   }}
                 >
                   <i className="bi bi-plus-circle-fill txt-blue"></i>
@@ -214,6 +184,35 @@ export default function PipeLine() {
 
           {children}
         </>
+      );
+    };
+
+    const renderStepResultInformation = (item: TPipelineTrace | undefined) => {
+      if (!item) return null;
+
+      const topLicense = Object.entries(item.matches).sort(
+        ([, confidence1], [, confidence2]) => confidence2 - confidence1
+      )[0];
+      return (
+        <Stack>
+          <hr />
+          <p>
+            {Object.keys(item.matches).length > 0 ? (
+              <>
+                Segment top license:{" "}
+                <span className="bg-grey rounded txt-white px-2">
+                  {topLicense[0]}
+                </span>{" "}
+                with a confidence of{" "}
+                <span className="bg-grey rounded txt-white px-2">
+                  {topLicense[1]}%
+                </span>
+              </>
+            ) : (
+              "No license detected"
+            )}
+          </p>
+        </Stack>
       );
     };
 
@@ -236,22 +235,49 @@ export default function PipeLine() {
                   icon="bi bi-x-circle-fill"
                   iconClass="txt-red float-end"
                   bg={opts.bg}
+                  onIconClick={() => {
+                    pipeline.remove(pipeline_entry);
+                    window.dispatchEvent(new Event("ll-update"));
+                  }}
                 >
-                  <Row xs={1} md={2}>
-                    <Col>
-                      <Form.Select className="bg-dark-1 txt-white">
-                        <option value="1">Using Regex</option>
-                        <option value="2">Using Text</option>
-                      </Form.Select>
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        className="bg-dark-1 txt-white"
-                        placeholder="Your regex here"
-                        value={pipeline_entry.value.v}
-                      />
-                    </Col>
-                  </Row>
+                  <Stack>
+                    <Row xs={1} md={2}>
+                      <Col>
+                        <Form.Select
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            (pipeline_entry.value as any).using = e.target
+                              .value as EPipelineUsing;
+                            window.dispatchEvent(new Event("ll-update"));
+                          }}
+                          className="bg-dark-1 txt-white"
+                        >
+                          <option value={EPipelineUsing.REGEX}>
+                            Using Regex
+                          </option>
+                          <option value={EPipelineUsing.TEXT}>
+                            Using Text
+                          </option>
+                        </Form.Select>
+                      </Col>
+                      <Col>
+                        <Form.Control
+                          className="bg-dark-1 txt-white"
+                          placeholder={`Enter ${
+                            pipeline_entry.value.using === EPipelineUsing.REGEX
+                              ? "regex"
+                              : "text"
+                          } here`}
+                          value={pipeline_entry.value.v}
+                          onChange={(e) => {
+                            (pipeline_entry.value as any).v = e.target.value;
+                            window.dispatchEvent(new Event("ll-update"));
+                          }}
+                        />
+                      </Col>
+                    </Row>
+                    {renderStepResultInformation(pipeline_entry.value.results)}
+                  </Stack>
                 </RegularCard>
               </div>
             </ArcherElement>
@@ -276,28 +302,61 @@ export default function PipeLine() {
                   icon="bi bi-x-circle-fill"
                   iconClass="txt-red float-end"
                   bg={opts.bg}
+                  onIconClick={() => {
+                    pipeline.remove(pipeline_entry);
+                    window.dispatchEvent(new Event("ll-update"));
+                  }}
                 >
-                  <Row xs={1} md={3}>
-                    <Col>
-                      <Form.Select className="bg-dark-1 txt-white">
-                        <option value="1">Using Regex</option>
-                        <option value="2">Using Text</option>
-                      </Form.Select>
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        className="bg-dark-1 txt-white"
-                        placeholder="Your regex here"
-                      />
-                    </Col>
+                  <Stack>
+                    <Row xs={1} md={3}>
+                      <Col>
+                        <Form.Select
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            (pipeline_entry.value as any).using = e.target
+                              .value as EPipelineUsing;
+                            window.dispatchEvent(new Event("ll-update"));
+                          }}
+                          className="bg-dark-1 txt-white"
+                        >
+                          <option value={EPipelineUsing.REGEX}>
+                            Using Regex
+                          </option>
+                          <option value={EPipelineUsing.TEXT}>
+                            Using Text
+                          </option>
+                        </Form.Select>
+                      </Col>
+                      <Col>
+                        <Form.Control
+                          className="bg-dark-1 txt-white"
+                          placeholder={`Enter ${
+                            pipeline_entry.value.using === EPipelineUsing.REGEX
+                              ? "regex"
+                              : "text"
+                          } here`}
+                          value={pipeline_entry.value.v}
+                          onChange={(e) => {
+                            (pipeline_entry.value as any).v = e.target.value;
+                            window.dispatchEvent(new Event("ll-update"));
+                          }}
+                        />
+                      </Col>
 
-                    <Col>
-                      <Form.Control
-                        className="bg-dark-1 txt-white"
-                        placeholder="Your replacement here"
-                      />
-                    </Col>
-                  </Row>
+                      <Col>
+                        <Form.Control
+                          className="bg-dark-1 txt-white"
+                          placeholder="Your replacement text here"
+                          defaultValue={pipeline_entry.value.replaceWith}
+                          onChange={(e) => {
+                            (pipeline_entry.value as any).replaceWith =
+                              e.target.value;
+                          }}
+                        />
+                      </Col>
+                    </Row>
+                    {renderStepResultInformation(pipeline_entry.value.results)}
+                  </Stack>
                 </RegularCard>
               </div>
             </ArcherElement>
@@ -322,20 +381,66 @@ export default function PipeLine() {
                   icon="bi bi-x-circle-fill"
                   iconClass="txt-red float-end"
                   bg={opts.bg}
+                  onIconClick={() => {
+                    pipeline.remove(pipeline_entry);
+                    window.dispatchEvent(new Event("ll-update"));
+                  }}
                 >
-                  <ArcherContainer>
-                    <div>
-                      <Row className="g-5">
-                        {pipeline_entry.value.nested_pipeline.map(
-                          (nested_entry) =>
-                            renderPipeLine(nested_entry, {
-                              ...opts,
-                              bg: "bg-dark-2",
-                            })
-                        )}
-                      </Row>
-                    </div>
-                  </ArcherContainer>
+                  <Stack>
+                    <ArcherContainer>
+                      <div>
+                        <Row className="g-5">
+                          {pipeline_entry.value.nested_pipeline.map(
+                            (nested_entry) =>
+                              renderPipeLine(
+                                nested_entry,
+                                {
+                                  ...opts,
+                                  bg: "bg-dark-2",
+                                },
+                                [
+                                  {
+                                    targetId: "",
+                                    sourceAnchor: "bottom", // from this element's X
+                                    targetAnchor: "top", // to the other element's X
+                                    style: {
+                                      strokeColor: "color(--color-grey)",
+                                      strokeDasharray: "0",
+                                    },
+                                  },
+                                ]
+                              )
+                          )}
+
+                          <Col xs={12}>
+                            <div className="position-relative">
+                              <div className="position-absolute start-50 translate-middle">
+                                <Button
+                                  className="rounded-5"
+                                  onClick={() => {
+                                    setSelectedPipeSegment(
+                                      (
+                                        pipeline_entry.value as any
+                                      ).nested_pipeline.getTail()
+                                    );
+                                    setSelectedPipeline(
+                                      (pipeline_entry.value as any)
+                                        .nested_pipeline
+                                    );
+                                    setShowAddPipeSegment(true);
+                                    setAddBefore(false);
+                                  }}
+                                >
+                                  <i className="bi bi-plus-circle-fill txt-blue"></i>
+                                </Button>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </ArcherContainer>
+                    {renderStepResultInformation(pipeline_entry.value.results)}
+                  </Stack>
                 </RegularCard>
               </div>
             </ArcherElement>
@@ -343,6 +448,109 @@ export default function PipeLine() {
         );
       }
     }
+  };
+
+  const addToPipeline = (
+    pipeline: DoublyLinkedList<TPipeLine>,
+    current: DoublyLinkedListNode<TPipeLine> | null,
+    toAdd: TPipeLine,
+    addBefore: boolean
+  ) => {
+    if (pipeline.getSize() === 0) {
+      pipeline.add(toAdd);
+      return;
+    }
+
+    if (pipeline.getHead() === current!) {
+      if (addBefore) {
+        pipeline.insertBefore(pipeline.getHead()!, toAdd);
+      } else {
+        pipeline.insertAfter(pipeline.getHead()!, toAdd);
+      }
+    } else {
+      if (addBefore) {
+        pipeline.insertBefore(current!, toAdd);
+      } else {
+        pipeline.insertAfter(current!, toAdd);
+      }
+    }
+
+    window.dispatchEvent(new Event("ll-update"));
+  };
+
+  const mapPipelineToRequest = (
+    p: DoublyLinkedList<TPipeLine>
+  ): TPipelineStep[] => {
+    const pipelineItems: TPipelineStep[] = p
+      .map(({ value }) => {
+        switch (value.type) {
+          case EPipelineType.REPLACE: {
+            return {
+              operation: value.type,
+              parameters: {
+                [value.using]: value.v,
+                replacement: value.replaceWith,
+              },
+            };
+          }
+          case EPipelineType.REMOVE: {
+            return {
+              operation: value.type,
+              parameters: {
+                [value.using]: value.v,
+              },
+            };
+          }
+
+          case EPipelineType.BATCH: {
+            return {
+              operation: value.type,
+              parameters: {
+                steps: mapPipelineToRequest(value.nested_pipeline),
+              },
+            };
+          }
+          default: {
+            toastError("Unknown pipeline type", "");
+            return null;
+          }
+        }
+      })
+      .filter((v) => v !== null) as TPipelineStep[];
+
+    return pipelineItems;
+  };
+
+  const testPipeLine = (opts: TPipelineTestOptions) => {
+    provider.testPipeline(opts).then((res) => {
+      setPipelineTestResults(res);
+
+      // go over each result step and set the "ran" flag on the pipeline entry to true if ran
+      pipeline.forEach((e, idx) => {
+        idx += 1; // since the first element is always the initial run, which is not in our pipeline steps, we skip it
+        if (res.traces[idx] && res.traces[idx].terminated) {
+          e.value.ran = true;
+          e.value.results = res.traces[idx];
+        }
+      });
+
+      window.dispatchEvent(new Event("ll-update"));
+
+      return res;
+    });
+  };
+
+  const topMatch = (v: Record<string, number>) => {
+    return Object.entries(v).reduce(
+      (acc, [k, v]) => {
+        if (v > acc[1]) {
+          return [k, v];
+        }
+
+        return acc;
+      },
+      ["", 0]
+    );
   };
 
   return (
@@ -363,7 +571,9 @@ export default function PipeLine() {
                 targetAnchor: "top",
                 sourceAnchor: "bottom",
                 style: {
-                  strokeColor: "var(--color-red)",
+                  strokeColor: pipeline.getHead()?.value.ran
+                    ? "var(--color-green)"
+                    : "var(--color-red)",
                   strokeDasharray: pipeline.getHead()?.value.ran ? "0" : "5,5",
                 },
               },
@@ -372,24 +582,158 @@ export default function PipeLine() {
             <div>
               <RegularCard bg="bg-dark" minHeight="100%" maxHeight="100%">
                 <>
-                  <Row>
-                    <Col md={"auto"}>
-                      <Form.Label>Confidence threshold</Form.Label>
-                    </Col>
-                    <Col>
-                      <Form.Range min={0} max={100} step={0.5} />
-                    </Col>
-                  </Row>
+                  <Stack>
+                    <Row>
+                      <Col md={"auto"}>
+                        <Form.Label>
+                          Desired confidence ({desiredConfidence.toFixed(1)}%)
+                        </Form.Label>
+                      </Col>
+                      <Col>
+                        <Form.Range
+                          defaultValue={desiredConfidence}
+                          min={0}
+                          max={100}
+                          step={0.5}
+                          onChange={(e) => {
+                            setDesiredConfidence(parseFloat(e.target.value));
+                          }}
+                        />
+                      </Col>
+                    </Row>
+
+                    {pipelineTestResults && (
+                      <Stack>
+                        <hr />
+                        <p>
+                          Pipeline ran using{" "}
+                          <span className="bg-grey rounded txt-white px-2">
+                            {pipelineTestResults.algorithm}
+                          </span>{" "}
+                          algorithm
+                        </p>
+                        <p
+                          className={
+                            pipelineTestResults.traces.length > 0 &&
+                            Object.keys(pipelineTestResults.traces[0].matches)
+                              .length > 0
+                              ? "txt-green"
+                              : "txt-red"
+                          }
+                        >
+                          {" "}
+                          {pipelineTestResults.traces.length > 0 &&
+                          Object.keys(pipelineTestResults.traces[0].matches)
+                            .length > 0 ? (
+                            <>
+                              Resulting top license:{" "}
+                              <span className="bg-grey rounded txt-white px-2">
+                                {
+                                  topMatch(
+                                    pipelineTestResults.traces[pipelineTestResults.traces.length-1].matches
+                                  )[0]
+                                }
+                              </span>{" "}
+                              with a confidence of{" "}
+                              <span className="bg-grey rounded txt-white px-2">
+                                {
+                                  topMatch(
+                                    pipelineTestResults.traces[pipelineTestResults.traces.length-1].matches
+                                  )[1]
+                                }
+                                %
+                              </span>
+                            </>
+                          ) : (
+                            "No license detected"
+                          )}
+                        </p>
+                      </Stack>
+                    )}
+                  </Stack>
                 </>
               </RegularCard>
             </div>
           </ArcherElement>
 
           <Row className="g-5">
-            {pipeline.map((entry) => renderPipeLine(entry))}
+            {pipeline.map((entry, idx) => renderPipeLine(entry))}
+
+            <Col xs={12}>
+              <div className="position-relative">
+                <div className="position-absolute start-50 translate-middle">
+                  <Button
+                    className="rounded-5"
+                    onClick={() => {
+                      setSelectedPipeSegment(pipeline.getTail());
+                      setSelectedPipeline(pipeline);
+                      setShowAddPipeSegment(true);
+                      setAddBefore(false);
+                    }}
+                  >
+                    <i className="bi bi-plus-circle-fill txt-blue"></i>
+                  </Button>
+                </div>
+              </div>
+            </Col>
           </Row>
         </Stack>
       </ArcherContainer>
+
+      <InlineCard
+        show={showTestPipelineCard}
+        handleClose={() => setShowTestPipelineCard(false)}
+      >
+        <Stack direction="vertical">
+          <textarea
+            value={testLicense}
+            className="w-100 bg-dark-1 txt-white rounded"
+            rows={10}
+            onChange={(e) => {
+              setTestLicense(e.target.value);
+            }}
+            placeholder="Your license text goes here"
+          ></textarea>
+          <br />
+          <Stack direction="horizontal" gap={3}>
+            <Form.Select
+              onChange={(e) => {
+                setTestAlgorithm(e.target.value);
+              }}
+              defaultValue={testAlgorithm}
+              className="w-50 bg-dark-1 txt-white"
+            >
+              <option value="fuzzy">Fuzzy detection algorithm</option>
+              <option value="gaoya">Gaoya detection algorithm</option>
+            </Form.Select>
+
+            <Button
+              className="bg-blue"
+              onClick={() => {
+                console.log("testPipeline", testAlgorithm, testLicense);
+                testPipeLine({
+                  algorithm: testAlgorithm,
+                  license: testLicense,
+                  pipeline: {
+                    threshold: desiredConfidence,
+                    name: "Test pipeline",
+                    steps: mapPipelineToRequest(pipeline),
+                  },
+                });
+                setShowTestPipelineCard(false);
+              }}
+            >
+              Start test
+            </Button>
+            <Button
+              className="bg-red txt-dark-1"
+              onClick={() => setShowTestPipelineCard(false)}
+            >
+              Cancel
+            </Button>
+          </Stack>
+        </Stack>
+      </InlineCard>
 
       <InlineCard
         show={showAddPipeSegment}
@@ -410,17 +754,18 @@ export default function PipeLine() {
                     type: EPipelineType.REMOVE,
                     id: uuidv4(),
                     ran: false,
-                    v: new RegExp(/([\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6})/).toString()
+                    v: new RegExp(
+                      /([\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6})/
+                    ).toString(),
+                    using: EPipelineUsing.REGEX,
                   };
-                  if (pipeline.getHead() === null) {
-                    pipeline.add(toAdd);
-                  } else {
-                    pipeline.insertAfter(
-                      selectedPipeSegment?.prev || pipeline.getHead()!,
-                      toAdd
-                    );
-                  }
 
+                  addToPipeline(
+                    selectedPipeline,
+                    selectedPipeSegment!,
+                    toAdd,
+                    addBefore
+                  );
                   setShowAddPipeSegment(false);
                 }}
               >
@@ -465,23 +810,96 @@ export default function PipeLine() {
             </Col>
           </Row>
 
-          <SectionHeading title={"Manual"} type="display" size={"5"} divider />
+          <SectionHeading
+            title={"Specific"}
+            type="display"
+            size={"5"}
+            divider
+          />
           <br />
-          <Row xs={1} md={2} lg={3}>
+          <Row xs={1} md={3} lg={4}>
             <Col>
-              <Form.Select className="bg-dark-2 txt-white">
-                <option value="1">Regex remove</option>
-                <option value="2">Regex replace</option>
-                <option value="3">Text remove</option>
-                <option value="3">Text replace</option>
-              </Form.Select>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {
+                  const toAdd: TPipeLine = {
+                    type: EPipelineType.REPLACE,
+                    id: uuidv4(),
+                    ran: false,
+                    v: "",
+                    replaceWith: "",
+                    using: EPipelineUsing.TEXT,
+                  };
+
+                  addToPipeline(
+                    selectedPipeline,
+                    selectedPipeSegment!,
+                    toAdd,
+                    addBefore
+                  );
+                  setShowAddPipeSegment(false);
+                }}
+              >
+                Replace instruction
+              </RegularCard>
             </Col>
 
             <Col>
-              <Form.Control
-                className="bg-dark-2 txt-white"
-                placeholder="Your regex here"
-              />
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {
+                  const toAdd: TPipeLine = {
+                    type: EPipelineType.REMOVE,
+                    id: uuidv4(),
+                    ran: false,
+                    v: "",
+                    using: EPipelineUsing.TEXT,
+                  };
+
+                  addToPipeline(
+                    selectedPipeline,
+                    selectedPipeSegment!,
+                    toAdd,
+                    addBefore
+                  );
+                  setShowAddPipeSegment(false);
+                }}
+              >
+                Remove instruction
+              </RegularCard>
+            </Col>
+
+            <Col>
+              <RegularCard
+                className="clickable"
+                height="100px"
+                overflowY="hidden"
+                bg="bg-dark-2"
+                onCardClick={() => {
+                  const toAdd: TPipeLine = {
+                    type: EPipelineType.BATCH,
+                    id: uuidv4(),
+                    ran: false,
+                    nested_pipeline: new DoublyLinkedList<TPipeLine>(),
+                  };
+
+                  addToPipeline(
+                    selectedPipeline,
+                    selectedPipeSegment!,
+                    toAdd,
+                    addBefore
+                  );
+                  setShowAddPipeSegment(false);
+                }}
+              >
+                Batch instruction
+              </RegularCard>
             </Col>
           </Row>
         </>

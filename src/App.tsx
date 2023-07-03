@@ -114,7 +114,7 @@ function App() {
                             <Route path="/settings" element={<Settings />} />
                             <Route path="/payment" element={<Payment />} />
                             <Route
-                              path="/export-view"
+                              path="/export-view/:id"
                               element={<ExportView />}
                             />
                             <Route path="/test" element={<Test />} />

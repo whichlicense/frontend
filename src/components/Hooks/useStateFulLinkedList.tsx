@@ -17,12 +17,14 @@
 
 import { useState, useEffect } from "react";
 import { DoublyLinkedList } from "../utils/LinkedList";
+import { useEffectOnce } from "../utils/useEffectOnce";
 
 export function useStatefulLinkedList<T>(ll: DoublyLinkedList<T>) {
     const [dll, setDll] = useState(ll);
   
     useEffect(() => {
       const handleListChange = () => {
+        alert("ll changed");
         setDll((prev)=>{
           return new DoublyLinkedList<T>(prev.toArray());
         })
@@ -34,6 +36,19 @@ export function useStatefulLinkedList<T>(ll: DoublyLinkedList<T>) {
         ll.updateCallback = ()=>{}; // Clean up the updateCallback when the component unmounts
       };
     }, [ll]);
+
+    useEffectOnce(()=>{
+      const handleListChange = () => {
+        setDll((prev)=>{
+          return new DoublyLinkedList<T>(prev.toArray());
+        })
+      }
+      window.addEventListener("ll-update",handleListChange)
+
+      return () => {
+        window.removeEventListener("ll-update",handleListChange);
+      }
+    });
   
     return dll;
   }

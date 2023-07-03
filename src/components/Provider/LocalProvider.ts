@@ -21,6 +21,8 @@ import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply,
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 import { TScanInitiationOptions } from "../typings/Scan";
 import { ESignalType, Provider } from "./Provider";
+import { TDiscoverOut, TScannedDependenciesOut } from "../../types/discover";
+import { TPipelineTestOptions, TPipelineTestResultsOut } from "../../types/pipeline";
 
 // TODO: remove me when real endpoints/data are available
 export type orNull<T> = T | null;
@@ -60,84 +62,47 @@ export type TDummyData = {
  */
 export class LocalProvider extends Provider {
     // TODO: when wrapper is available, we can assume that all scans are from the local provider
-    private scans: any[] = [];
+    private scans: string[] = [];
 
-    getAllScannedDependencies(): Promise<any[]> {
-        // TODO: Implement
-        const dummyData = this.scans as TDummyData[];
-        const dependenciesFlattened: (TDummyData["transitiveDependencies"]) = [];
-        for (const scan of dummyData) {
-            dependenciesFlattened.push(...scan.directDependencies);
-            dependenciesFlattened.push(...scan.transitiveDependencies);
-            dependenciesFlattened.push(
-                {
-                    name: scan.name,
-                    version: scan.version,
-                    license: scan.license,
-                    scope: "",
-                    ecosystem: scan.ecosystems[0],
-                    directDependencies: scan.directDependencies.reduce((acc, dependency) => {
-                        acc[dependency.name] = dependency.version;
-                        return acc;
-                    }, {} as { [dependencyName: string]: string })
-                }
-            )
-        }
-        return Promise.resolve(dependenciesFlattened);
+    getAllScannedDependencies(): Promise<TScannedDependenciesOut[]> {
+        return axios.get(`${Provider.constructUrlBase({...this.options, port: 8085})}/cache/all?latest=true`)
+            .then((res) => res.data);
     }
-    getPersonalScans(): Promise<any[]> {
-        // TODO: Implement
-        return Promise.resolve(this.scans);
+    getPersonalScans(): Promise<TDiscoverOut[]> {
+        return axios.post(`${Provider.constructUrlBase({
+            ...this.options,
+            port: 8085
+        })}/cache/scans`, this.scans).then((res) => res.data);
     }
-    getScan(id: string): Promise<any> {
+
+    // TODO: getDependencyVersions (based on a dependency, get all versions of said dependency)
+    // TODO: test pipeline endpoint that takes in license text.. will return results of the pipeline
+    // TODO: endpoint to accept,reject, etc -> to a package
+
+    testPipeline(opts: TPipelineTestOptions): Promise<TPipelineTestResultsOut> {
+        return axios.post(`${Provider.constructUrlBase({
+            ...this.options,
+            port: 8083
+        })}/identify`, opts).then((res) => res.data);
+    }
+
+
+    getScan(id: number | string, transitives: boolean = false): Promise<TDiscoverOut> {
         // TODO: Implement with real endpoint instead of this "patch"
 
-        const dummyData = this.scans as TDummyData[];
-        const dependenciesFlattened: (TDummyData["transitiveDependencies"]) = [];
-        for (const scan of dummyData) {
-            dependenciesFlattened.push(...scan.directDependencies);
-            dependenciesFlattened.push(...scan.transitiveDependencies);
-            dependenciesFlattened.push(
-                {
-                    name: scan.name,
-                    version: scan.version,
-                    license: scan.license,
-                    scope: "",
-                    ecosystem: scan.ecosystems[0],
-                    directDependencies: scan.directDependencies.reduce((acc, dependency) => {
-                        acc[dependency.name] = dependency.version;
-                        return acc;
-                    }, {} as { [dependencyName: string]: string })
-                }
-            )
-        }
+        return axios.post(`${Provider.constructUrlBase({
+            ...this.options,
+            port: 8085
+        })}/cache/scans?transitive=${transitives}`, [id]).then((res) => res.data[0]);
+    }
 
-        const findDependency = (id: string) => {
-            return dependenciesFlattened.find((dependency) => dependency.name === id)
-        }
+    getScans(ids: string[], transitives: boolean = false): Promise<TDiscoverOut[]> {
+        // TODO: Implement with real endpoint instead of this "patch"
 
-        const requestedScan = findDependency(id.replaceAll("_", "/"));
-        if (!requestedScan) {
-            return Promise.reject("Scan not found");
-        }
-
-
-        (requestedScan!.directDependencies as unknown as TDummyData["transitiveDependencies"]) =
-            (Object.keys(requestedScan!.directDependencies)
-                .map((depName) => {
-                    const dep = findDependency(depName);
-                    if (dep) {
-                        return {
-                            name: depName,
-                            version: dep.version,
-                            license: dep.license,
-                        };
-                    }
-                    return undefined
-                }) as unknown as TDummyData["transitiveDependencies"])
-                .filter((dep) => dep !== undefined);
-
-        return Promise.resolve(requestedScan);
+        return axios.post(`${Provider.constructUrlBase({
+            ...this.options,
+            port: 8085
+        })}/cache/scans?transitive=${transitives}`, ids).then((res) => res.data);
     }
 
     me(): Promise<TMeReply | null> {
@@ -210,24 +175,28 @@ export class LocalProvider extends Provider {
         return AccountType.ALL;
     }
 
+    // TODO: pass in optional pipeline to use.. store pipeline in indexDB.. allow users to select when calling discover
     initiateScan(options: TScanInitiationOptions): Promise<void> {
         // TODO: implement me when local API wrapper is ready
         // throw new Error("Method not implemented.");
-        return axios.post(`${Provider.constructUrlBase(this.options)}/discover`, options).then((res) => {
+        return axios.post(`${Provider.constructUrlBase({
+            ...this.options,
+            port: 8082
+        })}/discover`, options).then((res) => {
             this.scans.push(res.data);
-            this.signalSocket.dispatchEvent(new MessageEvent("message", {
-                data: JSON.stringify({
-                    type: ESignalType.SCAN_FINISHED,
-                })
-            }));
-            this.signalSocket.dispatchEvent(new MessageEvent("message", {
-                data: JSON.stringify({
-                    type: ESignalType.NOTIFICATION,
-                    data: {
-                        message: "Scan finished",
-                    }
-                })
-            }));
+            // this.signalSocket.dispatchEvent(new MessageEvent("message", {
+            //     data: JSON.stringify({
+            //         type: ESignalType.SCAN_FINISHED,
+            //     })
+            // }));
+            // this.signalSocket.dispatchEvent(new MessageEvent("message", {
+            //     data: JSON.stringify({
+            //         type: ESignalType.NOTIFICATION,
+            //         data: {
+            //             message: "Scan finished",
+            //         }
+            //     })
+            // }));
         })
     }
 }

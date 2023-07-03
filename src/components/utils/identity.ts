@@ -15,17 +15,12 @@
  *   limitations under the License.
  */
 
-import { useToolBar } from "../components/Hooks/useToolBar";
-
-export default function Scans() {
-    useToolBar([])
-
-    // TODO: use the scans component used in the dashboard here.. adjust the component to be able to optionally add more elements to the table
-    // or to remove items from said table. we can use the deepkeyof type to select elements from the underlying object and pass
-    // them as an array to the scans component which should facilitate selecting which elements to show in the table.
-    return (
-        <div>
-            <p>Coming soon</p>
-        </div>
-    );
+export function milliseconds(identity: bigint): number {
+    return Number((identity >> 23n) & ((1n << 41n) - 1n));
+}
+export function fromHex(identity: string): bigint {
+    return BigInt('0x' + identity);
+}
+export function time(identity: bigint): Date {
+    return new Date(milliseconds(identity) + 1680979723157);
 }

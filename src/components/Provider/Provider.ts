@@ -23,6 +23,8 @@ import { AccountType, TAccountDomain, TAddSubAccountBody, TLoginReply, TMeReply,
 import { TUser } from "../../context/AuthContext";
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
 import { TLocaleMapping } from "../typings/locale";
+import { TDiscoverOut, TScannedDependenciesOut } from "../../types/discover";
+import { TPipelineTestOptions, TPipelineTestResultsOut } from "../../types/pipeline";
 
 export type ProviderOptions = {
     host: string;
@@ -45,19 +47,21 @@ export enum ESignalType {
 
 export type TSignalCallBack = (type: ESignalType, data: any) => void;
 
+
 /**
  * Represents a connection system towards a server.
  */
 export abstract class Provider {
     protected options: ProviderOptions;
-    protected signalSocket: WebSocket;
-    protected onSignal: Set<TSignalCallBack>;
+    public signalSocket: WebSocket;
+    public onSignal: Set<TSignalCallBack>;
     constructor(options: ProviderOptions) {
         this.options = options;
 
         const savedToken = localStorage.getItem("token");
 
-        this.signalSocket = new WebSocket(`${options.secure ? 'wss' : 'ws'}://${options.host}:${options.port}/socket/signals`);
+        // TODO: remove hardcoded port and stuff here when the microservices are under 1 port
+        this.signalSocket = new WebSocket(`${options.secure ? 'wss' : 'ws'}://${options.host}:${8084}/observed`);
 
         this.signalSocket.addEventListener("open", () => {
             console.log("Signal socket opened");
@@ -99,6 +103,8 @@ export abstract class Provider {
         })
     }
 
+    abstract testPipeline(opts: TPipelineTestOptions): Promise<TPipelineTestResultsOut>;
+
     /**
      * Is called when a new telemetry entry is created.
      * @param e The data of the new telemetry entry
@@ -111,15 +117,16 @@ export abstract class Provider {
     }
 
     // TODO: define type when available
-    abstract getScan(id: string): Promise<any>;
+    abstract getScan(id: number | string, transitives?: boolean): Promise<TDiscoverOut>;
+    abstract getScans(id: string[], transitives?: boolean): Promise<TDiscoverOut[]>;
     // TODO: define type when available
-    abstract getPersonalScans(): Promise<any[]>;
+    abstract getPersonalScans(): Promise<TDiscoverOut[]>;
     abstract initiateScan(options: TScanInitiationOptions): Promise<void>;
     // TODO: define type when available
     /**
      * Get all dependencies that have been scanned by the underlying provider, ever.
      */
-    abstract getAllScannedDependencies(): Promise<any[]>;
+    abstract getAllScannedDependencies(): Promise<TScannedDependenciesOut[]>;
 
     /**
      * Get the type of the logged in account.
@@ -152,7 +159,11 @@ export abstract class Provider {
                 return res.data;
             })
             .catch((err) => {
-                return "# No help available for this page.";
+                return axios.get(`${window.location.origin}/assets/help/${route}.md`).then((res) => {
+                    return res.data;
+                }).catch(()=>{
+                    return "# No help available for this page.";
+                })
             });
     }
 

@@ -18,7 +18,7 @@
 import { Stack } from "react-bootstrap";
 
 type FullScreenLoaderProps = {
-  message?: string;
+  message?: string | (string|null)[];
 };
 export default function FullScreenLoader(props: FullScreenLoaderProps) {
   return (
@@ -28,9 +28,21 @@ export default function FullScreenLoader(props: FullScreenLoaderProps) {
     >
       <Stack gap={3} className="justify-content-center align-items-center">
         <div className="spinner-border txt-blue" role="status"></div>
-        <span className="txt-white display-6">
-          {props.message || "Loading.. please wait."}
-        </span>
+        {Array.isArray(props.message) ? (
+          <span>
+          <Stack>
+            {props.message.map((msg, i) => (
+              <h2 key={i} className="txt-white">
+                {msg}
+              </h2>
+            ))}
+          </Stack>
+          </span>
+        ) : (
+          <span className="txt-white display-6">
+            {props.message || "Loading.. please wait."}
+          </span>
+        )}
       </Stack>
     </div>
   );

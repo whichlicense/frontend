@@ -23,6 +23,8 @@ import { Provider } from "./Provider";
 import { TUser } from "../../context/AuthContext";
 import { toastError } from "../utils/toasting";
 import { TEmailNotificationSettings } from "../typings/EmailNotificationSettings";
+import { TPipelineTestOptions, TPipelineTestResultsOut } from "../../types/pipeline";
+import { TDiscoverOut } from "../../types/discover";
 
 /**
  * Represents a connection system towards the cloud hosted solution.
@@ -31,8 +33,12 @@ export class CloudProvider extends Provider {
     static defaultHost = "192.168.1.130";
     static defaultPort = 8081;
 
-    getScan(id: string): Promise<any> {
-        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scan/${id.replaceAll("/", "_")}`, {
+    testPipeline(opts: TPipelineTestOptions): Promise<TPipelineTestResultsOut> {
+        throw new Error("Method not implemented.");
+    }
+
+    getScan(id: number): Promise<any> {
+        return axios.get(`${Provider.constructUrlBase(this.options)}/scan/get-scan/${id}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
@@ -42,6 +48,10 @@ export class CloudProvider extends Provider {
             toastError(err, "Something went wrong when fetching the scan. Please try again later.");
             return {};
         })
+    }
+
+    getScans(id: string[], transitives?: boolean | undefined): Promise<TDiscoverOut[]> {
+        return Promise.reject("Method not implemented.");
     }
 
     me(): Promise<TMeReply | null> {

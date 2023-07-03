@@ -28,14 +28,29 @@ export function useSignal(props: {
     const { signal, callback } = props;
 
     useEffect(()=>{
-        const signalListener = providerCtx.provider?.onProviderSignal((signalType, data)=>{
-            if(signalType === signal){
-                callback(data)
+        const ws = new WebSocket(`ws://localhost:${8084}/observed`);
+        const receiver = (event: MessageEvent<any>) => {
+            console.log("Signal received", event.data);
+            const d = JSON.parse(event.data) as { type: ESignalType, data: any };
+            if(d.type === signal){
+                callback(d.data);
             }
-        });
+        }
+        ws.addEventListener("message", receiver);
+
+
+        // const signalListener = providerCtx.provider?.onProviderSignal((signalType, data)=>{
+        //     console.log("providerCtx.provider?.onProviderSignal", data)
+        //     if(signalType === signal){
+        //         callback(data)
+        //     }
+        // });
+
+        // console.log("Signal listener", providerCtx.provider.onSignal);
         return () => {
-            signalListener?.remove();
+            // signalListener?.remove();
+            ws.removeEventListener("message", receiver);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [providerCtx])
+    }, [callback, providerCtx.provider, signal])
 }

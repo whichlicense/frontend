@@ -15,17 +15,24 @@
  *   limitations under the License.
  */
 
-import { useToolBar } from "../components/Hooks/useToolBar";
+import axios from "axios";
 
-export default function Scans() {
-    useToolBar([])
+export type TGitHubLicenseInfo = {
+    key: string,
+    name: string
+    spdx_id: string,
+    url: string,
+    node_id: string,
+    html_url: string,
+    description: string,
+    implementation: string,
+    permissions: string[],
+    conditions: string[],
+    limitations: string[],
+    body: string,
+    featured: boolean
+}
 
-    // TODO: use the scans component used in the dashboard here.. adjust the component to be able to optionally add more elements to the table
-    // or to remove items from said table. we can use the deepkeyof type to select elements from the underlying object and pass
-    // them as an array to the scans component which should facilitate selecting which elements to show in the table.
-    return (
-        <div>
-            <p>Coming soon</p>
-        </div>
-    );
+export function getInfo(ofl: string): Promise<TGitHubLicenseInfo>{
+    return axios.get(`https://api.github.com/licenses/${ofl}`).then((res) => res.data).catch((err) => console.error(err));
 }

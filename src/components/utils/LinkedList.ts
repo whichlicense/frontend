@@ -100,9 +100,40 @@ export class DoublyLinkedList<T> {
         this.updateCallback();
         return newNode;
     }
+
+    public insertBefore(node: DoublyLinkedListNode<T>, value: T): DoublyLinkedListNode<T> {
+        const newNode = new DoublyLinkedListNode<T>(value);
+
+        if (node === this.head) {
+            this.head!.prev = newNode;
+            newNode.next = this.head;
+            this.head = newNode;
+            this.size++;
+
+            this.updateCallback();
+            return newNode;
+        }
+
+        newNode.prev = node.prev;
+        newNode.next = node;
+        node.prev!.next = newNode;
+        node.prev = newNode;
+        this.size++;
+
+        this.updateCallback();
+        return newNode;
+    }
     
 
     public remove(node: DoublyLinkedListNode<T>): void {
+        if(this.size === 1){
+            this.head = null;
+            this.tail = null;
+            this.size = 0;
+            this.updateCallback();
+            return;
+        }
+
         if (node === this.head) {
             this.head = this.head.next;
             this.head!.prev = null;
@@ -124,22 +155,27 @@ export class DoublyLinkedList<T> {
         node.prev!.next = node.next;
         node.next!.prev = node.prev;
         this.size--;
+        this.updateCallback();
     }
 
-    public forEach(callback: (node: DoublyLinkedListNode<T>) => void): void {
+    public forEach(callback: (node: DoublyLinkedListNode<T>, idx: number) => void): void {
         let current = this.head;
+        let idx = 0;
         while (current) {
-            callback(current);
+            callback(current, idx);
             current = current.next;
+            idx++;
         }
     }
 
-    public map(callback: (node: DoublyLinkedListNode<T>) => any): any[] {
+    public map(callback: (node: DoublyLinkedListNode<T>, idx: number) => any): any[] {
         const result = [];
         let current = this.head;
+        let idx = 0;
         while (current) {
-            result.push(callback(current));
+            result.push(callback(current, idx));
             current = current.next;
+            idx++;
         }
         return result;
     }

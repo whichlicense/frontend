@@ -35,6 +35,9 @@ import { useEffectOnce } from "../components/utils/useEffectOnce";
 import { useAuthContext } from "../context/AuthContext";
 import { useSignal } from "../components/Hooks/useSignal";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
+import { TDiscoverOut } from "../types/discover";
+import { fromHex, time } from "../components/utils/identity";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   useForceAuth({
@@ -42,6 +45,7 @@ export default function Dashboard() {
     travelTo: "/login",
   });
   const { getProviderType, provider } = useProviderContext();
+  const navigate = useNavigate();
   const telemetry = Telemetry.instance;
   useToolBar([
     {
@@ -74,14 +78,28 @@ export default function Dashboard() {
         });
       },
     },
+    {
+      type: ToolBarItemType.SEPARATOR,
+    },
+    {
+      type: ToolBarItemType.BUTTON,
+      title: "Create A Pipeline",
+      icon: "bi bi-plus-circle",
+      onClick: () => {
+        navigate("/pipeline")
+      },
+    },
   ]);
   const auth = useAuthContext();
 
   useSignal({
     signal: ESignalType.SCAN_FINISHED,
-    callback: () => {
-      console.info("A scan has finished");
-      getPersonalScans();
+    callback: (d) => {
+      console.info("A scan has finished", d, (d as any).identity);
+      provider.getScan((d as any).identity).then((scan) => {
+        setDummyData([scan, ...dummyData]);
+      });
+      // getPersonalScans();
     },
   });
 
@@ -92,16 +110,7 @@ export default function Dashboard() {
   };
 
   const [showAddProject, setShowAddProject] = useState(false);
-  const [dummyData, setDummyData] = useState<
-    {
-      name: string;
-      version: string;
-      license: string;
-      ecosystem: string;
-      generated: number;
-      dependencyAmount: number;
-    }[]
-  >();
+  const [dummyData, setDummyData] = useState<TDiscoverOut[]>([]);
 
   useEffectOnce(() => {
     // TODO: this needs to be attached to the provider as the calls might change depending on the provider being used...
@@ -111,7 +120,7 @@ export default function Dashboard() {
   return (
     <>
       <Row>
-        <Col xs={12} className="g-3 d-flex align-items-stretch">
+        {/* <Col xs={12} className="g-3 d-flex align-items-stretch">
           <Stack>
             <div className="ps-2">
               <SectionHeading
@@ -155,7 +164,7 @@ export default function Dashboard() {
               ]}
             />
           </Stack>
-        </Col>
+        </Col> */}
 
         <Col xs={12} md={6} className="g-3 d-flex align-items-stretch">
           <ProviderMismatchHandler
@@ -217,11 +226,12 @@ export default function Dashboard() {
                 dummyData?.map((scan) => {
                   return {
                     name: scan.name,
-                    date: new Date(scan.generated * 1000),
-                    license: scan.license,
-                    ecosystem: scan.ecosystem,
+                    date: new Date(time(fromHex(scan.identity as string))),
+                    // TODO: discovered license
+                    license: scan.discoveredLicenseTrace.license || scan.declaredLicense,
+                    ecosystem: scan.ecosystems,
                     status: ComplianceStatus.UNKNOWN,
-                    link: `/scan-result/${scan.name}`,
+                    link: `/scan-result/${scan.identity}`,
                   };
                 }) || []
               }

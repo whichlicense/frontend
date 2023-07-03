@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Container,
   Row,
@@ -35,6 +35,12 @@ import { downloadPlainText } from "../components/utils/download";
 import { LICENSE_1 } from "../components/utils/TEST_LICENSES";
 import { ToolBarItemType } from "../context/ToolBarContext";
 import { ETelemetryEntryType, Telemetry } from "../components/utils/Telemetry";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useProviderContext } from "../context/ProviderContext";
+import { TDiscoverOut } from "../types/discover";
+import FullScreenLoader from "../components/Loaders/FullScreenLoader";
+import { fromHex, time } from "../components/utils/identity";
 
 // TODO: remove me.. only for testing
 function getRandomInt(min: number, max: number) {
@@ -168,7 +174,9 @@ export default function ExportView() {
         telemetry.addEntry({
           type: ETelemetryEntryType.INTERACTION,
           title: "Open Export options",
-          description: `Options: \n${Object.entries(printSettings).map(([k, v]) => `\t${k}: ${v}`).join("\n")}`,
+          description: `Options: \n${Object.entries(printSettings)
+            .map(([k, v]) => `\t${k}: ${v}`)
+            .join("\n")}`,
         });
       },
     },
@@ -226,6 +234,45 @@ export default function ExportView() {
     },
   ]);
 
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { provider } = useProviderContext();
+
+  const [scan, setScan] = useState<TDiscoverOut | undefined>(undefined);
+  const [allScanDetailed, setAllScanDetailed] = useState<
+    Map<string, TDiscoverOut> | undefined
+  >(undefined);
+
+  if (id === undefined) {
+    toast.error("No scan id provided");
+    navigate("/dashboard");
+  }
+
+  useEffect(() => {
+    if (!id) return;
+    provider.getScan(id, true).then((res) => {
+      setScan(res);
+      
+      console.log(Object.values(res.dependencies));
+      provider
+        .getScans(
+          Object.values(res.dependencies)
+            // .filter((x) => x.kind === "DIRECT")
+            .map((dep) => dep.scans[dep.version]),
+          true
+        )
+        .then((transitiveRes) => {
+          setAllScanDetailed(
+            new Map(
+              transitiveRes.map((tsc) => {
+                return [tsc.identity as string, tsc];
+              })
+            )
+          );
+        });
+    });
+  }, [id, provider]);
+
   const constructHTML = () => {
     return `<html>
     <head>
@@ -268,6 +315,8 @@ export default function ExportView() {
     }, 500);
   };
 
+  // TODO: for dependency exposure, put names in boxes, size based on amount of direct dependencies, color based on compliancy status
+
   const constructedMermaidGraph = useMemo(() => {
     return printSettings.showDependencyMindMap
       ? `mindmap
@@ -281,7 +330,7 @@ ${test_nested_dependencies
 
   function traverseAndRenderMermaid(
     level: number,
-    node: typeof test_nested_dependencies[0]
+    node: (typeof test_nested_dependencies)[0]
   ) {
     const classes = node.compliant ? "\n:::bg-green" : "\n:::bg-red";
     let mermaidString = `${"\t".repeat(level)}${node.name}${classes}\n`;
@@ -291,28 +340,33 @@ ${test_nested_dependencies
     return mermaidString;
   }
 
-  function traverseAndRenderForOrgChart(
-    node: typeof test_nested_dependencies[0],
-    parentId: string,
-    contents: [string, string | null, number][]
-  ) {
-    contents.push([node.id, parentId, node.dependencies.length + 1]);
-    for (const dep of node.dependencies) {
-      traverseAndRenderForOrgChart(dep, node.id, contents);
-    }
-  }
-
   const constructedOrgChartData = useMemo(() => {
-    if (!printSettings.showDependencyExposure)
-      return [] as [string, string | null, number][];
-    const contents: [string, string | null, number][] = [["Root", null, 0]];
-    for (const node of test_nested_dependencies) {
-      traverseAndRenderForOrgChart(node, "Root", contents);
-    }
-    return contents;
+    const contents  = Object.entries(scan?.dependencies || {}).filter(x=>x[1].kind === "DIRECT").map(([depName, depItem]) => {
+      const directDepInfo = allScanDetailed?.get(depItem.scans[depItem.version]);
+      return [
+        depName,
+        scan?.name || "ERROR",
+        Object.keys(directDepInfo?.dependencies || {}).length + 1,
+      ];
+    })
+    return [
+      [(scan?.name || "ERROR"), null, 0],
+      ...contents
+    ] as [string, string | null, number][];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [test_nested_dependencies, printSettings.showDependencyExposure]);
+  }, [scan, allScanDetailed, printSettings.showDependencyExposure]);
 
+  if (!scan || !allScanDetailed)
+    return (
+      <div>
+        <FullScreenLoader
+          message={[
+            !scan ? `Fetching Top level scan` : null,
+            !allScanDetailed ? `Fetching Transitive scan details` : null,
+          ]}
+        />
+      </div>
+    );
   return (
     <div className="fade-in-forward">
       <h1>Export view</h1>
@@ -346,10 +400,14 @@ ${test_nested_dependencies
             </Col>
             <Col xs={9} className="text-end">
               <Stack gap={1}>
-                <h6 className="display-4">ReactJS</h6>
-                <h6>Version: 1.0.0</h6>
-                <h6>Generated by: xxxxxxx</h6>
-                <h6>Generated on: 2023-03-09T11:22:48.776Z</h6>
+                <h6 className="display-4">{scan?.name}</h6>
+                <h6>Version: {scan.version}</h6>
+                <h6>Generated by: Platform microservices</h6>
+                <h6>Generated on: {new Date().toISOString()}</h6>
+                <h6>
+                  Scanned on:{" "}
+                  {time(fromHex(scan.identity as string)).toISOString()}
+                </h6>
               </Stack>
             </Col>
             {printSettings.showCustomNotes && (
@@ -425,7 +483,7 @@ ${test_nested_dependencies
 
             <Col xs={6}>
               <RegularCard title="Status" minHeight="100px">
-                <h4 className="txt-green">Compliant</h4>
+                <h4 className="txt-green">Unknown</h4>
               </RegularCard>
             </Col>
             <Col xs={6}>
@@ -434,7 +492,7 @@ ${test_nested_dependencies
                   href="#test-anchor"
                   className="h4 txt-green text-decoration-none"
                 >
-                  MIT
+                  {scan.discoveredLicense || scan.declaredLicense || "Unknown"}
                 </a>
               </RegularCard>
             </Col>
@@ -445,12 +503,17 @@ ${test_nested_dependencies
                   <Stack gap={2}>
                     <small className="ps-2">
                       <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill opacity-75"></i>
-                      Some warning message here
+                      Classification & compliancy system not implemented
+                    </small>
+
+                    <small className="ps-2">
+                      <i className="txt-yellow pe-2 bi bi-exclamation-triangle-fill opacity-75"></i>
+                      Unable to obtain license text for some packages
                     </small>
 
                     <small className="ps-2">
                       <i className="txt-blue pe-2 bi bi bi-info-circle-fill opacity-75"></i>
-                      Some notice message here
+                      Nested dependency tree not available
                     </small>
                   </Stack>
                 </RegularCard>
@@ -489,26 +552,48 @@ ${test_nested_dependencies
 
             {printSettings.showTopLevelDependencies && (
               <Col xs={12}>
-                <RegularCard title="Top-level Dependencies" maxHeight="100%">
+                <RegularCard title="Direct Dependencies" maxHeight="100%">
                   <ListGroup>
-                    {Array.from({ length: 100 }).map((_, idx) => (
-                      <ListGroup.Item as={"a"} href={`#dep-${idx}`} key={idx}>
-                        <Row>
-                          <Col xs={6}>Dependency {idx}</Col>
-                          <Col xs={2}>
-                            <div>1.0.0</div>
-                          </Col>
-                          <Col xs={2}>
-                            <Badge className="bg-grey txt-dark-1">MIT</Badge>
-                          </Col>
-                          <Col xs={2} className="d-flex justify-content-end">
-                            <Badge className="bg-green txt-dark-1">
-                              Compliant
-                            </Badge>
-                          </Col>
-                        </Row>
-                      </ListGroup.Item>
-                    ))}
+                    {Object.entries(scan.dependencies)
+                      .filter(([_, v]) => v.kind === "DIRECT")
+                      .map(([depName, item], idx) => {
+                        const fullDetails = allScanDetailed.get(
+                          item.scans[item.version]
+                        );
+                        if (!fullDetails)
+                          return (
+                            <ListGroup.Item key={idx}>
+                              Error retrieving information for {depName}
+                            </ListGroup.Item>
+                          );
+                        return (
+                          <ListGroup.Item
+                            as={"a"}
+                            href={`#dep-${idx}`}
+                            key={idx}
+                          >
+                            <Row>
+                              <Col xs={6}>{depName}</Col>
+                              <Col xs={2}>
+                                <div>{item.version}</div>
+                              </Col>
+                              <Col xs={2}>
+                                <Badge className="bg-grey txt-dark-1">
+                                  {fullDetails.discoveredLicense || fullDetails.declaredLicense || "Unknown"}
+                                </Badge>
+                              </Col>
+                              <Col
+                                xs={2}
+                                className="d-flex justify-content-end"
+                              >
+                                <Badge className="bg-green txt-dark-1">
+                                  Unknown
+                                </Badge>
+                              </Col>
+                            </Row>
+                          </ListGroup.Item>
+                        );
+                      })}
                   </ListGroup>
                   <br />
                   <br />
@@ -518,26 +603,56 @@ ${test_nested_dependencies
             )}
 
             {printSettings.showTransitiveDependencies &&
-              Array.from({ length: 100 }).map((_, idx) => (
-                <Col xs={16}>
-                  <RegularCard
-                    title={`Dependency ${idx}'s dependencies`}
-                    maxHeight="100%"
-                    id={`dep-${idx}`}
-                  >
-                    <ListGroup>
-                      {Array.from({ length: 10 }).map((_, idx) => (
-                        <ListGroup.Item key={idx}>
-                          Transitive dependency {idx}
-                        </ListGroup.Item>
-                      ))}
-                    </ListGroup>
-                    <br />
-                    <br />
-                    <br />
-                  </RegularCard>
-                </Col>
-              ))}
+               <Col xs={12}>
+               <RegularCard title="Transitive Dependencies" maxHeight="100%">
+                 <ListGroup>
+                   {Object.entries(scan.dependencies)
+                     .filter(([_, v]) => v.kind === "TRANSITIVE")
+                     .map(([depName, item], idx) => {
+                       const fullDetails = allScanDetailed.get(
+                         item.scans[item.version]
+                       );
+                       if (!fullDetails)
+                         return (
+                           <ListGroup.Item key={idx}>
+                             Error retrieving information for {depName}
+                           </ListGroup.Item>
+                         );
+                       return (
+                         <ListGroup.Item
+                           as={"a"}
+                           href={`#dep-${idx}`}
+                           key={idx}
+                         >
+                           <Row>
+                             <Col xs={6}>{depName}</Col>
+                             <Col xs={2}>
+                               <div>{item.version}</div>
+                             </Col>
+                             <Col xs={2}>
+                               <Badge className="bg-grey txt-dark-1">
+                                 {fullDetails.discoveredLicense || fullDetails.declaredLicense || "Unknown"}
+                               </Badge>
+                             </Col>
+                             <Col
+                               xs={2}
+                               className="d-flex justify-content-end"
+                             >
+                               <Badge className="bg-green txt-dark-1">
+                                 Unknown
+                               </Badge>
+                             </Col>
+                           </Row>
+                         </ListGroup.Item>
+                       );
+                     })}
+                 </ListGroup>
+                 <br />
+                 <br />
+                 <br />
+               </RegularCard>
+             </Col>
+             }
 
             {printSettings.addLicenses &&
               Array.from({ length: 10 }).map((_, idx) => (
@@ -561,11 +676,13 @@ ${test_nested_dependencies
         title="Export options"
         show={showExportOptions}
         handleClose={() => {
-          setShowExportOptions(false)
+          setShowExportOptions(false);
           telemetry.addEntry({
             type: ETelemetryEntryType.INTERACTION,
             title: "Close export options",
-            description: `Options: \n${Object.entries(printSettings).map(([k, v]) => `\t${k}: ${v}`).join("\n")}`,
+            description: `Options: \n${Object.entries(printSettings)
+              .map(([k, v]) => `\t${k}: ${v}`)
+              .join("\n")}`,
           });
         }}
       >
